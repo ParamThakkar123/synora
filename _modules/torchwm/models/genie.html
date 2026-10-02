@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 
 
@@ -26,18 +25,18 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../../_static/styles/theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
-<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+  <link href="../../../_static/styles/theme.css?digest=64cc4de3f052d77215f0" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=64cc4de3f052d77215f0" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=549e9d87" />
   
   <!-- So that users can add custom icons -->
-  <script defer src="../../../_static/scripts/fontawesome.js?digest=cb8930eaaf36d9849b67"></script>
+  <script defer src="../../../_static/scripts/fontawesome.js?digest=64cc4de3f052d77215f0"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67" />
-<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67" />
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=64cc4de3f052d77215f0" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=64cc4de3f052d77215f0" />
 
     <script src="../../../_static/documentation_options.js?v=8d563738"></script>
     <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
@@ -460,7 +459,7 @@ window.runMermaid = runMermaid;</script>
   
     <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
 <div class="bd-header__inner bd-page-width">
-  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+  <button type="button" class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
     <span class="fa-solid fa-bars"></span>
   </button>
   
@@ -1128,6 +1127,7 @@ window.runMermaid = runMermaid;</script>
         <span class="n">num_frames</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">16</span><span class="p">,</span>
         <span class="n">actions</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">use_maskgit</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">use_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Generate video frames given a prompt frame and actions.</span>
 
@@ -1136,6 +1136,10 @@ window.runMermaid = runMermaid;</script>
 <span class="sd">            num_frames: Total number of frames to generate</span>
 <span class="sd">            actions: (B, num_frames-1) latent action indices, or None for random</span>
 <span class="sd">            use_maskgit: Whether to use MaskGIT sampling</span>
+<span class="sd">            use_cache: Generate each frame from a temporal KV cache instead of</span>
+<span class="sd">                re-running the dynamics model over the whole prefix; O(T)</span>
+<span class="sd">                rather than O(T^2) in the number of frames. Same logits up to</span>
+<span class="sd">                float rounding.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            generated_video: (B, C, num_frames, H, W)</span>
@@ -1163,7 +1167,7 @@ window.runMermaid = runMermaid;</script>
         <span class="c1"># Generate</span>
         <span class="k">if</span> <span class="n">use_maskgit</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">"sampler"</span><span class="p">):</span>
             <span class="n">generated_tokens</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generate_maskgit</span><span class="p">(</span>
-                <span class="n">prompt_tokens</span><span class="p">,</span> <span class="n">actions</span><span class="p">,</span> <span class="n">num_frames</span>
+                <span class="n">prompt_tokens</span><span class="p">,</span> <span class="n">actions</span><span class="p">,</span> <span class="n">num_frames</span><span class="p">,</span> <span class="n">use_cache</span><span class="o">=</span><span class="n">use_cache</span>
             <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">generated_tokens</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dynamics_model</span><span class="o">.</span><span class="n">autoregressive_sample</span><span class="p">(</span>
@@ -1171,6 +1175,7 @@ window.runMermaid = runMermaid;</script>
                 <span class="n">actions</span><span class="p">,</span>
                 <span class="n">num_frames</span><span class="p">,</span>
                 <span class="n">temperature</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span>
+                <span class="n">use_cache</span><span class="o">=</span><span class="n">use_cache</span><span class="p">,</span>
             <span class="p">)</span>
 
         <span class="c1"># Decode tokens to video</span>
@@ -1185,6 +1190,7 @@ window.runMermaid = runMermaid;</script>
         <span class="n">prompt_tokens</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
         <span class="n">actions</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
         <span class="n">num_frames</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">use_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Autoregressively generate frame tokens, honoring the given actions.</span>
 
@@ -1201,7 +1207,28 @@ window.runMermaid = runMermaid;</script>
 <span class="sd">        frames, so iterative refinement of a single frame is a no-op here; we</span>
 <span class="sd">        therefore sample each frame in a single forward pass. Adding a mask</span>
 <span class="sd">        token is the remaining architectural gap for true MaskGIT sampling.</span>
+
+<span class="sd">        With ``use_cache`` the prompt is encoded once into a temporal KV cache</span>
+<span class="sd">        and each new frame is one single-frame forward.</span>
 <span class="sd">        """</span>
+        <span class="k">if</span> <span class="n">use_cache</span><span class="p">:</span>
+            <span class="n">B</span><span class="p">,</span> <span class="n">T_prompt</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">prompt_tokens</span><span class="o">.</span><span class="n">shape</span>
+            <span class="n">cache</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dynamics_model</span><span class="o">.</span><span class="n">init_cache</span><span class="p">(</span><span class="n">B</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">prompt_tokens</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+            <span class="n">logits</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dynamics_model</span><span class="o">.</span><span class="n">forward_cached</span><span class="p">(</span>
+                <span class="n">prompt_tokens</span><span class="p">,</span> <span class="n">actions</span><span class="p">[:,</span> <span class="p">:</span><span class="n">T_prompt</span><span class="p">],</span> <span class="n">cache</span>
+            <span class="p">)</span>
+            <span class="n">frames</span> <span class="o">=</span> <span class="p">[</span><span class="n">prompt_tokens</span><span class="p">]</span>
+            <span class="n">t</span> <span class="o">=</span> <span class="n">T_prompt</span>
+            <span class="k">while</span> <span class="n">t</span> <span class="o">&lt;</span> <span class="n">num_frames</span><span class="p">:</span>
+                <span class="n">next_tokens</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sampler</span><span class="o">.</span><span class="n">sample_frame</span><span class="p">(</span><span class="n">logits</span><span class="p">[:,</span> <span class="o">-</span><span class="mi">1</span><span class="p">])</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+                <span class="n">frames</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">next_tokens</span><span class="p">)</span>
+                <span class="n">t</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="k">if</span> <span class="n">t</span> <span class="o">&lt;</span> <span class="n">num_frames</span><span class="p">:</span>
+                    <span class="n">logits</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dynamics_model</span><span class="o">.</span><span class="n">forward_cached</span><span class="p">(</span>
+                        <span class="n">next_tokens</span><span class="p">,</span> <span class="n">actions</span><span class="p">[:,</span> <span class="n">t</span> <span class="o">-</span> <span class="mi">1</span> <span class="p">:</span> <span class="n">t</span><span class="p">],</span> <span class="n">cache</span>
+                    <span class="p">)</span>
+            <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span><span class="n">frames</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
         <span class="n">current_tokens</span> <span class="o">=</span> <span class="n">prompt_tokens</span>  <span class="c1"># (B, T_prompt, N)</span>
 
         <span class="k">while</span> <span class="n">current_tokens</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">num_frames</span><span class="p">:</span>
@@ -1460,8 +1487,8 @@ window.runMermaid = runMermaid;</script>
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67"></script>
-<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67"></script>
+  <script defer src="../../../_static/scripts/bootstrap.js?digest=64cc4de3f052d77215f0"></script>
+<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=64cc4de3f052d77215f0"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -1482,7 +1509,6 @@ window.runMermaid = runMermaid;</script>
 
   <p class="sphinx-version">
     Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.1.0.
-    <br/>
   </p>
 </div>
       
@@ -1495,7 +1521,7 @@ window.runMermaid = runMermaid;</script>
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.21.0.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.22.0.
 </p></div>
       
     </div>

@@ -135,37 +135,50 @@ server = InferenceServer()
 
 ## Performance Optimization
 
-### JIT Compilation
+The {doc}`deployment_guide` covers this in depth. In short:
 
 ```python
 import torch
+from torchwm.inference import optimize_for_inference, make_stepper
 
-agent = torch.jit.script(agent)
-```
+# eval mode, no grad, bf16 where supported, torch.compile with CUDA graphs
+actor = optimize_for_inference(agent.dreamer.actor, precision="auto", compile=True)
 
-### Memory Efficient Inference
-
-```python
-import torch
-
+# or drive the whole observe -> act loop through a uniform, batchable stepper
+stepper = make_stepper(agent)
+state = stepper.init_state(batch_size=1)
 with torch.inference_mode():
-    output = agent.predict(inputs)
+    state = stepper.observe(state, obs, prev_action)
+    action = stepper.act(state)
 ```
+
+Prefer `torch.compile` (via `optimize_for_inference` or `torchwm.maybe_compile`)
+over `torch.jit.script`. TorchScript is in maintenance mode upstream, and
+`torchwm.utils.jit_utils` is deprecated. Always run inference under
+`torch.inference_mode()`: it skips autograd bookkeeping that `no_grad` still
+performs.
 
 ## Exporting Models
 
-TorchWM installs a deployment-oriented `export()` method once on `torch.nn.Module`, so every model class in the library can be exported with the same API. High-level wrapper agents such as Dreamer and PlaNet use the same exporter for their contained modules:
+TorchWM installs a deployment-oriented `export()` method on `torch.nn.Module`, so every model class in the library can be exported with the same API. High-level wrapper agents such as Dreamer and PlaNet use the same exporter for their contained modules:
 
 ```python
-model.export("model.onnx", format="onnx", example_inputs=example_inputs)
+model.export("model.pt2", format="exported_program", example_inputs=example_inputs)
 agent.export("agent_actor.onnx", format="onnx")
 ```
 
 | Format | Alias | Output |
-|---|---|---|---|
+|---|---|---|
+| `"exported_program"` | `"export"`, `"pt2"` | `torch.export` graph (`.pt2`). Recommended. |
+| `"aoti"` | `"aotinductor"` | AOTInductor package, runnable from C++ without the model's Python code |
 | `"onnx"` | — | ONNX graph for ONNX Runtime, TensorRT conversion, or other production runtimes |
-| `"torchscript"` | `"jit"`, `"ts"` | TorchScript `.pt` file |
-| `"tensorrt"` | `"trt"` | Serialized TorchScript TensorRT module (requires `torch-tensorrt`) |
+| `"torchscript"` | `"jit"`, `"ts"` | TorchScript `.pt` file (legacy) |
+| `"tensorrt"` | `"trt"` | Torch-TensorRT module, compiled through the dynamo IR (requires `torch-tensorrt`) |
+
+Load any artifact back with `torchwm.load_exported(path)`, and check it against
+the eager module with `torchwm.verify_export(module, path, example_inputs)`.
+For whole deployment bundles (weights, config, artifacts and a manifest), see
+{doc}`deployment_guide`.
 
 Dreamer exports its deterministic actor by default. The exported Dreamer actor
 accepts concatenated latent features with shape `[batch, stoch_size + deter_size]`
@@ -218,8 +231,13 @@ Agents that contain multiple deployable modules accept either short target names
 TensorRT export requires `torch-tensorrt` in the deployment environment:
 
 ```python
-agent.export("dreamer_actor_trt.pt", format="tensorrt")
+agent.export("dreamer_actor_trt.ep", format="tensorrt")
 ```
+
+Note that the exported Dreamer actor above uses `ActionDecoder(deter=True)`,
+which estimates the mode from 100 random samples. For a deterministic,
+single-pass policy, export `DreamerStepper(agent).step_module()` instead (see
+{doc}`deployment_guide`).
 
 ## Integration Examples
 
@@ -281,8 +299,9 @@ for episode in range(10):
 
 ### Speed Issues
 - Move to GPU
-- Use JIT compilation
-- Batch inputs when possible
+- Use `optimize_for_inference(..., compile=True)` (CUDA graphs) and bf16
+- Batch inputs when possible; for Genie generation pass `use_cache=True`
+- Measure with `torchwm.inference.benchmark_step` before and after each change
 
 ### Accuracy Issues
 - Ensure inputs are normalized the same way as during training

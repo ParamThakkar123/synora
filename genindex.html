@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 
 
@@ -26,18 +25,18 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="_static/styles/theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
-<link href="_static/styles/pydata-sphinx-theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+  <link href="_static/styles/theme.css?digest=64cc4de3f052d77215f0" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=64cc4de3f052d77215f0" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="_static/custom.css?v=549e9d87" />
   
   <!-- So that users can add custom icons -->
-  <script defer src="_static/scripts/fontawesome.js?digest=cb8930eaaf36d9849b67"></script>
+  <script defer src="_static/scripts/fontawesome.js?digest=64cc4de3f052d77215f0"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67" />
-<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67" />
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=64cc4de3f052d77215f0" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=64cc4de3f052d77215f0" />
 
     <script src="_static/documentation_options.js?v=8d563738"></script>
     <script src="_static/doctools.js?v=fd6eb6e6"></script>
@@ -460,7 +459,7 @@ window.runMermaid = runMermaid;</script>
   
     <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
 <div class="bd-header__inner bd-page-width">
-  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+  <button type="button" class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
     <span class="fa-solid fa-bars"></span>
   </button>
   
@@ -662,6 +661,12 @@ window.runMermaid = runMermaid;</script>
       <li><a href="api_reference.html#torchwm.controller.iris_policy.IRISPolicy.act">act() (torchwm.controller.iris_policy.IRISPolicy method)</a>
 
       <ul>
+        <li><a href="api_reference.html#torchwm.inference.steppers.DreamerStepper.act">(torchwm.inference.steppers.DreamerStepper method)</a>
+</li>
+        <li><a href="api_reference.html#torchwm.inference.steppers.IRISStepper.act">(torchwm.inference.steppers.IRISStepper method)</a>
+</li>
+        <li><a href="api_reference.html#torchwm.inference.steppers.WorldModelStepper.act">(torchwm.inference.steppers.WorldModelStepper method)</a>
+</li>
         <li><a href="api_reference.html#torchwm.models.iris_agent.IRISAgent.act">(torchwm.models.iris_agent.IRISAgent method)</a>
 </li>
       </ul></li>
@@ -829,8 +834,12 @@ window.runMermaid = runMermaid;</script>
       </ul></li>
       <li><a href="api_reference.html#torchwm.vision.dreamer_decoder.ActionDecoder.add_exploration">add_exploration() (torchwm.vision.dreamer_decoder.ActionDecoder method)</a>
 </li>
-      <li><a href="api_reference.html#torchwm.models.iris_transformer.KVCache.advance">advance() (torchwm.models.iris_transformer.KVCache method)</a>
+      <li><a href="api_reference.html#torchwm.blocks.st_transformer.STKVCache.advance">advance() (torchwm.blocks.st_transformer.STKVCache method)</a>
+
+      <ul>
+        <li><a href="api_reference.html#torchwm.models.iris_transformer.KVCache.advance">(torchwm.models.iris_transformer.KVCache method)</a>
 </li>
+      </ul></li>
       <li><a href="api_reference.html#torchwm.datasets.nuplan.NuPlanSample.agent_types">agent_types (torchwm.datasets.nuplan.NuPlanSample attribute)</a>
 </li>
       <li><a href="api_reference.html#torchwm.datasets.nuplan.NuPlanSample.agents_future">agents_future (torchwm.datasets.nuplan.NuPlanSample attribute)</a>
@@ -855,9 +864,11 @@ window.runMermaid = runMermaid;</script>
 </li>
       <li><a href="api_reference.html#torchwm.utils.jepa_utils.AllReduceSum">AllReduceSum (class in torchwm.utils.jepa_utils)</a>
 </li>
-      <li><a href="api_reference.html#torchwm.memory.dreamer_memory.Episode.append">append() (torchwm.memory.dreamer_memory.Episode method)</a>
+      <li><a href="api_reference.html#torchwm.blocks.st_transformer.STKVCache.append">append() (torchwm.blocks.st_transformer.STKVCache method)</a>
 
       <ul>
+        <li><a href="api_reference.html#torchwm.memory.dreamer_memory.Episode.append">(torchwm.memory.dreamer_memory.Episode method)</a>
+</li>
         <li><a href="api_reference.html#torchwm.memory.dreamer_memory.Memory.append">(torchwm.memory.dreamer_memory.Memory method)</a>
 </li>
         <li><a href="api_reference.html#torchwm.memory.planet_memory.Episode.append">(torchwm.memory.planet_memory.Episode method)</a>
@@ -873,6 +884,14 @@ window.runMermaid = runMermaid;</script>
 </li>
       <li><a href="api_reference.html#torchwm.utils.utils.apply_model">apply_model() (in module torchwm.utils.utils)</a>
 </li>
+      <li><a href="api_reference.html#torchwm.inference.bundle.Bundle.artifacts">artifacts (torchwm.inference.bundle.Bundle attribute)</a>
+</li>
+      <li><a href="api_reference.html#torchwm.inference.benchmark.DriftReport.as_dict">as_dict() (torchwm.inference.benchmark.DriftReport method)</a>
+
+      <ul>
+        <li><a href="api_reference.html#torchwm.inference.benchmark.LatencyReport.as_dict">(torchwm.inference.benchmark.LatencyReport method)</a>
+</li>
+      </ul></li>
       <li><a href="api_reference.html#torchwm.configs.jepa_config.JEPAConfig.aspect_ratio">aspect_ratio (torchwm.configs.jepa_config.JEPAConfig attribute)</a>
 </li>
       <li><a href="api_reference.html#torchwm.utils.logging_utils.assert_finite">assert_finite() (in module torchwm.utils.logging_utils)</a>
@@ -940,9 +959,13 @@ window.runMermaid = runMermaid;</script>
 </li>
         <li><a href="api_reference.html#torchwm.datasets.video_datasets.DatasetConfig.batch_size">(torchwm.datasets.video_datasets.DatasetConfig attribute)</a>
 </li>
+        <li><a href="api_reference.html#torchwm.inference.benchmark.LatencyReport.batch_size">(torchwm.inference.benchmark.LatencyReport attribute)</a>
+</li>
         <li><a href="api_reference.html#torchwm.training.train_genie.GenieConfig.batch_size">(torchwm.training.train_genie.GenieConfig attribute)</a>
 </li>
       </ul></li>
+      <li><a href="api_reference.html#torchwm.inference.benchmark.benchmark_step">benchmark_step() (in module torchwm.inference.benchmark)</a>
+</li>
       <li><a href="api_reference.html#torchwm.benchmarks.runner.BenchmarkRunner">BenchmarkRunner (class in torchwm.benchmarks.runner)</a>
 </li>
   </ul></td>
@@ -974,6 +997,8 @@ window.runMermaid = runMermaid;</script>
       <li><a href="api_reference.html#torchwm.training.train_jepa.build_loss_fn">build_loss_fn() (in module torchwm.training.train_jepa)</a>
 </li>
       <li><a href="api_reference.html#torchwm.training.train_planet.build_parser">build_parser() (in module torchwm.training.train_planet)</a>
+</li>
+      <li><a href="api_reference.html#torchwm.inference.bundle.Bundle">Bundle (class in torchwm.inference.bundle)</a>
 </li>
       <li><a href="api_reference.html#torchwm.models.iris_agent.IRISAgent.burn_in">burn_in() (torchwm.models.iris_agent.IRISAgent method)</a>
 </li>
@@ -1079,10 +1104,10 @@ window.runMermaid = runMermaid;</script>
         <li><a href="api_reference.html#torchwm.configs.iris_config.IRISConfig.commitment_weight">(torchwm.configs.iris_config.IRISConfig attribute)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api_reference.html#torchwm.benchmarks.metrics.compute_aggregate_metrics">compute_aggregate_metrics() (in module torchwm.benchmarks.metrics)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api_reference.html#torchwm.training.rl_harness.PPOTrainer.compute_gae">compute_gae() (torchwm.training.rl_harness.PPOTrainer method)</a>
 </li>
       <li><a href="api_reference.html#torchwm.models.iris_agent.compute_lambda_return">compute_lambda_return() (in module torchwm.models.iris_agent)</a>
@@ -1091,7 +1116,11 @@ window.runMermaid = runMermaid;</script>
 </li>
       <li><a href="api_reference.html#torchwm.utils.dreamer_utils.compute_return">compute_return() (in module torchwm.utils.dreamer_utils)</a>
 </li>
+      <li><a href="api_reference.html#torchwm.inference.bundle.Bundle.config">config (torchwm.inference.bundle.Bundle attribute)</a>
+</li>
       <li><a href="api_reference.html#torchwm.api.ModelSpec.config_path">config_path (torchwm.api.ModelSpec attribute)</a>
+</li>
+      <li><a href="api_reference.html#torchwm.inference.steppers.ImagineOutput.continue_prob">continue_prob (torchwm.inference.steppers.ImagineOutput attribute)</a>
 </li>
       <li><a href="api_reference.html#torchwm.models.controller.Controller">Controller (class in torchwm.models.controller)</a>
 </li>
@@ -1207,9 +1236,11 @@ window.runMermaid = runMermaid;</script>
 </li>
       <li><a href="api_reference.html#torchwm.models.diffusion.DDPM.DDPM">DDPM (class in torchwm.models.diffusion.DDPM)</a>
 </li>
-      <li><a href="api_reference.html#torchwm.models.latent_action_model.LatentActionModel.decode">decode() (torchwm.models.latent_action_model.LatentActionModel method)</a>
+      <li><a href="api_reference.html#torchwm.inference.steppers.DreamerStepper.decode">decode() (torchwm.inference.steppers.DreamerStepper method)</a>
 
       <ul>
+        <li><a href="api_reference.html#torchwm.models.latent_action_model.LatentActionModel.decode">(torchwm.models.latent_action_model.LatentActionModel method)</a>
+</li>
         <li><a href="api_reference.html#torchwm.utils.dreamer_utils.TwoHotEncoder.decode">(torchwm.utils.dreamer_utils.TwoHotEncoder method)</a>
 </li>
         <li><a href="api_reference.html#torchwm.vision.iris_decoder.DiscreteAutoencoder.decode">(torchwm.vision.iris_decoder.DiscreteAutoencoder method)</a>
@@ -1273,6 +1304,8 @@ window.runMermaid = runMermaid;</script>
         <li><a href="api_reference.html#torchwm.configs.genie_config.STTransformerConfig.depth">(torchwm.configs.genie_config.STTransformerConfig attribute)</a>
 </li>
       </ul></li>
+      <li><a href="api_reference.html#torchwm.inference.quantize.Int8WeightOnlyLinear.dequantized_weight">dequantized_weight() (torchwm.inference.quantize.Int8WeightOnlyLinear method)</a>
+</li>
       <li><a href="api_reference.html#torchwm.api.EnvBackendSpec.description">description (torchwm.api.EnvBackendSpec attribute)</a>
 
       <ul>
@@ -1304,13 +1337,17 @@ window.runMermaid = runMermaid;</script>
 </li>
         <li><a href="api_reference.html#torchwm.configs.wm_config.WMVAEConfig.device">(torchwm.configs.wm_config.WMVAEConfig attribute)</a>
 </li>
+        <li><a href="api_reference.html#torchwm.inference.runtime.InferenceModel.device">(torchwm.inference.runtime.InferenceModel property)</a>
+</li>
+        <li><a href="api_reference.html#torchwm.inference.steppers.WorldModelStepper.device">(torchwm.inference.steppers.WorldModelStepper attribute)</a>
+</li>
       </ul></li>
       <li><a href="api_reference.html#torchwm.benchmarks.adapters.DiamondAdapter">DiamondAdapter (class in torchwm.benchmarks.adapters)</a>
 </li>
-      <li><a href="api_reference.html#torchwm.training.train_diamond.DiamondAgent">DiamondAgent (class in torchwm.training.train_diamond)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api_reference.html#torchwm.training.train_diamond.DiamondAgent">DiamondAgent (class in torchwm.training.train_diamond)</a>
+</li>
       <li><a href="api_reference.html#torchwm.envs.diamond_atari.DiamondAtariWrapper">DiamondAtariWrapper (class in torchwm.envs.diamond_atari)</a>
 </li>
       <li><a href="api_reference.html#torchwm.configs.diamond_config.DiamondConfig">DiamondConfig (class in torchwm.configs.diamond_config)</a>
@@ -1389,9 +1426,15 @@ window.runMermaid = runMermaid;</script>
 </li>
       <li><a href="api_reference.html#torchwm.export.DreamerPolicyExport">DreamerPolicyExport (class in torchwm.export)</a>
 </li>
+      <li><a href="api_reference.html#torchwm.inference.steppers.DreamerStepModule">DreamerStepModule (class in torchwm.inference.steppers)</a>
+</li>
+      <li><a href="api_reference.html#torchwm.inference.steppers.DreamerStepper">DreamerStepper (class in torchwm.inference.steppers)</a>
+</li>
       <li><a href="api_reference.html#torchwm.benchmarks.adapters.DreamerV1Adapter">DreamerV1Adapter (class in torchwm.benchmarks.adapters)</a>
 </li>
       <li><a href="api_reference.html#torchwm.benchmarks.adapters.DreamerV2Adapter">DreamerV2Adapter (class in torchwm.benchmarks.adapters)</a>
+</li>
+      <li><a href="api_reference.html#torchwm.inference.benchmark.DriftReport">DriftReport (class in torchwm.inference.benchmark)</a>
 </li>
       <li><a href="api_reference.html#torchwm.configs.dit_config.DiTConfig.DROP">DROP (torchwm.configs.dit_config.DiTConfig attribute)</a>
 </li>
@@ -1563,10 +1606,10 @@ window.runMermaid = runMermaid;</script>
       </ul></li>
       <li><a href="api_reference.html#torchwm.configs.iris_config.IRISConfig.encoder_layers">encoder_layers (torchwm.configs.iris_config.IRISConfig attribute)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api_reference.html#torchwm.configs.iris_config.IRISConfig.encoder_residual_blocks">encoder_residual_blocks (torchwm.configs.iris_config.IRISConfig attribute)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api_reference.html#torchwm.models.modular_rssm.EncoderBase">EncoderBase (class in torchwm.models.modular_rssm)</a>
 </li>
       <li><a href="api_reference.html#torchwm.utils.utils.ensure_results_dir_exists">ensure_results_dir_exists() (in module torchwm.utils.utils)</a>
@@ -1645,6 +1688,8 @@ window.runMermaid = runMermaid;</script>
         <li><a href="api_reference.html#torchwm.training.train_iris.IRISTrainer.evaluate">(torchwm.training.train_iris.IRISTrainer method)</a>
 </li>
       </ul></li>
+      <li><a href="api_reference.html#torchwm.inference.steppers.DreamerStepModule.example_inputs">example_inputs() (torchwm.inference.steppers.DreamerStepModule method)</a>
+</li>
       <li><a href="api_reference.html#torchwm.configs.dreamer_config.DreamerConfig.exp_name">exp_name (torchwm.configs.dreamer_config.DreamerConfig attribute)</a>
 </li>
       <li><a href="api_reference.html#torchwm.models.iris_transformer.IRISTransformer.expected_reward">expected_reward() (torchwm.models.iris_transformer.IRISTransformer method)</a>
@@ -1667,6 +1712,8 @@ window.runMermaid = runMermaid;</script>
 </li>
       <li><a href="api_reference.html#torchwm.datasets.video_datasets.VideoDatasetConfig.extensions">extensions (torchwm.datasets.video_datasets.VideoDatasetConfig attribute)</a>
 </li>
+      <li><a href="api_reference.html#torchwm.inference.quantize.Int8WeightOnlyLinear.extra_repr">extra_repr() (torchwm.inference.quantize.Int8WeightOnlyLinear method)</a>
+</li>
   </ul></td>
 </tr></table>
 
@@ -1675,9 +1722,13 @@ window.runMermaid = runMermaid;</script>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api_reference.html#torchwm.api.EnvBackendSpec.factory_path">factory_path (torchwm.api.EnvBackendSpec attribute)</a>
 </li>
+      <li><a href="api_reference.html#torchwm.inference.steppers.DreamerStepper.features">features() (torchwm.inference.steppers.DreamerStepper static method)</a>
+</li>
       <li><a href="api_reference.html#torchwm.datasets.imagenet1k.ImageNetSubset.filter_dataset_">filter_dataset_() (torchwm.datasets.imagenet1k.ImageNetSubset method)</a>
 </li>
       <li><a href="api_reference.html#torchwm.configs.jepa_config.JEPAConfig.final_lr">final_lr (torchwm.configs.jepa_config.JEPAConfig attribute)</a>
+</li>
+      <li><a href="api_reference.html#torchwm.inference.benchmark.DriftReport.final_max_abs_error">final_max_abs_error (torchwm.inference.benchmark.DriftReport property)</a>
 </li>
       <li><a href="api_reference.html#torchwm.configs.jepa_config.JEPAConfig.final_weight_decay">final_weight_decay (torchwm.configs.jepa_config.JEPAConfig attribute)</a>
 </li>
@@ -1702,6 +1753,8 @@ window.runMermaid = runMermaid;</script>
 </li>
       </ul></li>
       <li><a href="api_reference.html#torchwm.configs.jepa_config.JEPAConfig.folder">folder (torchwm.configs.jepa_config.JEPAConfig attribute)</a>
+</li>
+      <li><a href="api_reference.html#torchwm.inference.bundle.Bundle.formats">formats (torchwm.inference.bundle.Bundle property)</a>
 </li>
       <li><a href="api_reference.html#torchwm.blocks.mhsa.MultiHeadSelfAttention.forward">forward() (torchwm.blocks.mhsa.MultiHeadSelfAttention method)</a>
 
@@ -1729,6 +1782,12 @@ window.runMermaid = runMermaid;</script>
         <li><a href="api_reference.html#torchwm.export.DreamerPolicyExport.forward">(torchwm.export.DreamerPolicyExport method)</a>
 </li>
         <li><a href="api_reference.html#torchwm.export.IRISActorCriticExport.forward">(torchwm.export.IRISActorCriticExport method)</a>
+</li>
+        <li><a href="api_reference.html#torchwm.inference.quantize.Int8WeightOnlyLinear.forward">(torchwm.inference.quantize.Int8WeightOnlyLinear method)</a>
+</li>
+        <li><a href="api_reference.html#torchwm.inference.runtime.InferenceModel.forward">(torchwm.inference.runtime.InferenceModel method)</a>
+</li>
+        <li><a href="api_reference.html#torchwm.inference.steppers.DreamerStepModule.forward">(torchwm.inference.steppers.DreamerStepModule method)</a>
 </li>
         <li><a href="api_reference.html#torchwm.models.controller.Controller.forward">(torchwm.models.controller.Controller method)</a>
 </li>
@@ -1881,6 +1940,8 @@ window.runMermaid = runMermaid;</script>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api_reference.html#torchwm.models.iris_agent.IRISAgent.forward_actor_critic">forward_actor_critic() (torchwm.models.iris_agent.IRISAgent method)</a>
 </li>
+      <li><a href="api_reference.html#torchwm.models.dynamics_model.DynamicsModel.forward_cached">forward_cached() (torchwm.models.dynamics_model.DynamicsModel method)</a>
+</li>
       <li><a href="api_reference.html#torchwm.models.diffusion.DiT.DiT.forward_with_cfg">forward_with_cfg() (torchwm.models.diffusion.DiT.DiT method)</a>
 </li>
       <li><a href="api_reference.html#torchwm.configs.iris_config.IRISConfig.frame_channels">frame_channels (torchwm.configs.iris_config.IRISConfig attribute)</a>
@@ -1916,6 +1977,8 @@ window.runMermaid = runMermaid;</script>
 </li>
       </ul></li>
       <li><a href="api_reference.html#torchwm.configs.jepa_config.JEPAConfig.from_dict">from_dict() (torchwm.configs.jepa_config.JEPAConfig class method)</a>
+</li>
+      <li><a href="api_reference.html#torchwm.inference.quantize.Int8WeightOnlyLinear.from_linear">from_linear() (torchwm.inference.quantize.Int8WeightOnlyLinear class method)</a>
 </li>
       <li><a href="api_reference.html#torchwm.models.diffusion.DiT.DiT.from_pretrained">from_pretrained() (torchwm.models.diffusion.DiT.DiT class method)</a>
 
@@ -2141,8 +2204,12 @@ window.runMermaid = runMermaid;</script>
         <li><a href="api_reference.html#torchwm.configs.iris_config.IRISConfig.imagination_horizon">(torchwm.configs.iris_config.IRISConfig attribute)</a>
 </li>
       </ul></li>
-      <li><a href="api_reference.html#torchwm.models.iris_transformer.IRISWorldModel.imagine">imagine() (torchwm.models.iris_transformer.IRISWorldModel method)</a>
+      <li><a href="api_reference.html#torchwm.inference.steppers.DreamerStepper.imagine">imagine() (torchwm.inference.steppers.DreamerStepper method)</a>
+
+      <ul>
+        <li><a href="api_reference.html#torchwm.models.iris_transformer.IRISWorldModel.imagine">(torchwm.models.iris_transformer.IRISWorldModel method)</a>
 </li>
+      </ul></li>
       <li><a href="api_reference.html#torchwm.configs.dreamer_config.DreamerConfig.imagine_horizon">imagine_horizon (torchwm.configs.dreamer_config.DreamerConfig attribute)</a>
 </li>
       <li><a href="api_reference.html#torchwm.models.dreamer_rssm.RSSM.imagine_rollout">imagine_rollout() (torchwm.models.dreamer_rssm.RSSM method)</a>
@@ -2161,6 +2228,8 @@ window.runMermaid = runMermaid;</script>
         <li><a href="api_reference.html#torchwm.models.modular_rssm.ModularRSSM.imagine_step">(torchwm.models.modular_rssm.ModularRSSM method)</a>
 </li>
       </ul></li>
+      <li><a href="api_reference.html#torchwm.inference.steppers.ImagineOutput">ImagineOutput (class in torchwm.inference.steppers)</a>
+</li>
       <li><a href="api_reference.html#torchwm.configs.dit_config.DiTConfig.IMG_SIZE">IMG_SIZE (torchwm.configs.dit_config.DiTConfig attribute)</a>
 </li>
       <li><a href="api_reference.html#torchwm.api.ModelSpec.import_path">import_path (torchwm.api.ModelSpec attribute)</a>
@@ -2181,12 +2250,22 @@ window.runMermaid = runMermaid;</script>
 </li>
       <li><a href="api_reference.html#torchwm.models.genie.Genie.infer_actions">infer_actions() (torchwm.models.genie.Genie method)</a>
 </li>
-      <li><a href="api_reference.html#torchwm.models.iris_transformer.IRISTransformer.init_cache">init_cache() (torchwm.models.iris_transformer.IRISTransformer method)</a>
+      <li><a href="api_reference.html#torchwm.inference.precision.inference_context">inference_context() (in module torchwm.inference.precision)</a>
+</li>
+      <li><a href="api_reference.html#torchwm.inference.runtime.InferenceModel">InferenceModel (class in torchwm.inference.runtime)</a>
+</li>
+      <li><a href="api_reference.html#torchwm.blocks.st_transformer.STTransformer.init_cache">init_cache() (torchwm.blocks.st_transformer.STTransformer method)</a>
+
+      <ul>
+        <li><a href="api_reference.html#torchwm.models.dynamics_model.DynamicsModel.init_cache">(torchwm.models.dynamics_model.DynamicsModel method)</a>
+</li>
+        <li><a href="api_reference.html#torchwm.models.iris_transformer.IRISTransformer.init_cache">(torchwm.models.iris_transformer.IRISTransformer method)</a>
+</li>
+      </ul></li>
+      <li><a href="api_reference.html#torchwm.utils.jepa_utils.init_distributed">init_distributed() (in module torchwm.utils.jepa_utils)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api_reference.html#torchwm.utils.jepa_utils.init_distributed">init_distributed() (in module torchwm.utils.jepa_utils)</a>
-</li>
       <li><a href="api_reference.html#torchwm.controller.iris_policy.IRISPolicy.init_hidden">init_hidden() (torchwm.controller.iris_policy.IRISPolicy method)</a>
 
       <ul>
@@ -2205,9 +2284,15 @@ window.runMermaid = runMermaid;</script>
 </li>
       <li><a href="api_reference.html#torchwm.helpers.jepa_helper.init_opt">init_opt() (in module torchwm.helpers.jepa_helper)</a>
 </li>
-      <li><a href="api_reference.html#torchwm.models.dreamer_rssm.RSSM.init_state">init_state() (torchwm.models.dreamer_rssm.RSSM method)</a>
+      <li><a href="api_reference.html#torchwm.inference.steppers.DreamerStepper.init_state">init_state() (torchwm.inference.steppers.DreamerStepper method)</a>
 
       <ul>
+        <li><a href="api_reference.html#torchwm.inference.steppers.IRISStepper.init_state">(torchwm.inference.steppers.IRISStepper method)</a>
+</li>
+        <li><a href="api_reference.html#torchwm.inference.steppers.WorldModelStepper.init_state">(torchwm.inference.steppers.WorldModelStepper method)</a>
+</li>
+        <li><a href="api_reference.html#torchwm.models.dreamer_rssm.RSSM.init_state">(torchwm.models.dreamer_rssm.RSSM method)</a>
+</li>
         <li><a href="api_reference.html#torchwm.models.modular_rssm.BackboneBase.init_state">(torchwm.models.modular_rssm.BackboneBase method)</a>
 </li>
         <li><a href="api_reference.html#torchwm.models.modular_rssm.GRUBackbone.init_state">(torchwm.models.modular_rssm.GRUBackbone method)</a>
@@ -2220,6 +2305,8 @@ window.runMermaid = runMermaid;</script>
 </li>
       </ul></li>
       <li><a href="api_reference.html#torchwm.export.install_export_method">install_export_method() (in module torchwm.export)</a>
+</li>
+      <li><a href="api_reference.html#torchwm.inference.quantize.Int8WeightOnlyLinear">Int8WeightOnlyLinear (class in torchwm.inference.quantize)</a>
 </li>
       <li><a href="api_reference.html#torchwm.models.vit.VisionTransformer.interpolate_pos_encoding">interpolate_pos_encoding() (torchwm.models.vit.VisionTransformer method)</a>
 </li>
@@ -2249,6 +2336,8 @@ window.runMermaid = runMermaid;</script>
 </li>
       <li><a href="api_reference.html#torchwm.memory.iris_memory.IRISReplayBuffer">IRISReplayBuffer (class in torchwm.memory.iris_memory)</a>
 </li>
+      <li><a href="api_reference.html#torchwm.inference.steppers.IRISStepper">IRISStepper (class in torchwm.inference.steppers)</a>
+</li>
       <li><a href="api_reference.html#torchwm.training.train_iris.IRISTrainer">IRISTrainer (class in torchwm.training.train_iris)</a>
 </li>
       <li><a href="api_reference.html#torchwm.models.iris_transformer.IRISTransformer">IRISTransformer (class in torchwm.models.iris_transformer)</a>
@@ -2258,6 +2347,10 @@ window.runMermaid = runMermaid;</script>
       <li><a href="api_reference.html#torchwm.envs.robotics_env.is_moved_mujoco_error">is_moved_mujoco_error() (in module torchwm.envs.robotics_env)</a>
 </li>
       <li><a href="api_reference.html#torchwm.datasets.diamond_dataset.ReplayBuffer.is_ready">is_ready() (torchwm.datasets.diamond_dataset.ReplayBuffer method)</a>
+</li>
+      <li><a href="api_reference.html#torchwm.inference.benchmark.LatencyReport.items_per_sec">items_per_sec (torchwm.inference.benchmark.LatencyReport attribute)</a>
+</li>
+      <li><a href="api_reference.html#torchwm.inference.benchmark.LatencyReport.iterations">iterations (torchwm.inference.benchmark.LatencyReport attribute)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -2300,6 +2393,8 @@ window.runMermaid = runMermaid;</script>
       <li><a href="api_reference.html#torchwm.models.diffusion.DiT.LabelEmbedder">LabelEmbedder (class in torchwm.models.diffusion.DiT)</a>
 </li>
       <li><a href="api_reference.html#torchwm.configs.diamond_config.DiamondConfig.lambda_returns">lambda_returns (torchwm.configs.diamond_config.DiamondConfig attribute)</a>
+</li>
+      <li><a href="api_reference.html#torchwm.inference.benchmark.LatencyReport">LatencyReport (class in torchwm.inference.benchmark)</a>
 </li>
       <li><a href="api_reference.html#torchwm.configs.wm_config.WMControllerConfig.latent_size">latent_size (torchwm.configs.wm_config.WMControllerConfig attribute)</a>
 
@@ -2351,6 +2446,10 @@ window.runMermaid = runMermaid;</script>
 </li>
       <li><a href="api_reference.html#torchwm.models.iris_agent.IRISAgent.load">load() (torchwm.models.iris_agent.IRISAgent method)</a>
 </li>
+      <li><a href="api_reference.html#torchwm.inference.bundle.Bundle.load_artifact">load_artifact() (torchwm.inference.bundle.Bundle method)</a>
+</li>
+      <li><a href="api_reference.html#torchwm.inference.bundle.load_bundle">load_bundle() (in module torchwm.inference.bundle)</a>
+</li>
       <li><a href="api_reference.html#torchwm.configs.jepa_config.JEPAConfig.load_checkpoint">load_checkpoint (torchwm.configs.jepa_config.JEPAConfig attribute)</a>
 </li>
       <li><a href="api_reference.html#torchwm.helpers.jepa_helper.load_checkpoint">load_checkpoint() (in module torchwm.helpers.jepa_helper)</a>
@@ -2371,6 +2470,8 @@ window.runMermaid = runMermaid;</script>
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api_reference.html#torchwm.export.load_exported">load_exported() (in module torchwm.export)</a>
+</li>
       <li><a href="api_reference.html#torchwm.utils.utils.load_memory">load_memory() (in module torchwm.utils.utils)</a>
 </li>
       <li><a href="api_reference.html#torchwm.datasets.wm_dataset.RolloutDataset.load_next_buffer">load_next_buffer() (torchwm.datasets.wm_dataset.RolloutDataset method)</a>
@@ -2385,6 +2486,8 @@ window.runMermaid = runMermaid;</script>
         <li><a href="api_reference.html#torchwm.utils.train_utils.ReduceLROnPlateau.load_state_dict">(torchwm.utils.train_utils.ReduceLROnPlateau method)</a>
 </li>
       </ul></li>
+      <li><a href="api_reference.html#torchwm.inference.bundle.Bundle.load_weights">load_weights() (torchwm.inference.bundle.Bundle method)</a>
+</li>
       <li><a href="api_reference.html#torchwm.utils.utils.load_yml_config">load_yml_config() (in module torchwm.utils.utils)</a>
 </li>
       <li><a href="api_reference.html#torchwm.utils.jepa_utils.CSVLogger.log">log() (torchwm.utils.jepa_utils.CSVLogger method)</a>
@@ -2505,9 +2608,13 @@ window.runMermaid = runMermaid;</script>
 </li>
       <li><a href="api_reference.html#torchwm.envs.robotics_env.make_robotics_env">make_robotics_env() (in module torchwm.envs.robotics_env)</a>
 </li>
+      <li><a href="api_reference.html#torchwm.inference.steppers.make_stepper">make_stepper() (in module torchwm.inference.steppers)</a>
+</li>
       <li><a href="api_reference.html#torchwm.transforms.image.make_transforms">make_transforms() (in module torchwm.transforms.image)</a>
 </li>
       <li><a href="api_reference.html#torchwm.envs.unity_env.make_unity_mlagents_env">make_unity_mlagents_env() (in module torchwm.envs.unity_env)</a>
+</li>
+      <li><a href="api_reference.html#torchwm.inference.bundle.Bundle.manifest">manifest (torchwm.inference.bundle.Bundle attribute)</a>
 </li>
       <li><a href="api_reference.html#torchwm.datasets.nuplan.NuPlanSample.map_raster">map_raster (torchwm.datasets.nuplan.NuPlanSample attribute)</a>
 </li>
@@ -2542,6 +2649,8 @@ window.runMermaid = runMermaid;</script>
 </li>
       </ul></li>
       <li><a href="api_reference.html#torchwm.models.dynamics_model.MaskGITSampler">MaskGITSampler (class in torchwm.models.dynamics_model)</a>
+</li>
+      <li><a href="api_reference.html#torchwm.inference.benchmark.DriftReport.max_abs_error">max_abs_error (torchwm.inference.benchmark.DriftReport attribute)</a>
 </li>
       <li><a href="api_reference.html#torchwm.configs.iris_config.IRISConfig.max_env_steps">max_env_steps (torchwm.configs.iris_config.IRISConfig attribute)</a>
 </li>
@@ -2585,6 +2694,10 @@ window.runMermaid = runMermaid;</script>
 </li>
       <li><a href="api_reference.html#torchwm.vision.dreamer_decoder.SampleDist.mean">mean() (torchwm.vision.dreamer_decoder.SampleDist method)</a>
 </li>
+      <li><a href="api_reference.html#torchwm.vision.dreamer_decoder.ActionDecoder.mean_action">mean_action() (torchwm.vision.dreamer_decoder.ActionDecoder method)</a>
+</li>
+      <li><a href="api_reference.html#torchwm.inference.benchmark.LatencyReport.mean_ms">mean_ms (torchwm.inference.benchmark.LatencyReport attribute)</a>
+</li>
       <li><a href="api_reference.html#torchwm.memory.dreamer_memory.Memory">Memory (class in torchwm.memory.dreamer_memory)</a>
 
       <ul>
@@ -2612,6 +2725,8 @@ window.runMermaid = runMermaid;</script>
 </li>
       </ul></li>
       <li><a href="api_reference.html#torchwm.configs.jepa_config.JEPAConfig.min_keep">min_keep (torchwm.configs.jepa_config.JEPAConfig attribute)</a>
+</li>
+      <li><a href="api_reference.html#torchwm.inference.benchmark.LatencyReport.min_ms">min_ms (torchwm.inference.benchmark.LatencyReport attribute)</a>
 </li>
       <li><a href="api_reference.html#torchwm.models.vit.MLP">MLP (class in torchwm.models.vit)</a>
 </li>
@@ -2728,6 +2843,18 @@ window.runMermaid = runMermaid;</script>
         <li><a href="api_reference.html#module-torchwm.export">torchwm.export</a>
 </li>
         <li><a href="api_reference.html#module-torchwm.helpers.jepa_helper">torchwm.helpers.jepa_helper</a>
+</li>
+        <li><a href="api_reference.html#module-torchwm.inference.benchmark">torchwm.inference.benchmark</a>
+</li>
+        <li><a href="api_reference.html#module-torchwm.inference.bundle">torchwm.inference.bundle</a>
+</li>
+        <li><a href="api_reference.html#module-torchwm.inference.precision">torchwm.inference.precision</a>
+</li>
+        <li><a href="api_reference.html#module-torchwm.inference.quantize">torchwm.inference.quantize</a>
+</li>
+        <li><a href="api_reference.html#module-torchwm.inference.runtime">torchwm.inference.runtime</a>
+</li>
+        <li><a href="api_reference.html#module-torchwm.inference.steppers">torchwm.inference.steppers</a>
 </li>
         <li><a href="api_reference.html#module-torchwm.losses.convae_loss">torchwm.losses.convae_loss</a>
 </li>
@@ -2883,6 +3010,8 @@ window.runMermaid = runMermaid;</script>
       <ul>
         <li><a href="api_reference.html#torchwm.api.ModelSpec.name">(torchwm.api.ModelSpec attribute)</a>
 </li>
+        <li><a href="api_reference.html#torchwm.inference.benchmark.LatencyReport.name">(torchwm.inference.benchmark.LatencyReport attribute)</a>
+</li>
         <li><a href="api_reference.html#torchwm.vision.dreamer_decoder.SampleDist.name">(torchwm.vision.dreamer_decoder.SampleDist property)</a>
 </li>
       </ul></li>
@@ -3020,6 +3149,14 @@ window.runMermaid = runMermaid;</script>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api_reference.html#torchwm.datasets.wm_dataset.ObservationDataset">ObservationDataset (class in torchwm.datasets.wm_dataset)</a>
 </li>
+      <li><a href="api_reference.html#torchwm.inference.steppers.DreamerStepper.observe">observe() (torchwm.inference.steppers.DreamerStepper method)</a>
+
+      <ul>
+        <li><a href="api_reference.html#torchwm.inference.steppers.IRISStepper.observe">(torchwm.inference.steppers.IRISStepper method)</a>
+</li>
+        <li><a href="api_reference.html#torchwm.inference.steppers.WorldModelStepper.observe">(torchwm.inference.steppers.WorldModelStepper method)</a>
+</li>
+      </ul></li>
       <li><a href="api_reference.html#torchwm.models.dreamer_rssm.RSSM.observe_rollout">observe_rollout() (torchwm.models.dreamer_rssm.RSSM method)</a>
 
       <ul>
@@ -3034,6 +3171,8 @@ window.runMermaid = runMermaid;</script>
       </ul></li>
       <li><a href="api_reference.html#torchwm.envs.wrappers.OneHotAction">OneHotAction (class in torchwm.envs.wrappers)</a>
 </li>
+      <li><a href="api_reference.html#torchwm.inference.runtime.optimize_for_inference">optimize_for_inference() (in module torchwm.inference.runtime)</a>
+</li>
       <li><a href="api_reference.html#torchwm.utils.memory_utils.optimize_memory_efficient_ops">optimize_memory_efficient_ops() (in module torchwm.utils.memory_utils)</a>
 </li>
   </ul></td>
@@ -3042,6 +3181,12 @@ window.runMermaid = runMermaid;</script>
 <h2 id="P">P</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api_reference.html#torchwm.inference.benchmark.LatencyReport.p50_ms">p50_ms (torchwm.inference.benchmark.LatencyReport attribute)</a>
+</li>
+      <li><a href="api_reference.html#torchwm.inference.benchmark.LatencyReport.p90_ms">p90_ms (torchwm.inference.benchmark.LatencyReport attribute)</a>
+</li>
+      <li><a href="api_reference.html#torchwm.inference.benchmark.LatencyReport.p99_ms">p99_ms (torchwm.inference.benchmark.LatencyReport attribute)</a>
+</li>
       <li><a href="api_reference.html#torchwm.configs.diamond_config.DiamondConfig.p_mean">p_mean (torchwm.configs.diamond_config.DiamondConfig attribute)</a>
 </li>
       <li><a href="api_reference.html#torchwm.models.diffusion.DDPM.DDPM.p_sample">p_sample() (torchwm.models.diffusion.DDPM.DDPM method)</a>
@@ -3084,6 +3229,8 @@ window.runMermaid = runMermaid;</script>
       </ul></li>
       <li><a href="api_reference.html#torchwm.models.diffusion.DiT.PatchUnEmbed">PatchUnEmbed (class in torchwm.models.diffusion.DiT)</a>
 </li>
+      <li><a href="api_reference.html#torchwm.inference.bundle.Bundle.path">path (torchwm.inference.bundle.Bundle attribute)</a>
+</li>
       <li><a href="api_reference.html#torchwm.configs.diamond_config.DiamondConfig.patience">patience (torchwm.configs.diamond_config.DiamondConfig attribute)</a>
 </li>
       <li><a href="api_reference.html#torchwm.configs.dit_config.DiTConfig.PATIENCE">PATIENCE (torchwm.configs.dit_config.DiTConfig attribute)</a>
@@ -3102,16 +3249,18 @@ window.runMermaid = runMermaid;</script>
         <li><a href="api_reference.html#torchwm.training.train_genie.GenieConfig.patience">(torchwm.training.train_genie.GenieConfig attribute)</a>
 </li>
       </ul></li>
+      <li><a href="api_reference.html#torchwm.inference.benchmark.LatencyReport.peak_memory_mb">peak_memory_mb (torchwm.inference.benchmark.LatencyReport attribute)</a>
+</li>
       <li><a href="api_reference.html#torchwm.configs.iris_config.IRISConfig.perceptual_blocks">perceptual_blocks (torchwm.configs.iris_config.IRISConfig attribute)</a>
 </li>
       <li><a href="api_reference.html#torchwm.configs.iris_config.IRISConfig.perceptual_linear_weights">perceptual_linear_weights (torchwm.configs.iris_config.IRISConfig attribute)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api_reference.html#torchwm.configs.iris_config.IRISConfig.perceptual_weight">perceptual_weight (torchwm.configs.iris_config.IRISConfig attribute)</a>
 </li>
       <li><a href="api_reference.html#torchwm.configs.dreamer_config.DreamerConfig.perf_defaults">perf_defaults (torchwm.configs.dreamer_config.DreamerConfig attribute)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api_reference.html#torchwm.configs.diamond_config.DiamondConfig.persistent_workers">persistent_workers (torchwm.configs.diamond_config.DiamondConfig attribute)</a>
 </li>
       <li><a href="api_reference.html#torchwm.configs.jepa_config.JEPAConfig.pin_mem">pin_mem (torchwm.configs.jepa_config.JEPAConfig attribute)</a>
@@ -3139,6 +3288,8 @@ window.runMermaid = runMermaid;</script>
       <li><a href="api_reference.html#torchwm.utils.utils.postprocess_img">postprocess_img() (in module torchwm.utils.utils)</a>
 </li>
       <li><a href="api_reference.html#torchwm.training.rl_harness.PPOTrainer">PPOTrainer (class in torchwm.training.rl_harness)</a>
+</li>
+      <li><a href="api_reference.html#torchwm.inference.precision.precision_dtype">precision_dtype() (in module torchwm.inference.precision)</a>
 </li>
       <li><a href="api_reference.html#torchwm.training.train_mdn_rnn.precompute_latents">precompute_latents() (in module torchwm.training.train_mdn_rnn)</a>
 </li>
@@ -3190,6 +3341,8 @@ window.runMermaid = runMermaid;</script>
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api_reference.html#torchwm.inference.quantize.quantize_weights">quantize_weights() (in module torchwm.inference.quantize)</a>
+</li>
       <li><a href="api_reference.html#torchwm.configs.iris_config.IRISConfig.quantizer">quantizer (torchwm.configs.iris_config.IRISConfig attribute)</a>
 </li>
   </ul></td>
@@ -3215,6 +3368,8 @@ window.runMermaid = runMermaid;</script>
       <li><a href="api_reference.html#torchwm.utils.dreamer_utils.TwoHotEncoder.register_buffers">register_buffers() (torchwm.utils.dreamer_utils.TwoHotEncoder method)</a>
 </li>
       <li><a href="api_reference.html#torchwm.envs.robotics_env.register_gymnasium_robotics_envs">register_gymnasium_robotics_envs() (in module torchwm.envs.robotics_env)</a>
+</li>
+      <li><a href="api_reference.html#torchwm.inference.benchmark.DriftReport.rel_error">rel_error (torchwm.inference.benchmark.DriftReport attribute)</a>
 </li>
       <li><a href="api_reference.html#torchwm.configs.dreamer_config.DreamerConfig.render">render (torchwm.configs.dreamer_config.DreamerConfig attribute)</a>
 </li>
@@ -3308,6 +3463,8 @@ window.runMermaid = runMermaid;</script>
       </ul></li>
       <li><a href="api_reference.html#torchwm.envs.wrappers.ResizeImage">ResizeImage (class in torchwm.envs.wrappers)</a>
 </li>
+      <li><a href="api_reference.html#torchwm.inference.precision.resolve_precision">resolve_precision() (in module torchwm.inference.precision)</a>
+</li>
       <li><a href="api_reference.html#torchwm.helpers.jepa_helper.resolve_pred_depth">resolve_pred_depth() (in module torchwm.helpers.jepa_helper)</a>
 </li>
       <li><a href="api_reference.html#torchwm.vision.vq_layer.restart_dead_codes">restart_dead_codes() (in module torchwm.vision.vq_layer)</a>
@@ -3315,6 +3472,8 @@ window.runMermaid = runMermaid;</script>
       <li><a href="api_reference.html#torchwm.configs.dreamer_config.DreamerConfig.restore">restore (torchwm.configs.dreamer_config.DreamerConfig attribute)</a>
 </li>
       <li><a href="api_reference.html#torchwm.models.dreamer.Dreamer.restore_checkpoint">restore_checkpoint() (torchwm.models.dreamer.Dreamer method)</a>
+</li>
+      <li><a href="api_reference.html#torchwm.inference.steppers.ImagineOutput.reward">reward (torchwm.inference.steppers.ImagineOutput attribute)</a>
 </li>
       <li><a href="api_reference.html#torchwm.configs.diamond_config.DiamondConfig.reward_channels">reward_channels (torchwm.configs.diamond_config.DiamondConfig attribute)</a>
 
@@ -3351,6 +3510,8 @@ window.runMermaid = runMermaid;</script>
       <li><a href="api_reference.html#torchwm.datasets.video_datasets.RLEnvironmentDataset">RLEnvironmentDataset (class in torchwm.datasets.video_datasets)</a>
 </li>
       <li><a href="api_reference.html#torchwm.models.diffusion.actor_critic.RLLoss">RLLoss (class in torchwm.models.diffusion.actor_critic)</a>
+</li>
+      <li><a href="api_reference.html#torchwm.inference.benchmark.rollout_drift">rollout_drift() (in module torchwm.inference.benchmark)</a>
 </li>
       <li><a href="api_reference.html#torchwm.controller.rollout_generator.RolloutGenerator.rollout_eval">rollout_eval() (torchwm.controller.rollout_generator.RolloutGenerator method)</a>
 </li>
@@ -3448,6 +3609,8 @@ window.runMermaid = runMermaid;</script>
         <li><a href="api_reference.html#torchwm.models.iris_agent.IRISAgent.save">(torchwm.models.iris_agent.IRISAgent method)</a>
 </li>
       </ul></li>
+      <li><a href="api_reference.html#torchwm.inference.bundle.save_bundle">save_bundle() (in module torchwm.inference.bundle)</a>
+</li>
       <li><a href="api_reference.html#torchwm.training.train_convvae.save_checkpoint">save_checkpoint() (in module torchwm.training.train_convvae)</a>
 
       <ul>
@@ -3471,6 +3634,8 @@ window.runMermaid = runMermaid;</script>
       <li><a href="api_reference.html#torchwm.utils.utils.save_video">save_video() (in module torchwm.utils.utils)</a>
 </li>
       <li><a href="api_reference.html#torchwm.configs.dreamer_config.DreamerConfig.scalar_freq">scalar_freq (torchwm.configs.dreamer_config.DreamerConfig attribute)</a>
+</li>
+      <li><a href="api_reference.html#torchwm.inference.quantize.Int8WeightOnlyLinear.scale">scale (torchwm.inference.quantize.Int8WeightOnlyLinear attribute)</a>
 </li>
       <li><a href="api_reference.html#torchwm.datasets.nuplan.NuPlanSample.scenario_name">scenario_name (torchwm.datasets.nuplan.NuPlanSample attribute)</a>
 </li>
@@ -3536,8 +3701,6 @@ window.runMermaid = runMermaid;</script>
         <li><a href="api_reference.html#torchwm.memory.planet_memory.Memory.size">(torchwm.memory.planet_memory.Memory property)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api_reference.html#torchwm.training.train_controller.slave_routine">slave_routine() (in module torchwm.training.train_controller)</a>
 </li>
       <li><a href="api_reference.html#torchwm.datasets.tinyworlds.TinyWorldsConfig.split">split (torchwm.datasets.tinyworlds.TinyWorldsConfig attribute)</a>
@@ -3546,13 +3709,19 @@ window.runMermaid = runMermaid;</script>
 </li>
       <li><a href="api_reference.html#torchwm.configs.iris_config.IRISConfig.start_autoencoder_after">start_autoencoder_after (torchwm.configs.iris_config.IRISConfig attribute)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api_reference.html#torchwm.configs.jepa_config.JEPAConfig.start_lr">start_lr (torchwm.configs.jepa_config.JEPAConfig attribute)</a>
 </li>
       <li><a href="api_reference.html#torchwm.configs.iris_config.IRISConfig.start_transformer_after">start_transformer_after (torchwm.configs.iris_config.IRISConfig attribute)</a>
 </li>
+      <li><a href="api_reference.html#torchwm.inference.steppers.ImagineOutput.state">state (torchwm.inference.steppers.ImagineOutput attribute)</a>
+</li>
       <li><a href="api_reference.html#torchwm.datasets.diamond_dataset.ReplayBuffer.state_dict">state_dict() (torchwm.datasets.diamond_dataset.ReplayBuffer method)</a>
 
       <ul>
+        <li><a href="api_reference.html#torchwm.inference.bundle.Bundle.state_dict">(torchwm.inference.bundle.Bundle method)</a>
+</li>
         <li><a href="api_reference.html#torchwm.utils.train_utils.EarlyStopping.state_dict">(torchwm.utils.train_utils.EarlyStopping method)</a>
 </li>
         <li><a href="api_reference.html#torchwm.utils.train_utils.ReduceLROnPlateau.state_dict">(torchwm.utils.train_utils.ReduceLROnPlateau method)</a>
@@ -3618,6 +3787,14 @@ window.runMermaid = runMermaid;</script>
         <li><a href="api_reference.html#torchwm.envs.vector_env.VectorizedEnv.step_batch">(torchwm.envs.vector_env.VectorizedEnv method)</a>
 </li>
       </ul></li>
+      <li><a href="api_reference.html#torchwm.inference.steppers.DreamerStepper.step_module">step_module() (torchwm.inference.steppers.DreamerStepper method)</a>
+</li>
+      <li><a href="api_reference.html#torchwm.inference.benchmark.DriftReport.steps">steps (torchwm.inference.benchmark.DriftReport attribute)</a>
+</li>
+      <li><a href="api_reference.html#torchwm.inference.benchmark.LatencyReport.steps_per_sec">steps_per_sec (torchwm.inference.benchmark.LatencyReport attribute)</a>
+</li>
+      <li><a href="api_reference.html#torchwm.blocks.st_transformer.STKVCache">STKVCache (class in torchwm.blocks.st_transformer)</a>
+</li>
       <li><a href="api_reference.html#torchwm.blocks.st_transformer.STMLP">STMLP (class in torchwm.blocks.st_transformer)</a>
 </li>
       <li><a href="api_reference.html#torchwm.configs.dreamer_config.DreamerConfig.stoch_size">stoch_size (torchwm.configs.dreamer_config.DreamerConfig attribute)</a>
@@ -3642,9 +3819,13 @@ window.runMermaid = runMermaid;</script>
 </li>
       <li><a href="api_reference.html#torchwm.configs.genie_config.STTransformerConfig">STTransformerConfig (class in torchwm.configs.genie_config)</a>
 </li>
-      <li><a href="api_reference.html#torchwm.models.diffusion.DiT.DiT.summary">summary() (torchwm.models.diffusion.DiT.DiT method)</a>
+      <li><a href="api_reference.html#torchwm.inference.benchmark.DriftReport.summary">summary() (torchwm.inference.benchmark.DriftReport method)</a>
 
       <ul>
+        <li><a href="api_reference.html#torchwm.inference.benchmark.LatencyReport.summary">(torchwm.inference.benchmark.LatencyReport method)</a>
+</li>
+        <li><a href="api_reference.html#torchwm.models.diffusion.DiT.DiT.summary">(torchwm.models.diffusion.DiT.DiT method)</a>
+</li>
         <li><a href="api_reference.html#torchwm.models.dreamer.Dreamer.summary">(torchwm.models.dreamer.Dreamer method)</a>
 </li>
         <li><a href="api_reference.html#torchwm.models.dreamer.DreamerAgent.summary">(torchwm.models.dreamer.DreamerAgent method)</a>
@@ -3656,6 +3837,14 @@ window.runMermaid = runMermaid;</script>
         <li><a href="api_reference.html#torchwm.models.jepa_agent.JEPAAgent.summary">(torchwm.models.jepa_agent.JEPAAgent method)</a>
 </li>
         <li><a href="api_reference.html#torchwm.training.train_diamond.DiamondAgent.summary">(torchwm.training.train_diamond.DiamondAgent method)</a>
+</li>
+      </ul></li>
+      <li><a href="api_reference.html#torchwm.inference.steppers.DreamerStepper.supports_imagination">supports_imagination (torchwm.inference.steppers.DreamerStepper attribute)</a>
+
+      <ul>
+        <li><a href="api_reference.html#torchwm.inference.steppers.IRISStepper.supports_imagination">(torchwm.inference.steppers.IRISStepper attribute)</a>
+</li>
+        <li><a href="api_reference.html#torchwm.inference.steppers.WorldModelStepper.supports_imagination">(torchwm.inference.steppers.WorldModelStepper attribute)</a>
 </li>
       </ul></li>
       <li><a href="api_reference.html#torchwm.configs.jepa_config.JEPAConfig.sweep_config">sweep_config (torchwm.configs.jepa_config.JEPAConfig attribute)</a>
@@ -4102,12 +4291,56 @@ window.runMermaid = runMermaid;</script>
 </li>
       </ul></li>
       <li>
+    torchwm.inference.benchmark
+
+      <ul>
+        <li><a href="api_reference.html#module-torchwm.inference.benchmark">module</a>
+</li>
+      </ul></li>
+      <li>
+    torchwm.inference.bundle
+
+      <ul>
+        <li><a href="api_reference.html#module-torchwm.inference.bundle">module</a>
+</li>
+      </ul></li>
+      <li>
+    torchwm.inference.precision
+
+      <ul>
+        <li><a href="api_reference.html#module-torchwm.inference.precision">module</a>
+</li>
+      </ul></li>
+      <li>
+    torchwm.inference.quantize
+
+      <ul>
+        <li><a href="api_reference.html#module-torchwm.inference.quantize">module</a>
+</li>
+      </ul></li>
+      <li>
+    torchwm.inference.runtime
+
+      <ul>
+        <li><a href="api_reference.html#module-torchwm.inference.runtime">module</a>
+</li>
+      </ul></li>
+      <li>
+    torchwm.inference.steppers
+
+      <ul>
+        <li><a href="api_reference.html#module-torchwm.inference.steppers">module</a>
+</li>
+      </ul></li>
+      <li>
     torchwm.losses.convae_loss
 
       <ul>
         <li><a href="api_reference.html#module-torchwm.losses.convae_loss">module</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     torchwm.losses.gmm_loss
 
@@ -4129,8 +4362,6 @@ window.runMermaid = runMermaid;</script>
         <li><a href="api_reference.html#module-torchwm.masks.default">module</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     torchwm.masks.multiblock
 
@@ -4724,16 +4955,18 @@ window.runMermaid = runMermaid;</script>
 </li>
       <li><a href="api_reference.html#torchwm.vision.vq_layer.VectorQuantizerEMA">VectorQuantizerEMA (class in torchwm.vision.vq_layer)</a>
 </li>
+      <li><a href="api_reference.html#torchwm.export.verify_export">verify_export() (in module torchwm.export)</a>
+</li>
       <li><a href="api_reference.html#torchwm.configs.dreamer_config.DreamerConfig.video_format">video_format (torchwm.configs.dreamer_config.DreamerConfig attribute)</a>
 </li>
       <li><a href="api_reference.html#torchwm.configs.dreamer_config.DreamerConfig.video_fps">video_fps (torchwm.configs.dreamer_config.DreamerConfig attribute)</a>
 </li>
       <li><a href="api_reference.html#torchwm.datasets.video_datasets.VideoDatasetBase.video_paths">video_paths (torchwm.datasets.video_datasets.VideoDatasetBase attribute)</a>
 </li>
-      <li><a href="api_reference.html#torchwm.training.train_genie.VideoDataset">VideoDataset (class in torchwm.training.train_genie)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api_reference.html#torchwm.training.train_genie.VideoDataset">VideoDataset (class in torchwm.training.train_genie)</a>
+</li>
       <li><a href="api_reference.html#torchwm.datasets.video_datasets.VideoDatasetBase">VideoDatasetBase (class in torchwm.datasets.video_datasets)</a>
 </li>
       <li><a href="api_reference.html#torchwm.datasets.video_datasets.VideoDatasetConfig">VideoDatasetConfig (class in torchwm.datasets.video_datasets)</a>
@@ -4824,13 +5057,17 @@ window.runMermaid = runMermaid;</script>
         <li><a href="api_reference.html#torchwm.training.train_genie.GenieConfig.weight_decay">(torchwm.training.train_genie.GenieConfig attribute)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api_reference.html#torchwm.configs.diamond_config.DiamondConfig.weight_decay_actor">weight_decay_actor (torchwm.configs.diamond_config.DiamondConfig attribute)</a>
 </li>
       <li><a href="api_reference.html#torchwm.configs.diamond_config.DiamondConfig.weight_decay_diffusion">weight_decay_diffusion (torchwm.configs.diamond_config.DiamondConfig attribute)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api_reference.html#torchwm.configs.diamond_config.DiamondConfig.weight_decay_reward">weight_decay_reward (torchwm.configs.diamond_config.DiamondConfig attribute)</a>
+</li>
+      <li><a href="api_reference.html#torchwm.inference.quantize.Int8WeightOnlyLinear.weight_int8">weight_int8 (torchwm.inference.quantize.Int8WeightOnlyLinear attribute)</a>
+</li>
+      <li><a href="api_reference.html#torchwm.inference.quantize.weight_memory_bytes">weight_memory_bytes() (in module torchwm.inference.quantize)</a>
 </li>
       <li><a href="api_reference.html#torchwm.configs.dit_config.DiTConfig.WIDTH">WIDTH (torchwm.configs.dit_config.DiTConfig attribute)</a>
 </li>
@@ -4846,6 +5083,8 @@ window.runMermaid = runMermaid;</script>
         <li><a href="api_reference.html#torchwm.training.train_genie.GenieConfig.window_attention_heads">(torchwm.training.train_genie.GenieConfig attribute)</a>
 </li>
       </ul></li>
+      <li><a href="api_reference.html#torchwm.inference.benchmark.DriftReport.within">within() (torchwm.inference.benchmark.DriftReport method)</a>
+</li>
       <li><a href="api_reference.html#torchwm.configs.wm_config.WMControllerConfig">WMControllerConfig (class in torchwm.configs.wm_config)</a>
 </li>
       <li><a href="api_reference.html#torchwm.configs.wm_config.WMMDNRNNConfig">WMMDNRNNConfig (class in torchwm.configs.wm_config)</a>
@@ -4855,6 +5094,10 @@ window.runMermaid = runMermaid;</script>
       <li><a href="api_reference.html#torchwm.configs.dit_config.DiTConfig.WORKDIR">WORKDIR (torchwm.configs.dit_config.DiTConfig attribute)</a>
 </li>
       <li><a href="api_reference.html#torchwm.models.dreamer.Dreamer.world_model_loss">world_model_loss() (torchwm.models.dreamer.Dreamer method)</a>
+</li>
+      <li><a href="api_reference.html#torchwm.inference.steppers.WorldModelStepper">WorldModelStepper (class in torchwm.inference.steppers)</a>
+</li>
+      <li><a href="api_reference.html#torchwm.inference.benchmark.DriftReport.worst_rel_error">worst_rel_error (torchwm.inference.benchmark.DriftReport property)</a>
 </li>
       <li><a href="api_reference.html#torchwm.utils.utils.StreamingVideoWriter.write_frame">write_frame() (torchwm.utils.utils.StreamingVideoWriter method)</a>
 </li>
@@ -4892,8 +5135,8 @@ window.runMermaid = runMermaid;</script>
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67"></script>
-<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67"></script>
+  <script defer src="_static/scripts/bootstrap.js?digest=64cc4de3f052d77215f0"></script>
+<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=64cc4de3f052d77215f0"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -4914,7 +5157,6 @@ window.runMermaid = runMermaid;</script>
 
   <p class="sphinx-version">
     Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.1.0.
-    <br/>
   </p>
 </div>
       
@@ -4927,7 +5169,7 @@ window.runMermaid = runMermaid;</script>
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.21.0.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.22.0.
 </p></div>
       
     </div>

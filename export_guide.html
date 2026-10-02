@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 
 
@@ -11,12 +10,12 @@
 <meta property="og:type" content="website" />
 <meta property="og:url" content="https://paramthakkar123.github.io/torchwm/export_guide.html" />
 <meta property="og:site_name" content="TorchWM Documentation" />
-<meta property="og:description" content="TorchWM provides a unified export system that converts trained models and agents into deployable formats — ONNX, TorchScript, and TensorRT — without requiring each model to implement its own export..." />
+<meta property="og:description" content="TorchWM provides a unified export system that converts trained models and agents into deployable formats — torch.export programs, AOTInductor packages, ONNX, TensorRT and (legacy) TorchScript — wit..." />
 <meta property="og:image:width" content="1146" />
 <meta property="og:image:height" content="600" />
-<meta property="og:image" content="https://paramthakkar123.github.io/torchwm/_images/social_previews/summary_export_guide_b882a5ea.png" />
-<meta property="og:image:alt" content="TorchWM provides a unified export system that converts trained models and agents into deployable formats — ONNX, TorchScript, and TensorRT — without requiring each model to implement its own export..." />
-<meta name="description" content="TorchWM provides a unified export system that converts trained models and agents into deployable formats — ONNX, TorchScript, and TensorRT — without requiring each model to implement its own export..." />
+<meta property="og:image" content="https://paramthakkar123.github.io/torchwm/_images/social_previews/summary_export_guide_df8c0a4f.png" />
+<meta property="og:image:alt" content="TorchWM provides a unified export system that converts trained models and agents into deployable formats — torch.export programs, AOTInductor packages, ONNX, TensorRT and (legacy) TorchScript — wit..." />
+<meta name="description" content="TorchWM provides a unified export system that converts trained models and agents into deployable formats — torch.export programs, AOTInductor packages, ONNX, TensorRT and (legacy) TorchScript — wit..." />
 <meta name="twitter:card" content="summary_large_image" />
 
     <title>Exporting Models for Deployment &#8212; TorchWM 1.0.0 documentation</title>
@@ -38,18 +37,18 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="_static/styles/theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
-<link href="_static/styles/pydata-sphinx-theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+  <link href="_static/styles/theme.css?digest=64cc4de3f052d77215f0" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=64cc4de3f052d77215f0" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="_static/custom.css?v=549e9d87" />
   
   <!-- So that users can add custom icons -->
-  <script defer src="_static/scripts/fontawesome.js?digest=cb8930eaaf36d9849b67"></script>
+  <script defer src="_static/scripts/fontawesome.js?digest=64cc4de3f052d77215f0"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67" />
-<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67" />
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=64cc4de3f052d77215f0" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=64cc4de3f052d77215f0" />
 
     <script src="_static/documentation_options.js?v=8d563738"></script>
     <script src="_static/doctools.js?v=fd6eb6e6"></script>
@@ -116,7 +115,7 @@
   
     <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
 <div class="bd-header__inner bd-page-width">
-  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+  <button type="button" class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
     <span class="fa-solid fa-bars"></span>
   </button>
   
@@ -195,7 +194,7 @@
   
 
   
-    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+    <button type="button" class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
       <span class="fa-solid fa-outdent"></span>
     </button>
   
@@ -258,7 +257,7 @@
   </div>
   
     <div class="sidebar-primary-items__start sidebar-primary__section">
-        <div class="sidebar-primary-item pst-sidebar-collapse"><button id="pst-collapse-sidebar-button" aria-expanded="true" aria-controls="pst-primary-sidebar">
+        <div class="sidebar-primary-item pst-sidebar-collapse"><button type="button" id="pst-collapse-sidebar-button" aria-expanded="true" aria-controls="pst-primary-sidebar">
   <svg class="pst-icon" role="img" aria-hidden="true" focusable="false" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
     <path fill="currentColor" d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z"/>
   </svg>
@@ -278,6 +277,7 @@
 <li class="toctree-l1"><a class="reference internal" href="public_api.html">Public API Quick Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="training_guide.html">Training Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="inference_guide.html">Inference Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="deployment_guide.html">Efficient Inference and Deployment</a></li>
 <li class="toctree-l1"><a class="reference internal" href="evaluation_guide.html">Evaluation Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="memory_guide.html">Memory &amp; Replay Buffers</a></li>
 <li class="toctree-l1"><a class="reference internal" href="environments_guide.html">Environments Guide</a></li>
@@ -310,7 +310,7 @@
 <li class="toctree-l1"><a class="reference internal" href="api_reference.html">API Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api_exports.html">Exported Names by Category</a></li>
 <li class="toctree-l1"><a class="reference internal" href="configs_reference.html">Configs Reference</a></li>
-<li class="toctree-l1 current active"><a class="current reference internal" href="#">Exporting Models for Deployment</a></li>
+<li class="toctree-l1 current active"><a aria-current="page" class="current reference internal" href="#">Exporting Models for Deployment</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Development</span></p>
 <ul class="nav bd-sidenav">
@@ -377,8 +377,11 @@
   <section id="exporting-models-for-deployment">
 <h1><a class="toc-backref" href="#id1" role="doc-backlink">Exporting Models for Deployment</a><a class="headerlink" href="#exporting-models-for-deployment" title="Link to this heading">#</a></h1>
 <p>TorchWM provides a unified export system that converts trained models and agents
-into deployable formats — ONNX, TorchScript, and TensorRT — without requiring
-each model to implement its own export logic.</p>
+into deployable formats — <code class="docutils literal notranslate"><span class="pre">torch.export</span></code> programs, AOTInductor packages, ONNX,
+TensorRT and (legacy) TorchScript — without requiring each model to implement
+its own export logic. For making inference fast, choosing what to export for
+a recurrent world model, and packaging it with its config, see
+<a class="reference internal" href="deployment_guide.html"><span class="doc">Efficient Inference and Deployment</span></a>.</p>
 <nav class="contents" id="contents">
 <p class="topic-title">Contents</p>
 <ul class="simple">
@@ -387,36 +390,37 @@ each model to implement its own export logic.</p>
 <li><p><a class="reference internal" href="#overview" id="id2">Overview</a></p>
 <ul>
 <li><p><a class="reference internal" href="#supported-formats" id="id3">Supported formats</a></p></li>
+<li><p><a class="reference internal" href="#loading-and-verifying-artifacts" id="id4">Loading and verifying artifacts</a></p></li>
 </ul>
 </li>
-<li><p><a class="reference internal" href="#quick-start" id="id4">Quick start</a></p>
+<li><p><a class="reference internal" href="#quick-start" id="id5">Quick start</a></p>
 <ul>
-<li><p><a class="reference internal" href="#exporting-any-nn-module" id="id5">Exporting any <code class="docutils literal notranslate"><span class="pre">nn.Module</span></code></a></p></li>
-<li><p><a class="reference internal" href="#exporting-a-trained-agent" id="id6">Exporting a trained agent</a></p></li>
+<li><p><a class="reference internal" href="#exporting-any-nn-module" id="id6">Exporting any <code class="docutils literal notranslate"><span class="pre">nn.Module</span></code></a></p></li>
+<li><p><a class="reference internal" href="#exporting-a-trained-agent" id="id7">Exporting a trained agent</a></p></li>
 </ul>
 </li>
-<li><p><a class="reference internal" href="#target-resolution" id="id7">Target resolution</a></p>
+<li><p><a class="reference internal" href="#target-resolution" id="id8">Target resolution</a></p>
 <ul>
-<li><p><a class="reference internal" href="#agent-specific-defaults" id="id8">1. Agent-specific defaults</a></p></li>
-<li><p><a class="reference internal" href="#explicit-target-parameter" id="id9">2. Explicit <code class="docutils literal notranslate"><span class="pre">target=</span></code> parameter</a></p></li>
-<li><p><a class="reference internal" href="#single-module-fallback" id="id10">3. Single-module fallback</a></p></li>
+<li><p><a class="reference internal" href="#agent-specific-defaults" id="id9">1. Agent-specific defaults</a></p></li>
+<li><p><a class="reference internal" href="#explicit-target-parameter" id="id10">2. Explicit <code class="docutils literal notranslate"><span class="pre">target=</span></code> parameter</a></p></li>
+<li><p><a class="reference internal" href="#single-module-fallback" id="id11">3. Single-module fallback</a></p></li>
 </ul>
 </li>
-<li><p><a class="reference internal" href="#format-specific-details" id="id11">Format-specific details</a></p>
+<li><p><a class="reference internal" href="#format-specific-details" id="id12">Format-specific details</a></p>
 <ul>
-<li><p><a class="reference internal" href="#onnx" id="id12">ONNX</a></p></li>
-<li><p><a class="reference internal" href="#torchscript" id="id13">TorchScript</a></p></li>
-<li><p><a class="reference internal" href="#tensorrt" id="id14">TensorRT</a></p></li>
+<li><p><a class="reference internal" href="#onnx" id="id13">ONNX</a></p></li>
+<li><p><a class="reference internal" href="#torchscript" id="id14">TorchScript</a></p></li>
+<li><p><a class="reference internal" href="#tensorrt" id="id15">TensorRT</a></p></li>
 </ul>
 </li>
-<li><p><a class="reference internal" href="#custom-agents" id="id15">Custom agents</a></p>
+<li><p><a class="reference internal" href="#custom-agents" id="id16">Custom agents</a></p>
 <ul>
-<li><p><a class="reference internal" href="#custom-example-input-inference" id="id16">Custom example input inference</a></p></li>
+<li><p><a class="reference internal" href="#custom-example-input-inference" id="id17">Custom example input inference</a></p></li>
 </ul>
 </li>
-<li><p><a class="reference internal" href="#low-level-api" id="id17">Low-level API</a></p></li>
-<li><p><a class="reference internal" href="#common-pitfalls" id="id18">Common pitfalls</a></p></li>
-<li><p><a class="reference internal" href="#see-also" id="id19">See Also</a></p></li>
+<li><p><a class="reference internal" href="#low-level-api" id="id18">Low-level API</a></p></li>
+<li><p><a class="reference internal" href="#common-pitfalls" id="id19">Common pitfalls</a></p></li>
+<li><p><a class="reference internal" href="#see-also" id="id20">See Also</a></p></li>
 </ul>
 </li>
 </ul>
@@ -457,31 +461,64 @@ each model to implement its own export logic.</p>
 </tr>
 </thead>
 <tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">&quot;exported_program&quot;</span></code> (aliases: <code class="docutils literal notranslate"><span class="pre">&quot;export&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;pt2&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;ep&quot;</span></code>)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">.pt2</span></code></p></td>
+<td><p><strong>Recommended.</strong> <code class="docutils literal notranslate"><span class="pre">torch.export</span></code> graph; loadable without the model’s source, and the input to AOTInductor, ExecuTorch and TensorRT</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">&quot;aoti&quot;</span></code> (aliases: <code class="docutils literal notranslate"><span class="pre">&quot;aotinductor&quot;</span></code>)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">.pt2</span></code></p></td>
+<td><p>Ahead-of-time compiled package, runnable from Python or C++ (LibTorch) without the model’s Python code; needs a C++ toolchain at export time</p></td>
+</tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">&quot;onnx&quot;</span></code></p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">.onnx</span></code></p></td>
 <td><p>Cross-platform inference, mobile, edge devices, TensorRT conversion</p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">&quot;torchscript&quot;</span></code> (aliases: <code class="docutils literal notranslate"><span class="pre">&quot;jit&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;ts&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;pt&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;script&quot;</span></code>)</p></td>
-<td><p><code class="docutils literal notranslate"><span class="pre">.pt</span></code></p></td>
-<td><p>Serving via LibTorch (C++), no Python dependency at inference time</p></td>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">&quot;tensorrt&quot;</span></code> (aliases: <code class="docutils literal notranslate"><span class="pre">&quot;trt&quot;</span></code>)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">.ep</span></code></p></td>
+<td><p>NVIDIA GPU-optimized inference (requires <code class="docutils literal notranslate"><span class="pre">torch_tensorrt</span></code>). Compiles through <code class="docutils literal notranslate"><span class="pre">ir=&quot;dynamo&quot;</span></code> by default; pass <code class="docutils literal notranslate"><span class="pre">ir=&quot;ts&quot;</span></code> for the legacy TorchScript path</p></td>
 </tr>
-<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">&quot;tensorrt&quot;</span></code> (aliases: <code class="docutils literal notranslate"><span class="pre">&quot;trt&quot;</span></code>)</p></td>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">&quot;torchscript&quot;</span></code> (aliases: <code class="docutils literal notranslate"><span class="pre">&quot;jit&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;ts&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;pt&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;script&quot;</span></code>)</p></td>
 <td><p><code class="docutils literal notranslate"><span class="pre">.pt</span></code></p></td>
-<td><p>NVIDIA GPU-optimized inference (requires <code class="docutils literal notranslate"><span class="pre">torch_tensorrt</span></code> package)</p></td>
+<td><p>Legacy. TorchScript is in maintenance mode upstream; prefer <code class="docutils literal notranslate"><span class="pre">&quot;exported_program&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;aoti&quot;</span></code></p></td>
 </tr>
 </tbody>
 </table>
 </div>
+<p><code class="docutils literal notranslate"><span class="pre">torch.export</span></code> options pass straight through, for example
+<code class="docutils literal notranslate"><span class="pre">dynamic_shapes={&quot;x&quot;:</span> <span class="pre">{0:</span> <span class="pre">torch.export.Dim(&quot;batch&quot;)}}</span></code> to keep the batch size
+symbolic.</p>
+</section>
+<section id="loading-and-verifying-artifacts">
+<h3><a class="toc-backref" href="#id4" role="doc-backlink">Loading and verifying artifacts</a><a class="headerlink" href="#loading-and-verifying-artifacts" title="Link to this heading">#</a></h3>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">torchwm</span><span class="w"> </span><span class="kn">import</span> <span class="n">export_model</span><span class="p">,</span> <span class="n">load_exported</span><span class="p">,</span> <span class="n">verify_export</span>
+
+<span class="n">path</span> <span class="o">=</span> <span class="n">export_model</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="s2">"step.pt2"</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">"exported_program"</span><span class="p">,</span> <span class="n">example_inputs</span><span class="o">=</span><span class="n">x</span><span class="p">)</span>
+<span class="n">max_err</span> <span class="o">=</span> <span class="n">verify_export</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">x</span><span class="p">)</span>   <span class="c1"># raises AssertionError on mismatch</span>
+<span class="n">runner</span> <span class="o">=</span> <span class="n">load_exported</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>               <span class="c1"># format inferred from the suffix</span>
+<span class="n">runner</span> <span class="o">=</span> <span class="n">load_exported</span><span class="p">(</span><span class="s2">"step_aoti.pt2"</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">"aoti"</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">load_exported</span></code> returns a plain callable for every format. ONNX artifacts run
+through ONNX Runtime when it is installed.</p>
 </section>
 </section>
 <section id="quick-start">
-<h2><a class="toc-backref" href="#id4" role="doc-backlink">Quick start</a><a class="headerlink" href="#quick-start" title="Link to this heading">#</a></h2>
+<h2><a class="toc-backref" href="#id5" role="doc-backlink">Quick start</a><a class="headerlink" href="#quick-start" title="Link to this heading">#</a></h2>
 <section id="exporting-any-nn-module">
-<h3><a class="toc-backref" href="#id5" role="doc-backlink">Exporting any <code class="docutils literal notranslate"><span class="pre">nn.Module</span></code></a><a class="headerlink" href="#exporting-any-nn-module" title="Link to this heading">#</a></h3>
+<h3><a class="toc-backref" href="#id6" role="doc-backlink">Exporting any <code class="docutils literal notranslate"><span class="pre">nn.Module</span></code></a><a class="headerlink" href="#exporting-any-nn-module" title="Link to this heading">#</a></h3>
 <p>Importing <code class="docutils literal notranslate"><span class="pre">torchwm.export</span></code> installs the <code class="docutils literal notranslate"><span class="pre">.export()</span></code> method on every
-<code class="docutils literal notranslate"><span class="pre">torch.nn.Module</span></code> instance once:</p>
+<code class="docutils literal notranslate"><span class="pre">torch.nn.Module</span></code> instance once.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Calling <code class="docutils literal notranslate"><span class="pre">.export()</span></code> on a module class defined <strong>outside</strong> TorchWM relies on
+this global install and is deprecated (it emits a <code class="docutils literal notranslate"><span class="pre">DeprecationWarning</span></code>). Use
+<code class="docutils literal notranslate"><span class="pre">torchwm.export_model(module,</span> <span class="pre">path,</span> <span class="pre">...)</span></code> for your own modules. Set the
+environment variable <code class="docutils literal notranslate"><span class="pre">TORCHWM_NO_GLOBAL_EXPORT=1</span></code> to stop TorchWM from
+modifying <code class="docutils literal notranslate"><span class="pre">torch.nn.Module</span></code>; TorchWM agents keep <code class="docutils literal notranslate"><span class="pre">.export()</span></code> through
+<code class="docutils literal notranslate"><span class="pre">ExportableAgentMixin</span></code> either way.</p>
+</div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">torchwm.export</span>  <span class="c1"># installs nn.Module.export</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torchwm</span><span class="w"> </span><span class="kn">import</span> <span class="n">export_model</span>
 
 <span class="k">class</span><span class="w"> </span><span class="nc">MyModel</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -494,16 +531,18 @@ each model to implement its own export logic.</p>
 <span class="n">model</span> <span class="o">=</span> <span class="n">MyModel</span><span class="p">()</span>
 <span class="n">model</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
 
-<span class="c1"># TorchScript (scripted — works without example_inputs)</span>
-<span class="n">model</span><span class="o">.</span><span class="n">export</span><span class="p">(</span><span class="s2">"model.pt"</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">"torchscript"</span><span class="p">)</span>
+<span class="c1"># torch.export program (recommended)</span>
+<span class="n">export_model</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="s2">"model.pt2"</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">"exported_program"</span><span class="p">,</span> <span class="n">example_inputs</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">64</span><span class="p">))</span>
 
 <span class="c1"># ONNX (requires example_inputs)</span>
-<span class="n">model</span><span class="o">.</span><span class="n">export</span><span class="p">(</span><span class="s2">"model.onnx"</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">"onnx"</span><span class="p">,</span> <span class="n">example_inputs</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">64</span><span class="p">))</span>
+<span class="n">export_model</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="s2">"model.onnx"</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">"onnx"</span><span class="p">,</span> <span class="n">example_inputs</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">64</span><span class="p">))</span>
 </pre></div>
 </div>
+<p>TorchWM’s own models (for example <code class="docutils literal notranslate"><span class="pre">torchwm.create_model(&quot;genie-small&quot;)</span></code>) can
+call the same thing as a method: <code class="docutils literal notranslate"><span class="pre">genie.export(&quot;genie.pt2&quot;,</span> <span class="pre">format=&quot;exported_program&quot;,</span> <span class="pre">example_inputs=video)</span></code>.</p>
 </section>
 <section id="exporting-a-trained-agent">
-<h3><a class="toc-backref" href="#id6" role="doc-backlink">Exporting a trained agent</a><a class="headerlink" href="#exporting-a-trained-agent" title="Link to this heading">#</a></h3>
+<h3><a class="toc-backref" href="#id7" role="doc-backlink">Exporting a trained agent</a><a class="headerlink" href="#exporting-a-trained-agent" title="Link to this heading">#</a></h3>
 <p>High-level agents support the same <code class="docutils literal notranslate"><span class="pre">.export()</span></code> method directly:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">torchwm</span>
 
@@ -525,11 +564,11 @@ correct example inputs for each agent type.</p>
 </section>
 </section>
 <section id="target-resolution">
-<h2><a class="toc-backref" href="#id7" role="doc-backlink">Target resolution</a><a class="headerlink" href="#target-resolution" title="Link to this heading">#</a></h2>
+<h2><a class="toc-backref" href="#id8" role="doc-backlink">Target resolution</a><a class="headerlink" href="#target-resolution" title="Link to this heading">#</a></h2>
 <p>When you call <code class="docutils literal notranslate"><span class="pre">.export()</span></code>, the system needs to decide which <code class="docutils literal notranslate"><span class="pre">nn.Module</span></code> to
 serialize. It uses a priority-based resolution strategy:</p>
 <section id="agent-specific-defaults">
-<h3><a class="toc-backref" href="#id8" role="doc-backlink">1. Agent-specific defaults</a><a class="headerlink" href="#agent-specific-defaults" title="Link to this heading">#</a></h3>
+<h3><a class="toc-backref" href="#id9" role="doc-backlink">1. Agent-specific defaults</a><a class="headerlink" href="#agent-specific-defaults" title="Link to this heading">#</a></h3>
 <p>Each agent type has a preferred default target:</p>
 <div class="pst-scrollable-table-container"><table class="table">
 <thead>
@@ -556,7 +595,7 @@ serialize. It uses a priority-based resolution strategy:</p>
 </div>
 </section>
 <section id="explicit-target-parameter">
-<h3><a class="toc-backref" href="#id9" role="doc-backlink">2. Explicit <code class="docutils literal notranslate"><span class="pre">target=</span></code> parameter</a><a class="headerlink" href="#explicit-target-parameter" title="Link to this heading">#</a></h3>
+<h3><a class="toc-backref" href="#id10" role="doc-backlink">2. Explicit <code class="docutils literal notranslate"><span class="pre">target=</span></code> parameter</a><a class="headerlink" href="#explicit-target-parameter" title="Link to this heading">#</a></h3>
 <p>Override the default by naming a specific submodule:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Export by attribute path</span>
 <span class="n">agent</span><span class="o">.</span><span class="n">export</span><span class="p">(</span><span class="s2">"reward.pt"</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">"torchscript"</span><span class="p">,</span> <span class="n">target</span><span class="o">=</span><span class="s2">"dreamer.reward_model"</span><span class="p">)</span>
@@ -569,7 +608,7 @@ serialize. It uses a priority-based resolution strategy:</p>
 lists the available fully qualified paths.</p>
 </section>
 <section id="single-module-fallback">
-<h3><a class="toc-backref" href="#id10" role="doc-backlink">3. Single-module fallback</a><a class="headerlink" href="#single-module-fallback" title="Link to this heading">#</a></h3>
+<h3><a class="toc-backref" href="#id11" role="doc-backlink">3. Single-module fallback</a><a class="headerlink" href="#single-module-fallback" title="Link to this heading">#</a></h3>
 <p>If the object is itself an <code class="docutils literal notranslate"><span class="pre">nn.Module</span></code>, it is exported directly. If it
 contains exactly one <code class="docutils literal notranslate"><span class="pre">nn.Module</span></code> attribute, that attribute is exported.
 If it contains multiple modules, the system picks the first match from this
@@ -578,9 +617,9 @@ priority list: <code class="docutils literal notranslate"><span class="pre">acto
 </section>
 </section>
 <section id="format-specific-details">
-<h2><a class="toc-backref" href="#id11" role="doc-backlink">Format-specific details</a><a class="headerlink" href="#format-specific-details" title="Link to this heading">#</a></h2>
+<h2><a class="toc-backref" href="#id12" role="doc-backlink">Format-specific details</a><a class="headerlink" href="#format-specific-details" title="Link to this heading">#</a></h2>
 <section id="onnx">
-<h3><a class="toc-backref" href="#id12" role="doc-backlink">ONNX</a><a class="headerlink" href="#onnx" title="Link to this heading">#</a></h3>
+<h3><a class="toc-backref" href="#id13" role="doc-backlink">ONNX</a><a class="headerlink" href="#onnx" title="Link to this heading">#</a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">agent</span><span class="o">.</span><span class="n">export</span><span class="p">(</span>
     <span class="s2">"policy.onnx"</span><span class="p">,</span>
     <span class="nb">format</span><span class="o">=</span><span class="s2">"onnx"</span><span class="p">,</span>
@@ -595,7 +634,7 @@ priority list: <code class="docutils literal notranslate"><span class="pre">acto
 for all supported keyword arguments.</p>
 </section>
 <section id="torchscript">
-<h3><a class="toc-backref" href="#id13" role="doc-backlink">TorchScript</a><a class="headerlink" href="#torchscript" title="Link to this heading">#</a></h3>
+<h3><a class="toc-backref" href="#id14" role="doc-backlink">TorchScript</a><a class="headerlink" href="#torchscript" title="Link to this heading">#</a></h3>
 <p>Two modes, controlled by whether <code class="docutils literal notranslate"><span class="pre">example_inputs</span></code> is provided:</p>
 <div class="pst-scrollable-table-container"><table class="table">
 <thead>
@@ -625,7 +664,7 @@ for all supported keyword arguments.</p>
 </div>
 </section>
 <section id="tensorrt">
-<h3><a class="toc-backref" href="#id14" role="doc-backlink">TensorRT</a><a class="headerlink" href="#tensorrt" title="Link to this heading">#</a></h3>
+<h3><a class="toc-backref" href="#id15" role="doc-backlink">TensorRT</a><a class="headerlink" href="#tensorrt" title="Link to this heading">#</a></h3>
 <p>Requires the optional <code class="docutils literal notranslate"><span class="pre">torch_tensorrt</span></code> package:</p>
 <div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>torch_tensorrt
 </pre></div>
@@ -641,7 +680,7 @@ for all supported keyword arguments.</p>
 </section>
 </section>
 <section id="custom-agents">
-<h2><a class="toc-backref" href="#id15" role="doc-backlink">Custom agents</a><a class="headerlink" href="#custom-agents" title="Link to this heading">#</a></h2>
+<h2><a class="toc-backref" href="#id16" role="doc-backlink">Custom agents</a><a class="headerlink" href="#custom-agents" title="Link to this heading">#</a></h2>
 <p>If you build a custom agent that is not an <code class="docutils literal notranslate"><span class="pre">nn.Module</span></code>, inherit
 <code class="docutils literal notranslate"><span class="pre">ExportableAgentMixin</span></code> to get the <code class="docutils literal notranslate"><span class="pre">.export()</span></code> method:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">torchwm</span><span class="w"> </span><span class="kn">import</span> <span class="n">ExportableAgentMixin</span>
@@ -655,7 +694,7 @@ for all supported keyword arguments.</p>
 <p>The mixin will automatically discover <code class="docutils literal notranslate"><span class="pre">self.policy</span></code> and prefer it as the
 default target. Pass <code class="docutils literal notranslate"><span class="pre">target=&quot;encoder&quot;</span></code> to export a different submodule.</p>
 <section id="custom-example-input-inference">
-<h3><a class="toc-backref" href="#id16" role="doc-backlink">Custom example input inference</a><a class="headerlink" href="#custom-example-input-inference" title="Link to this heading">#</a></h3>
+<h3><a class="toc-backref" href="#id17" role="doc-backlink">Custom example input inference</a><a class="headerlink" href="#custom-example-input-inference" title="Link to this heading">#</a></h3>
 <p>If the auto-inferred example inputs are wrong for your agent, pass them
 explicitly:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">agent</span><span class="o">.</span><span class="n">export</span><span class="p">(</span>
@@ -670,7 +709,7 @@ explicitly:</p>
 </section>
 </section>
 <section id="low-level-api">
-<h2><a class="toc-backref" href="#id17" role="doc-backlink">Low-level API</a><a class="headerlink" href="#low-level-api" title="Link to this heading">#</a></h2>
+<h2><a class="toc-backref" href="#id18" role="doc-backlink">Low-level API</a><a class="headerlink" href="#low-level-api" title="Link to this heading">#</a></h2>
 <p>For scripting or batch export, use the standalone functions directly:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">torchwm</span><span class="w"> </span><span class="kn">import</span> <span class="n">export_any</span><span class="p">,</span> <span class="n">export_model</span>
 
@@ -683,7 +722,7 @@ explicitly:</p>
 </div>
 </section>
 <section id="common-pitfalls">
-<h2><a class="toc-backref" href="#id18" role="doc-backlink">Common pitfalls</a><a class="headerlink" href="#common-pitfalls" title="Link to this heading">#</a></h2>
+<h2><a class="toc-backref" href="#id19" role="doc-backlink">Common pitfalls</a><a class="headerlink" href="#common-pitfalls" title="Link to this heading">#</a></h2>
 <ol class="arabic simple">
 <li><p><strong>Missing <code class="docutils literal notranslate"><span class="pre">.eval()</span></code></strong>: Export always sets the module to eval mode before
 tracing and restores the original mode afterwards. Call <code class="docutils literal notranslate"><span class="pre">.eval()</span></code> manually
@@ -698,7 +737,7 @@ instead of <code class="docutils literal notranslate"><span class="pre">target=&
 </ol>
 </section>
 <section id="see-also">
-<h2><a class="toc-backref" href="#id19" role="doc-backlink">See Also</a><a class="headerlink" href="#see-also" title="Link to this heading">#</a></h2>
+<h2><a class="toc-backref" href="#id20" role="doc-backlink">See Also</a><a class="headerlink" href="#see-also" title="Link to this heading">#</a></h2>
 <ul class="simple">
 <li><p><a class="reference internal" href="inference_guide.html"><span class="doc">Inference Guide</span></a> — running exported models in production</p></li>
 <li><p><a class="reference internal" href="public_api.html"><span class="doc">Public API Quick Reference</span></a> — <code class="docutils literal notranslate"><span class="pre">export_any</span></code> and <code class="docutils literal notranslate"><span class="pre">export_model</span></code> factory functions</p></li>
@@ -755,6 +794,7 @@ instead of <code class="docutils literal notranslate"><span class="pre">target=&
     <ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a><ul class="nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#supported-formats">Supported formats</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#loading-and-verifying-artifacts">Loading and verifying artifacts</a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#quick-start">Quick start</a><ul class="nav section-nav flex-column">
@@ -806,8 +846,8 @@ instead of <code class="docutils literal notranslate"><span class="pre">target=&
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67"></script>
-<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67"></script>
+  <script defer src="_static/scripts/bootstrap.js?digest=64cc4de3f052d77215f0"></script>
+<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=64cc4de3f052d77215f0"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -828,7 +868,6 @@ instead of <code class="docutils literal notranslate"><span class="pre">target=&
 
   <p class="sphinx-version">
     Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.1.0.
-    <br/>
   </p>
 </div>
       
@@ -841,7 +880,7 @@ instead of <code class="docutils literal notranslate"><span class="pre">target=&
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.21.0.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.22.0.
 </p></div>
       
     </div>

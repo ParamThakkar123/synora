@@ -1,8 +1,11 @@
 # Exporting Models for Deployment
 
 TorchWM provides a unified export system that converts trained models and agents
-into deployable formats — ONNX, TorchScript, and TensorRT — without requiring
-each model to implement its own export logic.
+into deployable formats — `torch.export` programs, AOTInductor packages, ONNX,
+TensorRT and (legacy) TorchScript — without requiring each model to implement
+its own export logic. For making inference fast, choosing what to export for
+a recurrent world model, and packaging it with its config, see
+{doc}`deployment_guide`.
 
 ```{contents} Contents
 :depth: 3
@@ -22,20 +25,49 @@ The export system is built around three levels of API:
 
 | Format | Extension | Use case |
 |---|---|---|
+| `"exported_program"` (aliases: `"export"`, `"pt2"`, `"ep"`) | `.pt2` | **Recommended.** `torch.export` graph; loadable without the model's source, and the input to AOTInductor, ExecuTorch and TensorRT |
+| `"aoti"` (aliases: `"aotinductor"`) | `.pt2` | Ahead-of-time compiled package, runnable from Python or C++ (LibTorch) without the model's Python code; needs a C++ toolchain at export time |
 | `"onnx"` | `.onnx` | Cross-platform inference, mobile, edge devices, TensorRT conversion |
-| `"torchscript"` (aliases: `"jit"`, `"ts"`, `"pt"`, `"script"`) | `.pt` | Serving via LibTorch (C++), no Python dependency at inference time |
-| `"tensorrt"` (aliases: `"trt"`) | `.pt` | NVIDIA GPU-optimized inference (requires `torch_tensorrt` package) |
+| `"tensorrt"` (aliases: `"trt"`) | `.ep` | NVIDIA GPU-optimized inference (requires `torch_tensorrt`). Compiles through `ir="dynamo"` by default; pass `ir="ts"` for the legacy TorchScript path |
+| `"torchscript"` (aliases: `"jit"`, `"ts"`, `"pt"`, `"script"`) | `.pt` | Legacy. TorchScript is in maintenance mode upstream; prefer `"exported_program"` or `"aoti"` |
+
+`torch.export` options pass straight through, for example
+`dynamic_shapes={"x": {0: torch.export.Dim("batch")}}` to keep the batch size
+symbolic.
+
+### Loading and verifying artifacts
+
+```python
+from torchwm import export_model, load_exported, verify_export
+
+path = export_model(module, "step.pt2", format="exported_program", example_inputs=x)
+max_err = verify_export(module, path, x)   # raises AssertionError on mismatch
+runner = load_exported(path)               # format inferred from the suffix
+runner = load_exported("step_aoti.pt2", format="aoti")
+```
+
+`load_exported` returns a plain callable for every format. ONNX artifacts run
+through ONNX Runtime when it is installed.
 
 ## Quick start
 
 ### Exporting any `nn.Module`
 
 Importing `torchwm.export` installs the `.export()` method on every
-`torch.nn.Module` instance once:
+`torch.nn.Module` instance once.
+
+:::{note}
+Calling `.export()` on a module class defined **outside** TorchWM relies on
+this global install and is deprecated (it emits a `DeprecationWarning`). Use
+`torchwm.export_model(module, path, ...)` for your own modules. Set the
+environment variable `TORCHWM_NO_GLOBAL_EXPORT=1` to stop TorchWM from
+modifying `torch.nn.Module`; TorchWM agents keep `.export()` through
+`ExportableAgentMixin` either way.
+:::
 
 ```python
 import torch
-import torchwm.export  # installs nn.Module.export
+from torchwm import export_model
 
 class MyModel(torch.nn.Module):
     def __init__(self):
@@ -48,12 +80,15 @@ class MyModel(torch.nn.Module):
 model = MyModel()
 model.eval()
 
-# TorchScript (scripted — works without example_inputs)
-model.export("model.pt", format="torchscript")
+# torch.export program (recommended)
+export_model(model, "model.pt2", format="exported_program", example_inputs=torch.zeros(1, 64))
 
 # ONNX (requires example_inputs)
-model.export("model.onnx", format="onnx", example_inputs=torch.zeros(1, 64))
+export_model(model, "model.onnx", format="onnx", example_inputs=torch.zeros(1, 64))
 ```
+
+TorchWM's own models (for example `torchwm.create_model("genie-small")`) can
+call the same thing as a method: `genie.export("genie.pt2", format="exported_program", example_inputs=video)`.
 
 ### Exporting a trained agent
 

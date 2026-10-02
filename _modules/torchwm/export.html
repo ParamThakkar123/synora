@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 
 
@@ -26,18 +25,18 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../_static/styles/theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
-<link href="../../_static/styles/pydata-sphinx-theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+  <link href="../../_static/styles/theme.css?digest=64cc4de3f052d77215f0" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=64cc4de3f052d77215f0" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../_static/custom.css?v=549e9d87" />
   
   <!-- So that users can add custom icons -->
-  <script defer src="../../_static/scripts/fontawesome.js?digest=cb8930eaaf36d9849b67"></script>
+  <script defer src="../../_static/scripts/fontawesome.js?digest=64cc4de3f052d77215f0"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67" />
-<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67" />
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=64cc4de3f052d77215f0" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=64cc4de3f052d77215f0" />
 
     <script src="../../_static/documentation_options.js?v=8d563738"></script>
     <script src="../../_static/doctools.js?v=fd6eb6e6"></script>
@@ -460,7 +459,7 @@ window.runMermaid = runMermaid;</script>
   
     <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
 <div class="bd-header__inner bd-page-width">
-  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+  <button type="button" class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
     <span class="fa-solid fa-bars"></span>
   </button>
   
@@ -657,25 +656,51 @@ window.runMermaid = runMermaid;</script>
   <h1>Source code for torchwm.export</h1><div class="highlight"><pre>
 <span></span><span class="sd">"""Export utilities for production deployment.</span>
 
-<span class="sd">The public entry point is ``obj.export(path, format="onnx")``. Importing this</span>
-<span class="sd">module installs that method on every ``torch.nn.Module`` once, so all TorchWM</span>
-<span class="sd">models get ONNX, TorchScript, and TensorRT export support without each model</span>
-<span class="sd">subclassing a TorchWM-specific base class. Non-``nn.Module`` agent wrappers can</span>
-<span class="sd">inherit :class:`ExportableAgentMixin`, which uses the same resolver and exporter.</span>
+<span class="sd">The public entry points are :func:`export_model` / :func:`export_any` and the</span>
+<span class="sd">``obj.export(path, format=...)`` method. Supported formats:</span>
+
+<span class="sd">* ``"exported_program"`` - ``torch.export`` graph saved as ``.pt2``. The</span>
+<span class="sd">  recommended format: loadable without the model's source code, and the input</span>
+<span class="sd">  to AOTInductor, ExecuTorch and TensorRT.</span>
+<span class="sd">* ``"aoti"`` - AOTInductor package (``.pt2``): an ahead-of-time compiled shared</span>
+<span class="sd">  library runnable from Python or C++ without the model's Python code.</span>
+<span class="sd">* ``"onnx"`` - for ONNX Runtime / TensorRT / edge runtimes.</span>
+<span class="sd">* ``"tensorrt"`` - Torch-TensorRT, compiled through the dynamo IR by default.</span>
+<span class="sd">* ``"torchscript"`` - legacy; TorchScript is in maintenance mode upstream.</span>
+
+<span class="sd">:func:`load_exported` loads any of these back and :func:`verify_export` checks</span>
+<span class="sd">an artifact against its eager module.</span>
+
+<span class="sd">Importing this module installs an ``export`` method on ``torch.nn.Module`` so</span>
+<span class="sd">TorchWM models can call ``model.export(...)`` without a TorchWM base class.</span>
+<span class="sd">Calling it on a class defined outside TorchWM is deprecated (the method will</span>
+<span class="sd">stop being installed globally); set ``TORCHWM_NO_GLOBAL_EXPORT=1`` to skip the</span>
+<span class="sd">install. Non-``nn.Module`` agent wrappers inherit :class:`ExportableAgentMixin`.</span>
 <span class="sd">"""</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">__future__</span><span class="w"> </span><span class="kn">import</span> <span class="n">annotations</span>
 
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">importlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">import_module</span><span class="p">,</span> <span class="n">util</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Literal</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Literal</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">torch.nn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">nn</span>
 
-<span class="n">ExportFormat</span> <span class="o">=</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">"onnx"</span><span class="p">,</span> <span class="s2">"torchscript"</span><span class="p">,</span> <span class="s2">"tensorrt"</span><span class="p">]</span>
+<span class="n">ExportFormat</span> <span class="o">=</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">"onnx"</span><span class="p">,</span> <span class="s2">"torchscript"</span><span class="p">,</span> <span class="s2">"tensorrt"</span><span class="p">,</span> <span class="s2">"exported_program"</span><span class="p">,</span> <span class="s2">"aoti"</span><span class="p">]</span>
 
 <span class="n">_FORMAT_ALIASES</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">"exported-program"</span><span class="p">:</span> <span class="s2">"exported_program"</span><span class="p">,</span>
+    <span class="s2">"exportedprogram"</span><span class="p">:</span> <span class="s2">"exported_program"</span><span class="p">,</span>
+    <span class="s2">"export"</span><span class="p">:</span> <span class="s2">"exported_program"</span><span class="p">,</span>
+    <span class="s2">"torch.export"</span><span class="p">:</span> <span class="s2">"exported_program"</span><span class="p">,</span>
+    <span class="s2">"ep"</span><span class="p">:</span> <span class="s2">"exported_program"</span><span class="p">,</span>
+    <span class="s2">"pt2"</span><span class="p">:</span> <span class="s2">"exported_program"</span><span class="p">,</span>
+    <span class="s2">"aoti"</span><span class="p">:</span> <span class="s2">"aoti"</span><span class="p">,</span>
+    <span class="s2">"aotinductor"</span><span class="p">:</span> <span class="s2">"aoti"</span><span class="p">,</span>
+    <span class="s2">"aot-inductor"</span><span class="p">:</span> <span class="s2">"aoti"</span><span class="p">,</span>
     <span class="s2">"onnx"</span><span class="p">:</span> <span class="s2">"onnx"</span><span class="p">,</span>
     <span class="s2">"torchscript"</span><span class="p">:</span> <span class="s2">"torchscript"</span><span class="p">,</span>
     <span class="s2">"torch-script"</span><span class="p">:</span> <span class="s2">"torchscript"</span><span class="p">,</span>
@@ -1028,6 +1053,16 @@ window.runMermaid = runMermaid;</script>
     <span class="n">was_training</span> <span class="o">=</span> <span class="n">module</span><span class="o">.</span><span class="n">training</span>
     <span class="n">module</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
 
+    <span class="k">if</span> <span class="n">export_format</span> <span class="ow">in</span> <span class="p">{</span><span class="s2">"exported_program"</span><span class="p">,</span> <span class="s2">"aoti"</span><span class="p">}:</span>
+        <span class="c1"># Not under inference_mode: torch.export traces with its own fake</span>
+        <span class="c1"># tensors, and inference tensors would leak into the graph.</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
+                <span class="n">_export_pt2</span><span class="p">(</span><span class="n">module</span><span class="p">,</span> <span class="n">export_path</span><span class="p">,</span> <span class="n">export_format</span><span class="p">,</span> <span class="n">example_inputs</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="n">module</span><span class="o">.</span><span class="n">train</span><span class="p">(</span><span class="n">was_training</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">export_path</span>
+
     <span class="k">try</span><span class="p">:</span>
         <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">inference_mode</span><span class="p">():</span>
             <span class="k">if</span> <span class="n">export_format</span> <span class="o">==</span> <span class="s2">"onnx"</span><span class="p">:</span>
@@ -1066,14 +1101,24 @@ window.runMermaid = runMermaid;</script>
                 <span class="n">torch_tensorrt</span> <span class="o">=</span> <span class="n">import_module</span><span class="p">(</span><span class="s2">"torch_tensorrt"</span><span class="p">)</span>
                 <span class="n">trt_inputs</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">"inputs"</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">_inputs_to_args</span><span class="p">(</span><span class="n">example_inputs</span><span class="p">)))</span>
                 <span class="n">enabled_precisions</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">"enabled_precisions"</span><span class="p">,</span> <span class="p">{</span><span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">})</span>
+                <span class="c1"># "dynamo" is Torch-TensorRT's maintained frontend; "ts" (the</span>
+                <span class="c1"># previous default) goes through TorchScript and is legacy.</span>
+                <span class="n">ir</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">"ir"</span><span class="p">,</span> <span class="s2">"dynamo"</span><span class="p">)</span>
                 <span class="n">compiled</span> <span class="o">=</span> <span class="n">torch_tensorrt</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
                     <span class="n">module</span><span class="p">,</span>
-                    <span class="n">ir</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">"ir"</span><span class="p">,</span> <span class="s2">"ts"</span><span class="p">),</span>
+                    <span class="n">ir</span><span class="o">=</span><span class="n">ir</span><span class="p">,</span>
                     <span class="n">inputs</span><span class="o">=</span><span class="n">trt_inputs</span><span class="p">,</span>
                     <span class="n">enabled_precisions</span><span class="o">=</span><span class="n">enabled_precisions</span><span class="p">,</span>
                     <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
                 <span class="p">)</span>
-                <span class="n">torch</span><span class="o">.</span><span class="n">jit</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">compiled</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">export_path</span><span class="p">))</span>
+                <span class="k">if</span> <span class="n">ir</span> <span class="o">==</span> <span class="s2">"ts"</span><span class="p">:</span>
+                    <span class="n">torch</span><span class="o">.</span><span class="n">jit</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">compiled</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">export_path</span><span class="p">))</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">torch_tensorrt</span><span class="o">.</span><span class="n">save</span><span class="p">(</span>
+                        <span class="n">compiled</span><span class="p">,</span>
+                        <span class="nb">str</span><span class="p">(</span><span class="n">export_path</span><span class="p">),</span>
+                        <span class="n">inputs</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">_inputs_to_args</span><span class="p">(</span><span class="n">example_inputs</span><span class="p">)),</span>
+                    <span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>  <span class="c1"># pragma: no cover - guarded by _normalize_format.</span>
                 <span class="k">raise</span> <span class="ne">AssertionError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Unhandled export format: </span><span class="si">{</span><span class="n">export_format</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
     <span class="k">finally</span><span class="p">:</span>
@@ -1083,17 +1128,199 @@ window.runMermaid = runMermaid;</script>
 
 
 
+<span class="k">def</span><span class="w"> </span><span class="nf">_export_pt2</span><span class="p">(</span>
+    <span class="n">module</span><span class="p">:</span> <span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">,</span>
+    <span class="n">export_path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span>
+    <span class="n">export_format</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">example_inputs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+    <span class="n">kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">example_inputs</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">"example_inputs is required for </span><span class="si">{</span><span class="n">export_format</span><span class="si">}</span><span class="s2"> export."</span><span class="p">)</span>
+    <span class="c1"># ONNX-only options have no meaning for torch.export; drop them so the same</span>
+    <span class="c1"># call site can switch formats.</span>
+    <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">"do_constant_folding"</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="n">exported</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">export</span><span class="o">.</span><span class="n">export</span><span class="p">(</span>
+        <span class="n">module</span><span class="p">,</span>
+        <span class="n">_inputs_to_args</span><span class="p">(</span><span class="n">example_inputs</span><span class="p">),</span>
+        <span class="n">dynamic_shapes</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">"dynamic_shapes"</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+        <span class="n">strict</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">"strict"</span><span class="p">,</span> <span class="kc">False</span><span class="p">),</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="n">export_format</span> <span class="o">==</span> <span class="s2">"exported_program"</span><span class="p">:</span>
+        <span class="n">torch</span><span class="o">.</span><span class="n">export</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">exported</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">export_path</span><span class="p">))</span>
+        <span class="k">return</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">torch._inductor</span><span class="w"> </span><span class="kn">import</span> <span class="n">aoti_compile_and_package</span>
+    <span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>  <span class="c1"># pragma: no cover - torch &lt; 2.6</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">"AOTInductor export requires torch &gt;= 2.6."</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">exc</span>
+    <span class="n">aoti_compile_and_package</span><span class="p">(</span>
+        <span class="n">exported</span><span class="p">,</span>
+        <span class="n">package_path</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">export_path</span><span class="p">),</span>
+        <span class="n">inductor_configs</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">"inductor_configs"</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+    <span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_format_from_suffix</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ExportFormat</span><span class="p">:</span>
+    <span class="n">suffix</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">suffix</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">suffix</span> <span class="o">==</span> <span class="s2">".onnx"</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">"onnx"</span>
+    <span class="k">if</span> <span class="n">suffix</span> <span class="o">==</span> <span class="s2">".pt2"</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">"exported_program"</span>
+    <span class="k">return</span> <span class="s2">"torchscript"</span>
+
+
+<div class="viewcode-block" id="load_exported">
+<a class="viewcode-back" href="../../api_reference.html#torchwm.load_exported">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">load_exported</span><span class="p">(</span>
+    <span class="n">path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span><span class="p">,</span>
+    <span class="nb">format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">device</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">"""Load an exported artifact back as a callable.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        path: Artifact written by :func:`export_model`.</span>
+<span class="sd">        format: Its export format. Inferred from the suffix when omitted, with</span>
+<span class="sd">            ``.pt2`` read as ``exported_program``; pass ``"aoti"`` for</span>
+<span class="sd">            AOTInductor packages, which share the suffix.</span>
+<span class="sd">        device: Device to move an ExportedProgram or TorchScript module to.</span>
+
+<span class="sd">    ONNX artifacts run through ONNX Runtime (optional dependency); the returned</span>
+<span class="sd">    callable takes and returns tensors like the other formats.</span>
+<span class="sd">    """</span>
+    <span class="n">path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+    <span class="n">export_format</span> <span class="o">=</span> <span class="n">_normalize_format</span><span class="p">(</span><span class="nb">format</span><span class="p">)</span> <span class="k">if</span> <span class="nb">format</span> <span class="k">else</span> <span class="n">_format_from_suffix</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">export_format</span> <span class="o">==</span> <span class="s2">"exported_program"</span><span class="p">:</span>
+        <span class="n">module</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">export</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">))</span><span class="o">.</span><span class="n">module</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">module</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">)</span> <span class="k">if</span> <span class="n">device</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">module</span>
+    <span class="k">if</span> <span class="n">export_format</span> <span class="o">==</span> <span class="s2">"aoti"</span><span class="p">:</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">torch._inductor</span><span class="w"> </span><span class="kn">import</span> <span class="n">aoti_load_package</span>
+
+        <span class="n">runner</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="n">aoti_load_package</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">runner</span>
+    <span class="k">if</span> <span class="n">export_format</span> <span class="o">==</span> <span class="s2">"onnx"</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">_onnxruntime_callable</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">export_format</span> <span class="o">==</span> <span class="s2">"tensorrt"</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">util</span><span class="o">.</span><span class="n">find_spec</span><span class="p">(</span><span class="s2">"torch_tensorrt"</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">"Loading TensorRT artifacts requires torch-tensorrt."</span><span class="p">)</span>
+        <span class="n">import_module</span><span class="p">(</span><span class="s2">"torch_tensorrt"</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">export</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">))</span><span class="o">.</span><span class="n">module</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="k">pass</span>  <span class="c1"># a legacy ir="ts" artifact: fall through to TorchScript</span>
+    <span class="n">scripted</span><span class="p">:</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">jit</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">),</span> <span class="n">map_location</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>  <span class="c1"># type: ignore[no-untyped-call]</span>
+    <span class="k">return</span> <span class="n">scripted</span></div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_onnxruntime_callable</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+    <span class="k">if</span> <span class="n">util</span><span class="o">.</span><span class="n">find_spec</span><span class="p">(</span><span class="s2">"onnxruntime"</span><span class="p">)</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+            <span class="s2">"Running ONNX artifacts requires the optional onnxruntime package."</span>
+        <span class="p">)</span>
+    <span class="n">ort</span> <span class="o">=</span> <span class="n">import_module</span><span class="p">(</span><span class="s2">"onnxruntime"</span><span class="p">)</span>
+    <span class="n">session</span> <span class="o">=</span> <span class="n">ort</span><span class="o">.</span><span class="n">InferenceSession</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">path</span><span class="p">),</span> <span class="n">providers</span><span class="o">=</span><span class="n">ort</span><span class="o">.</span><span class="n">get_available_providers</span><span class="p">())</span>
+    <span class="n">input_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span><span class="o">.</span><span class="n">name</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">session</span><span class="o">.</span><span class="n">get_inputs</span><span class="p">()]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+        <span class="n">feeds</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="n">name</span><span class="p">:</span> <span class="n">arg</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span> <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">arg</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">input_names</span><span class="p">,</span> <span class="n">args</span><span class="p">)</span>
+        <span class="p">}</span>
+        <span class="n">outputs</span> <span class="o">=</span> <span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">from_numpy</span><span class="p">(</span><span class="n">o</span><span class="p">)</span> <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">session</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">feeds</span><span class="p">)]</span>
+        <span class="k">return</span> <span class="n">outputs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">outputs</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">outputs</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">run</span>
+
+
+<div class="viewcode-block" id="verify_export">
+<a class="viewcode-back" href="../../api_reference.html#torchwm.verify_export">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">verify_export</span><span class="p">(</span>
+    <span class="n">module</span><span class="p">:</span> <span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">,</span>
+    <span class="n">exported</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span> <span class="o">|</span> <span class="n">Callable</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="n">Any</span><span class="p">],</span>
+    <span class="n">example_inputs</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="nb">format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">atol</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-4</span><span class="p">,</span>
+    <span class="n">rtol</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-4</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Check that an exported artifact reproduces ``module`` on ``example_inputs``.</span>
+
+<span class="sd">    ``exported`` is an artifact path (loaded with :func:`load_exported`) or an</span>
+<span class="sd">    already-loaded callable. Returns the largest absolute difference over all</span>
+<span class="sd">    tensor outputs, and raises ``AssertionError`` if any output falls outside</span>
+<span class="sd">    ``atol``/``rtol``. For recurrent models also check closed-loop drift with</span>
+<span class="sd">    :func:`torchwm.inference.rollout_drift`: one matching step does not rule out</span>
+<span class="sd">    error that compounds over a rollout.</span>
+<span class="sd">    """</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">torch.utils._pytree</span><span class="w"> </span><span class="kn">import</span> <span class="n">tree_flatten</span>
+
+    <span class="n">runner</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">load_exported</span><span class="p">(</span><span class="n">exported</span><span class="p">,</span> <span class="nb">format</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">exported</span><span class="p">,</span> <span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">))</span>
+        <span class="k">else</span> <span class="n">exported</span>
+    <span class="p">)</span>
+    <span class="n">args</span> <span class="o">=</span> <span class="n">_inputs_to_args</span><span class="p">(</span><span class="n">example_inputs</span><span class="p">)</span>
+    <span class="n">was_training</span> <span class="o">=</span> <span class="n">module</span><span class="o">.</span><span class="n">training</span>
+    <span class="n">module</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
+            <span class="n">expected</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">t</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">tree_flatten</span><span class="p">(</span><span class="n">module</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span>
+            <span class="p">]</span>
+            <span class="n">actual</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">t</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">tree_flatten</span><span class="p">(</span><span class="n">runner</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">)</span>
+            <span class="p">]</span>
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="n">module</span><span class="o">.</span><span class="n">train</span><span class="p">(</span><span class="n">was_training</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">expected</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">actual</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">AssertionError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">"Exported artifact returned </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">actual</span><span class="p">)</span><span class="si">}</span><span class="s2"> tensors; eager returned "</span>
+            <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">expected</span><span class="p">)</span><span class="si">}</span><span class="s2">."</span>
+        <span class="p">)</span>
+    <span class="n">worst</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="k">for</span> <span class="n">want</span><span class="p">,</span> <span class="n">got</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">expected</span><span class="p">,</span> <span class="n">actual</span><span class="p">):</span>
+        <span class="n">got</span> <span class="o">=</span> <span class="n">got</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">want</span><span class="o">.</span><span class="n">device</span><span class="p">,</span> <span class="n">want</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">want</span><span class="o">.</span><span class="n">numel</span><span class="p">():</span>
+            <span class="n">worst</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">worst</span><span class="p">,</span> <span class="nb">float</span><span class="p">((</span><span class="n">want</span> <span class="o">-</span> <span class="n">got</span><span class="p">)</span><span class="o">.</span><span class="n">abs</span><span class="p">()</span><span class="o">.</span><span class="n">max</span><span class="p">()))</span>
+        <span class="n">torch</span><span class="o">.</span><span class="n">testing</span><span class="o">.</span><span class="n">assert_close</span><span class="p">(</span><span class="n">got</span><span class="p">,</span> <span class="n">want</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="n">atol</span><span class="p">,</span> <span class="n">rtol</span><span class="o">=</span><span class="n">rtol</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">worst</span></div>
+
+
+
 <span class="k">def</span><span class="w"> </span><span class="nf">_module_export</span><span class="p">(</span>
     <span class="bp">self</span><span class="p">:</span> <span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span><span class="p">,</span> <span class="nb">format</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">"onnx"</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">Any</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__module__</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">"torchwm"</span><span class="p">):</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+            <span class="s2">"Calling .export() on a module defined outside TorchWM relies on the "</span>
+            <span class="s2">"method TorchWM installs on every torch.nn.Module. That global install "</span>
+            <span class="s2">"is deprecated and will be removed; use "</span>
+            <span class="s2">"torchwm.export_model(module, path, ...) instead."</span><span class="p">,</span>
+            <span class="ne">DeprecationWarning</span><span class="p">,</span>
+            <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+        <span class="p">)</span>
     <span class="k">return</span> <span class="n">export_any</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="nb">format</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="install_export_method">
 <a class="viewcode-back" href="../../api_reference.html#torchwm.install_export_method">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">install_export_method</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">"""Install ``torch.nn.Module.export`` once for every Torch model class."""</span>
+<span class="w">    </span><span class="sd">"""Install ``torch.nn.Module.export`` once.</span>
 
+<span class="sd">    Skipped when the ``TORCHWM_NO_GLOBAL_EXPORT`` environment variable is set</span>
+<span class="sd">    to a truthy value, for applications that do not want TorchWM to modify</span>
+<span class="sd">    ``torch.nn.Module``. TorchWM agents keep ``.export()`` either way through</span>
+<span class="sd">    :class:`ExportableAgentMixin`, and :func:`export_model` always works.</span>
+<span class="sd">    """</span>
+
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">"TORCHWM_NO_GLOBAL_EXPORT"</span><span class="p">,</span> <span class="s2">""</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">{</span>
+        <span class="s2">"1"</span><span class="p">,</span>
+        <span class="s2">"true"</span><span class="p">,</span>
+        <span class="s2">"yes"</span><span class="p">,</span>
+        <span class="s2">"on"</span><span class="p">,</span>
+    <span class="p">}:</span>
+        <span class="k">return</span>
     <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">,</span> <span class="s2">"_torchwm_export_installed"</span><span class="p">,</span> <span class="kc">False</span><span class="p">):</span>
         <span class="k">return</span>
     <span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="o">.</span><span class="n">export</span> <span class="o">=</span> <span class="n">_module_export</span>  <span class="c1"># type: ignore[attr-defined]</span>
@@ -1112,6 +1339,8 @@ window.runMermaid = runMermaid;</script>
     <span class="s2">"export_any"</span><span class="p">,</span>
     <span class="s2">"export_model"</span><span class="p">,</span>
     <span class="s2">"install_export_method"</span><span class="p">,</span>
+    <span class="s2">"load_exported"</span><span class="p">,</span>
+    <span class="s2">"verify_export"</span><span class="p">,</span>
 <span class="p">]</span>
 </pre></div>
 
@@ -1142,8 +1371,8 @@ window.runMermaid = runMermaid;</script>
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67"></script>
-<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67"></script>
+  <script defer src="../../_static/scripts/bootstrap.js?digest=64cc4de3f052d77215f0"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=64cc4de3f052d77215f0"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -1164,7 +1393,6 @@ window.runMermaid = runMermaid;</script>
 
   <p class="sphinx-version">
     Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.1.0.
-    <br/>
   </p>
 </div>
       
@@ -1177,7 +1405,7 @@ window.runMermaid = runMermaid;</script>
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.21.0.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.22.0.
 </p></div>
       
     </div>

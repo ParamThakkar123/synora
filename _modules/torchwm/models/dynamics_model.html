@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 
 
@@ -26,18 +25,18 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../../_static/styles/theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
-<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+  <link href="../../../_static/styles/theme.css?digest=64cc4de3f052d77215f0" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=64cc4de3f052d77215f0" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="../../../_static/copybutton.css?v=76b2166b" />
     <link rel="stylesheet" type="text/css" href="../../../_static/custom.css?v=549e9d87" />
   
   <!-- So that users can add custom icons -->
-  <script defer src="../../../_static/scripts/fontawesome.js?digest=cb8930eaaf36d9849b67"></script>
+  <script defer src="../../../_static/scripts/fontawesome.js?digest=64cc4de3f052d77215f0"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67" />
-<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67" />
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=64cc4de3f052d77215f0" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=64cc4de3f052d77215f0" />
 
     <script src="../../../_static/documentation_options.js?v=8d563738"></script>
     <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
@@ -460,7 +459,7 @@ window.runMermaid = runMermaid;</script>
   
     <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
 <div class="bd-header__inner bd-page-width">
-  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+  <button type="button" class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
     <span class="fa-solid fa-bars"></span>
   </button>
   
@@ -661,7 +660,7 @@ window.runMermaid = runMermaid;</script>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Optional</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">torchwm.blocks.st_transformer</span><span class="w"> </span><span class="kn">import</span> <span class="n">STTransformer</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torchwm.blocks.st_transformer</span><span class="w"> </span><span class="kn">import</span> <span class="n">STKVCache</span><span class="p">,</span> <span class="n">STTransformer</span>
 
 
 <div class="viewcode-block" id="MaskGITSampler">
@@ -926,6 +925,66 @@ window.runMermaid = runMermaid;</script>
         <span class="k">return</span> <span class="n">logits</span></div>
 
 
+<div class="viewcode-block" id="DynamicsModel.init_cache">
+<a class="viewcode-back" href="../../../api_reference.html#torchwm.DynamicsModel.init_cache">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">init_cache</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">device</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">dtype</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">dtype</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">STKVCache</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Allocate a temporal KV cache for :meth:`forward_cached`."""</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dynamics_transformer</span><span class="o">.</span><span class="n">init_cache</span><span class="p">(</span>
+            <span class="n">batch_size</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_frames</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DynamicsModel.forward_cached">
+<a class="viewcode-back" href="../../../api_reference.html#torchwm.DynamicsModel.forward_cached">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward_cached</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">video_tokens</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+        <span class="n">actions</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+        <span class="n">cache</span><span class="p">:</span> <span class="n">STKVCache</span><span class="p">,</span>
+        <span class="n">commit</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Inference forward over only the frames after those in ``cache``.</span>
+
+<span class="sd">        Equivalent to the matching frames of ``forward(all_tokens, all_actions,</span>
+<span class="sd">        mask_prob=0.0)`` in eval mode, without recomputing the cached prefix.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            video_tokens: (B, T_new, N) tokens of the new frames. ``T_new`` may</span>
+<span class="sd">                be larger than 1 only while the cache is empty (the prompt).</span>
+<span class="sd">            actions: (B, T_new) latent actions for those frames.</span>
+<span class="sd">            cache: From :meth:`init_cache`; its length is the index of the</span>
+<span class="sd">                first new frame.</span>
+<span class="sd">            commit: Advance the cache past these frames. False evaluates a</span>
+<span class="sd">                candidate frame without keeping it.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            logits: (B, T_new, N, vocab_size)</span>
+<span class="sd">        """</span>
+        <span class="n">B</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">N</span> <span class="o">=</span> <span class="n">video_tokens</span><span class="o">.</span><span class="n">shape</span>
+        <span class="n">start</span> <span class="o">=</span> <span class="n">cache</span><span class="o">.</span><span class="n">length</span>
+        <span class="k">if</span> <span class="n">start</span> <span class="o">+</span> <span class="n">T</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">num_frames</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">"Frame </span><span class="si">{</span><span class="n">start</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">T</span><span class="si">}</span><span class="s2"> exceeds the positional capacity </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">num_frames</span><span class="si">}</span><span class="s2">."</span>
+            <span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">video_embedding</span><span class="p">(</span><span class="n">video_tokens</span><span class="p">)</span>
+            <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">video_pos_embed</span><span class="p">[:,</span> <span class="n">start</span> <span class="p">:</span> <span class="n">start</span> <span class="o">+</span> <span class="n">T</span><span class="p">]</span>
+        <span class="p">)</span>
+        <span class="n">action_emb</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">action_embedding</span><span class="p">(</span><span class="n">actions</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">action_pos_embed</span><span class="p">[:,</span> <span class="n">start</span> <span class="p">:</span> <span class="n">start</span> <span class="o">+</span> <span class="n">T</span><span class="p">]</span>
+        <span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">x</span> <span class="o">+</span> <span class="n">action_emb</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dynamics_transformer</span><span class="p">(</span>
+            <span class="n">x</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">B</span><span class="p">,</span> <span class="n">T</span> <span class="o">*</span> <span class="n">N</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dim</span><span class="p">),</span> <span class="n">cache</span><span class="o">=</span><span class="n">cache</span><span class="p">,</span> <span class="n">commit</span><span class="o">=</span><span class="n">commit</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_proj</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">B</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dim</span><span class="p">))</span></div>
+
+
 <div class="viewcode-block" id="DynamicsModel.sample">
 <a class="viewcode-back" href="../../../api_reference.html#torchwm.DynamicsModel.sample">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">sample</span><span class="p">(</span>
@@ -997,6 +1056,7 @@ window.runMermaid = runMermaid;</script>
         <span class="n">actions</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
         <span class="n">num_frames</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
         <span class="n">temperature</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
+        <span class="n">use_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Simple autoregressive sampling (frame by frame).</span>
 
@@ -1008,10 +1068,22 @@ window.runMermaid = runMermaid;</script>
 <span class="sd">                are sampled at random.</span>
 <span class="sd">            num_frames: Total number of frames to generate</span>
 <span class="sd">            temperature: Sampling temperature</span>
+<span class="sd">            use_cache: Reuse the temporal keys/values of already generated</span>
+<span class="sd">                frames (:class:`~torchwm.blocks.st_transformer.STKVCache`)</span>
+<span class="sd">                instead of re-running the transformer over the whole prefix for</span>
+<span class="sd">                every frame. The logits match the uncached path up to float</span>
+<span class="sd">                rounding. One difference: when actions must be padded at</span>
+<span class="sd">                random, the uncached path redraws the padding for *every*</span>
+<span class="sd">                earlier frame at every step, while the cached path draws each</span>
+<span class="sd">                frame's padding once.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            generated_tokens: (B, num_frames, N)</span>
 <span class="sd">        """</span>
+        <span class="k">if</span> <span class="n">use_cache</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_autoregressive_sample_cached</span><span class="p">(</span>
+                <span class="n">prompt_tokens</span><span class="p">,</span> <span class="n">actions</span><span class="p">,</span> <span class="n">num_frames</span><span class="p">,</span> <span class="n">temperature</span>
+            <span class="p">)</span>
         <span class="n">B</span><span class="p">,</span> <span class="n">T_prompt</span><span class="p">,</span> <span class="n">N</span> <span class="o">=</span> <span class="n">prompt_tokens</span><span class="o">.</span><span class="n">shape</span>
 
         <span class="n">current_tokens</span> <span class="o">=</span> <span class="n">prompt_tokens</span>
@@ -1046,7 +1118,40 @@ window.runMermaid = runMermaid;</script>
             <span class="p">)</span>
 
         <span class="k">return</span> <span class="n">current_tokens</span></div>
-</div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_autoregressive_sample_cached</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">prompt_tokens</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+        <span class="n">actions</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">,</span>
+        <span class="n">num_frames</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">temperature</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+        <span class="n">B</span><span class="p">,</span> <span class="n">T_prompt</span><span class="p">,</span> <span class="n">N</span> <span class="o">=</span> <span class="n">prompt_tokens</span><span class="o">.</span><span class="n">shape</span>
+        <span class="n">device</span> <span class="o">=</span> <span class="n">prompt_tokens</span><span class="o">.</span><span class="n">device</span>
+        <span class="n">needed</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">num_frames</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">T_prompt</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">actions</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">needed</span><span class="p">:</span>
+            <span class="n">pad</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span>
+                <span class="mi">0</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">action_vocab_size</span><span class="p">,</span>
+                <span class="p">(</span><span class="n">B</span><span class="p">,</span> <span class="n">needed</span> <span class="o">-</span> <span class="n">actions</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span>
+                <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
+            <span class="p">)</span>
+            <span class="n">actions</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">([</span><span class="n">actions</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">device</span><span class="p">),</span> <span class="n">pad</span><span class="p">],</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="n">cache</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_cache</span><span class="p">(</span><span class="n">B</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">)</span>
+        <span class="n">frames</span> <span class="o">=</span> <span class="p">[</span><span class="n">prompt_tokens</span><span class="p">]</span>
+        <span class="n">logits</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">forward_cached</span><span class="p">(</span><span class="n">prompt_tokens</span><span class="p">,</span> <span class="n">actions</span><span class="p">[:,</span> <span class="p">:</span><span class="n">T_prompt</span><span class="p">],</span> <span class="n">cache</span><span class="p">)</span>
+        <span class="n">t</span> <span class="o">=</span> <span class="n">T_prompt</span>
+        <span class="k">while</span> <span class="n">t</span> <span class="o">&lt;</span> <span class="n">num_frames</span><span class="p">:</span>
+            <span class="n">probs</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">softmax</span><span class="p">(</span><span class="n">logits</span><span class="p">[:,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">temperature</span><span class="p">,</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">next_tokens</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">multinomial</span><span class="p">(</span><span class="n">probs</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">probs</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)),</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">next_tokens</span> <span class="o">=</span> <span class="n">next_tokens</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">B</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">N</span><span class="p">)</span>
+            <span class="n">frames</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">next_tokens</span><span class="p">)</span>
+            <span class="n">t</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">if</span> <span class="n">t</span> <span class="o">&lt;</span> <span class="n">num_frames</span><span class="p">:</span>
+                <span class="n">logits</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">forward_cached</span><span class="p">(</span><span class="n">next_tokens</span><span class="p">,</span> <span class="n">actions</span><span class="p">[:,</span> <span class="n">t</span> <span class="o">-</span> <span class="mi">1</span> <span class="p">:</span> <span class="n">t</span><span class="p">],</span> <span class="n">cache</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span><span class="n">frames</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span></div>
 
 
 
@@ -1105,8 +1210,8 @@ window.runMermaid = runMermaid;</script>
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67"></script>
-<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67"></script>
+  <script defer src="../../../_static/scripts/bootstrap.js?digest=64cc4de3f052d77215f0"></script>
+<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=64cc4de3f052d77215f0"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -1127,7 +1232,6 @@ window.runMermaid = runMermaid;</script>
 
   <p class="sphinx-version">
     Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.1.0.
-    <br/>
   </p>
 </div>
       
@@ -1140,7 +1244,7 @@ window.runMermaid = runMermaid;</script>
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.21.0.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.22.0.
 </p></div>
       
     </div>

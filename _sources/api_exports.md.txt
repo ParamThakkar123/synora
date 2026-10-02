@@ -188,9 +188,29 @@ generated from source, see {doc}`api_reference`.
 
 | Name | Source | Description |
 |---|---|---|
-| `export_any(obj, path, format, ...)` | `torchwm.export` | Export a model or agent to ONNX/TorchScript/TensorRT. |
+| `export_any(obj, path, format, ...)` | `torchwm.export` | Export a model or agent (`exported_program`, `aoti`, ONNX, TensorRT, TorchScript). |
 | `export_model(module, path, format, ...)` | `torchwm.export` | Export a raw nn.Module. |
+| `load_exported(path, format=None)` | `torchwm.export` | Load any exported artifact as a callable. |
+| `verify_export(module, exported, example_inputs)` | `torchwm.export` | Check an artifact against its eager module; returns max abs error. |
 | `ExportableAgentMixin` | `torchwm.export` | Mixin that adds `.export()` to custom agents. |
+
+## Inference and deployment
+
+See {doc}`deployment_guide`.
+
+| Name | Source | Description |
+|---|---|---|
+| `optimize_for_inference(module, ...)` | `torchwm.inference` | Wrap a module with a precision policy and optional `torch.compile` / CUDA graphs. |
+| `InferenceModel` | `torchwm.inference` | The wrapper returned by `optimize_for_inference`. |
+| `inference_context(device, precision)` | `torchwm.inference` | `inference_mode` plus autocast at one resolved precision. |
+| `make_stepper(agent)` | `torchwm.inference` | Uniform `init_state` / `observe` / `act` / `imagine` step interface. |
+| `DreamerStepper`, `IRISStepper` | `torchwm.inference` | Steppers for Dreamer and IRIS. |
+| `DreamerStepModule` | `torchwm.inference` | One Dreamer observe+act step as a pure, exportable module. |
+| `benchmark_step(fn, *args)` | `torchwm.inference` | Latency percentiles, throughput and peak memory. |
+| `rollout_drift(reference, candidate, state, inputs)` | `torchwm.inference` | Closed-loop divergence of an optimized step from a reference. |
+| `quantize_weights(module)` | `torchwm.inference` | Weight-only int8 quantization of `nn.Linear` layers. |
+| `save_bundle(dir, module, ...)` / `load_bundle(dir)` | `torchwm.inference` | Deployment bundles: weights, config, artifacts, manifest. |
+| `STKVCache` | `torchwm.blocks.st_transformer` | Temporal KV cache for incremental Genie / ST-transformer generation. |
 
 ## Reward and value models
 
