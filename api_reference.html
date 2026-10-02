@@ -34346,6 +34346,56 @@ Also adds some noise to the observations !!</p>
 </dl>
 </dd></dl>
 
+<dl class="py class">
+<dt class="sig sig-object py" id="torchwm.utils.utils.Mp4Writer">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">torchwm.utils.utils.</span></span><span class="sig-name descname"><span class="pre">Mp4Writer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fps</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchwm/utils/utils.html#Mp4Writer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchwm.utils.utils.Mp4Writer" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Write BGR uint8 frames to a browser-playable MP4.</p>
+<p>Browsers only decode H.264 in MP4, but OpenCV’s <code class="docutils literal notranslate"><span class="pre">mp4v</span></code> fourcc produces
+MPEG-4 Part 2, which no browser plays. Backends are tried in order:</p>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">imageio-ffmpeg</span></code> (bundled ffmpeg, libx264, yuv420p, faststart) -
+H.264 on every platform. Installed by the <code class="docutils literal notranslate"><span class="pre">viz</span></code> extra.</p></li>
+<li><p>OpenCV <code class="docutils literal notranslate"><span class="pre">avc1</span></code> - H.264 where the OpenCV build has an encoder
+(typically Windows/macOS; usually not pip wheels on Linux).</p></li>
+<li><p>OpenCV <code class="docutils literal notranslate"><span class="pre">mp4v</span></code> - always available, but not browser-playable; a
+warning is emitted.</p></li>
+</ol>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>path</strong> (<em>str</em>) – output <code class="docutils literal notranslate"><span class="pre">.mp4</span></code> path</p></li>
+<li><p><strong>fps</strong> (<em>float</em>) – frames per second</p></li>
+<li><p><strong>size</strong> (<em>tuple</em><em>[</em><em>int</em><em>, </em><em>int</em><em>]</em>) – <code class="docutils literal notranslate"><span class="pre">(width,</span> <span class="pre">height)</span></code> of every frame</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="torchwm.utils.utils.Mp4Writer.write">
+<span class="sig-name descname"><span class="pre">write</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">frame</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchwm/utils/utils.html#Mp4Writer.write"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchwm.utils.utils.Mp4Writer.write" title="Link to this definition">#</a></dt>
+<dd><p>Append one HWC (or HW) uint8 BGR frame of size <code class="docutils literal notranslate"><span class="pre">self.size</span></code>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>frame</strong> (<em>ndarray</em>)</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="torchwm.utils.utils.Mp4Writer.release">
+<span class="sig-name descname"><span class="pre">release</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchwm/utils/utils.html#Mp4Writer.release"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchwm.utils.utils.Mp4Writer.release" title="Link to this definition">#</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 <dl class="py function">
 <dt class="sig sig-object py" id="torchwm.utils.utils.save_video">
 <span class="sig-prename descclassname"><span class="pre">torchwm.utils.utils.</span></span><span class="sig-name descname"><span class="pre">save_video</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">frames</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/torchwm/utils/utils.html#save_video"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchwm.utils.utils.save_video" title="Link to this definition">#</a></dt>
@@ -34767,7 +34817,7 @@ along the batch dimension.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>path</strong> (<em>str</em>) – output video file path</p></li>
 <li><p><strong>fps</strong> (<em>int</em>) – frames per second</p></li>
-<li><p><strong>frame_shape</strong> (<em>Any</em>) – (height, width) of frames</p></li>
+<li><p><strong>frame_shape</strong> (<em>Any</em>) – (width, height) of frames; inferred from the first frame if None</p></li>
 <li><p><strong>format</strong> (<em>str</em>) – ‘mp4’ or ‘avi’</p></li>
 </ul>
 </dd>
@@ -36720,6 +36770,11 @@ along the batch dimension.</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#torchwm.utils.utils.preprocess_img"><code class="docutils literal notranslate"><span class="pre">preprocess_img()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#torchwm.utils.utils.bottle"><code class="docutils literal notranslate"><span class="pre">bottle()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#torchwm.utils.utils.get_combined_params"><code class="docutils literal notranslate"><span class="pre">get_combined_params()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#torchwm.utils.utils.Mp4Writer"><code class="docutils literal notranslate"><span class="pre">Mp4Writer</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchwm.utils.utils.Mp4Writer.write"><code class="docutils literal notranslate"><span class="pre">Mp4Writer.write()</span></code></a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#torchwm.utils.utils.Mp4Writer.release"><code class="docutils literal notranslate"><span class="pre">Mp4Writer.release()</span></code></a></li>
+</ul>
+</li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#torchwm.utils.utils.save_video"><code class="docutils literal notranslate"><span class="pre">save_video()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#torchwm.utils.utils.combine_videos"><code class="docutils literal notranslate"><span class="pre">combine_videos()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#torchwm.utils.utils.ensure_results_dir_exists"><code class="docutils literal notranslate"><span class="pre">ensure_results_dir_exists()</span></code></a></li>
