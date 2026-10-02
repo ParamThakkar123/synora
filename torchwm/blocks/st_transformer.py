@@ -2,7 +2,65 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torch.utils.checkpoint import checkpoint
-from typing import Optional
+from typing import List, Optional, Tuple
+
+
+class STKVCache:
+    """Per-layer temporal key/value cache for frame-by-frame generation.
+
+    In an ST-transformer, spatial attention and the MLP act within a frame and
+    temporal attention is causal, so a frame's activations never depend on
+    later frames. Generating frame ``t+1`` therefore only needs the temporal
+    keys/values of frames ``0..t`` - it does not have to re-run the network over
+    the whole prefix. With the cache, each new frame costs one frame's worth of
+    compute instead of ``t`` frames', turning an O(T^2) rollout into O(T).
+
+    Storage is a pre-allocated (B, heads, N, max_frames, head_dim) buffer per
+    layer. Writes go to ``length`` onwards; :meth:`advance` commits them. A
+    forward that is not committed can be repeated (e.g. MaskGIT refinement of
+    the same frame) and simply overwrites the same slots.
+    """
+
+    def __init__(
+        self,
+        num_layers: int,
+        batch_size: int,
+        num_heads: int,
+        num_patches: int,
+        head_dim: int,
+        max_frames: int,
+        device: torch.device,
+        dtype: torch.dtype,
+    ) -> None:
+        shape = (batch_size, num_heads, num_patches, max_frames, head_dim)
+        self.keys: List[torch.Tensor] = [
+            torch.zeros(shape, device=device, dtype=dtype) for _ in range(num_layers)
+        ]
+        self.values: List[torch.Tensor] = [
+            torch.zeros(shape, device=device, dtype=dtype) for _ in range(num_layers)
+        ]
+        self.max_frames = max_frames
+        self.length = 0
+
+    def append(
+        self, layer: int, k: torch.Tensor, v: torch.Tensor
+    ) -> Tuple[torch.Tensor, torch.Tensor]:
+        """Write ``(B, heads, N, T_new, hd)`` keys/values; return the full prefix."""
+        new_len = self.length + k.shape[3]
+        if new_len > self.max_frames:
+            raise ValueError(
+                f"ST KV cache overflow: {new_len} frames > capacity {self.max_frames}."
+            )
+        self.keys[layer][:, :, :, self.length : new_len] = k
+        self.values[layer][:, :, :, self.length : new_len] = v
+        return (
+            self.keys[layer][:, :, :, :new_len],
+            self.values[layer][:, :, :, :new_len],
+        )
+
+    def advance(self, frames: int) -> None:
+        """Commit ``frames`` newly written frames."""
+        self.length += frames
 
 
 class STSpatialAttention(nn.Module):
@@ -138,11 +196,21 @@ class STTemporalAttention(nn.Module):
         self.proj = nn.Linear(dim, dim)
         self.proj_drop = nn.Dropout(proj_drop)
 
-    def forward(self, x: torch.Tensor, causal: bool = True) -> torch.Tensor:
+    def forward(
+        self,
+        x: torch.Tensor,
+        causal: bool = True,
+        cache: Optional[STKVCache] = None,
+        layer_idx: int = 0,
+    ) -> torch.Tensor:
         """
         Args:
             x: (B, T, N, C) where T is temporal dim, N is spatial dim (H*W)
             causal: whether to apply causal masking
+            cache: Optional temporal KV cache. ``x`` then holds only the new
+                frames: either the whole prompt (cache empty) or one frame
+                attending to every cached frame.
+            layer_idx: This layer's slot in ``cache``.
         Returns:
             (B, T, N, C)
         """
@@ -156,6 +224,18 @@ class STTemporalAttention(nn.Module):
         q = self.q_norm(q)
         k = self.k_norm(k)
 
+        is_causal = causal
+        if cache is not None:
+            if not causal:
+                raise ValueError("A temporal KV cache requires causal attention.")
+            if cache.length > 0 and T > 1:
+                # SDPA's is_causal aligns the mask top-left, which is wrong
+                # once queries start partway through the keys.
+                raise ValueError("With a non-empty cache, feed one frame per forward.")
+            k, v = cache.append(layer_idx, k, v)
+            # A single query frame attends to every cached frame and itself.
+            is_causal = T > 1
+
         # Causality comes from SDPA's is_causal path (FlashAttention on supported
         # GPUs), so no explicit T x T mask is built here.
         x = F.scaled_dot_product_attention(
@@ -163,7 +243,7 @@ class STTemporalAttention(nn.Module):
             k,
             v,
             dropout_p=self.dropout_p if self.training else 0.0,
-            is_causal=causal,
+            is_causal=is_causal,
             scale=self.scale,
         )
         # SDPA returns (B, heads, N, T, head_dim); move heads next to head_dim to
@@ -293,10 +373,17 @@ class STTransformerBlock(nn.Module):
 
         self.drop_path = DropPath(drop_path) if drop_path > 0.0 else nn.Identity()
 
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
+    def forward(
+        self,
+        x: torch.Tensor,
+        cache: Optional[STKVCache] = None,
+        layer_idx: int = 0,
+    ) -> torch.Tensor:
         """
         Args:
             x: (B, T, N, C) or (B, T*H*W, C)
+            cache: Optional temporal KV cache (see :class:`STKVCache`).
+            layer_idx: This block's slot in ``cache``.
         Returns:
             Same shape as input
         """
@@ -318,7 +405,9 @@ class STTransformerBlock(nn.Module):
         x = x + self.drop_path(self.attn_spatial(self.norm1_spatial(x)))
 
         # Temporal attention (across time steps, with causal mask)
-        x = x + self.drop_path(self.attn_temporal(self.norm1_temporal(x)))
+        x = x + self.drop_path(
+            self.attn_temporal(self.norm1_temporal(x), cache=cache, layer_idx=layer_idx)
+        )
 
         # MLP (single FFW after both spatial and temporal, as per paper)
         x = x + self.drop_path(self.mlp(self.norm2(x)))
@@ -391,10 +480,41 @@ class STTransformer(nn.Module):
         )
         self.norm = norm_layer(dim)
 
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
+    def init_cache(
+        self,
+        batch_size: int,
+        max_frames: Optional[int] = None,
+        device: Optional[torch.device] = None,
+        dtype: Optional[torch.dtype] = None,
+    ) -> STKVCache:
+        """Allocate an empty temporal KV cache for incremental generation."""
+        block = self.blocks[0]
+        assert isinstance(block, STTransformerBlock)
+        attn = block.attn_temporal
+        weight = attn.qkv.weight
+        dim = int(weight.shape[1])
+        return STKVCache(
+            num_layers=len(self.blocks),
+            batch_size=batch_size,
+            num_heads=attn.num_heads,
+            num_patches=self.num_patches_per_frame,
+            head_dim=dim // attn.num_heads,
+            max_frames=max_frames or self.num_frames,
+            device=device or weight.device,
+            dtype=dtype or weight.dtype,
+        )
+
+    def forward(
+        self, x: torch.Tensor, cache: Optional[STKVCache] = None, commit: bool = True
+    ) -> torch.Tensor:
         """
         Args:
             x: (B, T*N, C) where T is num_frames, N is num_patches_per_frame
+            cache: Optional temporal KV cache. When given, ``x`` holds only the
+                frames after the cached ones, and the result equals the
+                corresponding frames of a full-prefix forward (eval mode).
+            commit: Advance ``cache`` past these frames. Pass False to evaluate
+                a candidate frame that will be recomputed (e.g. MaskGIT steps).
         Returns:
             (B, T*N, C)
         """
@@ -405,11 +525,15 @@ class STTransformer(nn.Module):
         # Reshape to (B, T, N, C) for ST-attention
         x = x.reshape(B, T, N, C)
 
-        for blk in self.blocks:
-            if self.gradient_checkpointing and self.training:
+        for layer_idx, blk in enumerate(self.blocks):
+            if cache is not None:
+                x = blk(x, cache=cache, layer_idx=layer_idx)
+            elif self.gradient_checkpointing and self.training:
                 x = checkpoint(blk, x, use_reentrant=False)
             else:
                 x = blk(x)
+        if cache is not None and commit:
+            cache.advance(T)
 
         x = self.norm(x)
 

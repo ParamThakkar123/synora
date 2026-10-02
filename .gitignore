@@ -16,6 +16,8 @@ torchwm_ui/test-results/
 .env.production
 # uv.lock intentionally tracked for deterministic installs
 data/
+# Test fixtures live under tests/data/ and must be committed.
+!tests/data/
 checkpoints/
 runs/
 server.log
@@ -25,7 +27,5 @@ mypy_out.txt
 coverage_report.json
 htmlcov/
 .benchmarks/
-# Stray artifacts (Windows reserved name; mis-joined test paths)
+# Stray artifacts (Windows reserved name)
 /nul
-/testsdata/
-/testsdataregression_baselines/

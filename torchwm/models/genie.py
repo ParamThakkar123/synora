@@ -440,6 +440,7 @@ class Genie(nn.Module):
         num_frames: int = 16,
         actions: Optional[torch.Tensor] = None,
         use_maskgit: bool = True,
+        use_cache: bool = False,
     ) -> torch.Tensor:
         """Generate video frames given a prompt frame and actions.
 
@@ -448,6 +449,10 @@ class Genie(nn.Module):
             num_frames: Total number of frames to generate
             actions: (B, num_frames-1) latent action indices, or None for random
             use_maskgit: Whether to use MaskGIT sampling
+            use_cache: Generate each frame from a temporal KV cache instead of
+                re-running the dynamics model over the whole prefix; O(T)
+                rather than O(T^2) in the number of frames. Same logits up to
+                float rounding.
 
         Returns:
             generated_video: (B, C, num_frames, H, W)
@@ -475,7 +480,7 @@ class Genie(nn.Module):
         # Generate
         if use_maskgit and hasattr(self, "sampler"):
             generated_tokens = self._generate_maskgit(
-                prompt_tokens, actions, num_frames
+                prompt_tokens, actions, num_frames, use_cache=use_cache
             )
         else:
             generated_tokens = self.dynamics_model.autoregressive_sample(
@@ -483,6 +488,7 @@ class Genie(nn.Module):
                 actions,
                 num_frames,
                 temperature=2.0,
+                use_cache=use_cache,
             )
 
         # Decode tokens to video
@@ -496,6 +502,7 @@ class Genie(nn.Module):
         prompt_tokens: torch.Tensor,
         actions: torch.Tensor,
         num_frames: int,
+        use_cache: bool = False,
     ) -> torch.Tensor:
         """Autoregressively generate frame tokens, honoring the given actions.
 
@@ -512,7 +519,28 @@ class Genie(nn.Module):
         frames, so iterative refinement of a single frame is a no-op here; we
         therefore sample each frame in a single forward pass. Adding a mask
         token is the remaining architectural gap for true MaskGIT sampling.
+
+        With ``use_cache`` the prompt is encoded once into a temporal KV cache
+        and each new frame is one single-frame forward.
         """
+        if use_cache:
+            B, T_prompt, _ = prompt_tokens.shape
+            cache = self.dynamics_model.init_cache(B, device=prompt_tokens.device)
+            logits = self.dynamics_model.forward_cached(
+                prompt_tokens, actions[:, :T_prompt], cache
+            )
+            frames = [prompt_tokens]
+            t = T_prompt
+            while t < num_frames:
+                next_tokens = self.sampler.sample_frame(logits[:, -1]).unsqueeze(1)
+                frames.append(next_tokens)
+                t += 1
+                if t < num_frames:
+                    logits = self.dynamics_model.forward_cached(
+                        next_tokens, actions[:, t - 1 : t], cache
+                    )
+            return torch.cat(frames, dim=1)
+
         current_tokens = prompt_tokens  # (B, T_prompt, N)
 
         while current_tokens.shape[1] < num_frames:

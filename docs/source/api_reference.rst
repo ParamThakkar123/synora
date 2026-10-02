@@ -30,6 +30,36 @@ Use ``torchwm`` for common workflows::
    :undoc-members:
    :show-inheritance:
 
+.. automodule:: torchwm.inference.runtime
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. automodule:: torchwm.inference.precision
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. automodule:: torchwm.inference.steppers
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. automodule:: torchwm.inference.benchmark
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. automodule:: torchwm.inference.quantize
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. automodule:: torchwm.inference.bundle
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 .. automodule:: torchwm.models
    :no-index:
 

@@ -29,6 +29,7 @@ agents with a unified API.
    public_api
    training_guide
    inference_guide
+   deployment_guide
    evaluation_guide
    memory_guide
    environments_guide

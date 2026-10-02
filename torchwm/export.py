@@ -1,24 +1,50 @@
 """Export utilities for production deployment.
 
-The public entry point is ``obj.export(path, format="onnx")``. Importing this
-module installs that method on every ``torch.nn.Module`` once, so all TorchWM
-models get ONNX, TorchScript, and TensorRT export support without each model
-subclassing a TorchWM-specific base class. Non-``nn.Module`` agent wrappers can
-inherit :class:`ExportableAgentMixin`, which uses the same resolver and exporter.
+The public entry points are :func:`export_model` / :func:`export_any` and the
+``obj.export(path, format=...)`` method. Supported formats:
+
+* ``"exported_program"`` - ``torch.export`` graph saved as ``.pt2``. The
+  recommended format: loadable without the model's source code, and the input
+  to AOTInductor, ExecuTorch and TensorRT.
+* ``"aoti"`` - AOTInductor package (``.pt2``): an ahead-of-time compiled shared
+  library runnable from Python or C++ without the model's Python code.
+* ``"onnx"`` - for ONNX Runtime / TensorRT / edge runtimes.
+* ``"tensorrt"`` - Torch-TensorRT, compiled through the dynamo IR by default.
+* ``"torchscript"`` - legacy; TorchScript is in maintenance mode upstream.
+
+:func:`load_exported` loads any of these back and :func:`verify_export` checks
+an artifact against its eager module.
+
+Importing this module installs an ``export`` method on ``torch.nn.Module`` so
+TorchWM models can call ``model.export(...)`` without a TorchWM base class.
+Calling it on a class defined outside TorchWM is deprecated (the method will
+stop being installed globally); set ``TORCHWM_NO_GLOBAL_EXPORT=1`` to skip the
+install. Non-``nn.Module`` agent wrappers inherit :class:`ExportableAgentMixin`.
 """
 
 from __future__ import annotations
 
+import os
+import warnings
 from importlib import import_module, util
 from pathlib import Path
-from typing import Any, Literal
+from typing import Any, Callable, Literal
 
 import torch
 import torch.nn as nn
 
-ExportFormat = Literal["onnx", "torchscript", "tensorrt"]
+ExportFormat = Literal["onnx", "torchscript", "tensorrt", "exported_program", "aoti"]
 
 _FORMAT_ALIASES = {
+    "exported-program": "exported_program",
+    "exportedprogram": "exported_program",
+    "export": "exported_program",
+    "torch.export": "exported_program",
+    "ep": "exported_program",
+    "pt2": "exported_program",
+    "aoti": "aoti",
+    "aotinductor": "aoti",
+    "aot-inductor": "aoti",
     "onnx": "onnx",
     "torchscript": "torchscript",
     "torch-script": "torchscript",
@@ -348,6 +374,16 @@ def export_model(
     was_training = module.training
     module.eval()
 
+    if export_format in {"exported_program", "aoti"}:
+        # Not under inference_mode: torch.export traces with its own fake
+        # tensors, and inference tensors would leak into the graph.
+        try:
+            with torch.no_grad():
+                _export_pt2(module, export_path, export_format, example_inputs, kwargs)
+        finally:
+            module.train(was_training)
+        return export_path
+
     try:
         with torch.inference_mode():
             if export_format == "onnx":
@@ -386,14 +422,24 @@ def export_model(
                 torch_tensorrt = import_module("torch_tensorrt")
                 trt_inputs = kwargs.pop("inputs", list(_inputs_to_args(example_inputs)))
                 enabled_precisions = kwargs.pop("enabled_precisions", {torch.float32})
+                # "dynamo" is Torch-TensorRT's maintained frontend; "ts" (the
+                # previous default) goes through TorchScript and is legacy.
+                ir = kwargs.pop("ir", "dynamo")
                 compiled = torch_tensorrt.compile(
                     module,
-                    ir=kwargs.pop("ir", "ts"),
+                    ir=ir,
                     inputs=trt_inputs,
                     enabled_precisions=enabled_precisions,
                     **kwargs,
                 )
-                torch.jit.save(compiled, str(export_path))
+                if ir == "ts":
+                    torch.jit.save(compiled, str(export_path))
+                else:
+                    torch_tensorrt.save(
+                        compiled,
+                        str(export_path),
+                        inputs=list(_inputs_to_args(example_inputs)),
+                    )
             else:  # pragma: no cover - guarded by _normalize_format.
                 raise AssertionError(f"Unhandled export format: {export_format}")
     finally:
@@ -402,15 +448,191 @@ def export_model(
     return export_path
 
 
+def _export_pt2(
+    module: nn.Module,
+    export_path: Path,
+    export_format: str,
+    example_inputs: Any,
+    kwargs: dict[str, Any],
+) -> None:
+    if example_inputs is None:
+        raise ValueError(f"example_inputs is required for {export_format} export.")
+    # ONNX-only options have no meaning for torch.export; drop them so the same
+    # call site can switch formats.
+    kwargs.pop("do_constant_folding", None)
+    exported = torch.export.export(
+        module,
+        _inputs_to_args(example_inputs),
+        dynamic_shapes=kwargs.pop("dynamic_shapes", None),
+        strict=kwargs.pop("strict", False),
+    )
+    if export_format == "exported_program":
+        torch.export.save(exported, str(export_path))
+        return
+    try:
+        from torch._inductor import aoti_compile_and_package
+    except ImportError as exc:  # pragma: no cover - torch < 2.6
+        raise RuntimeError("AOTInductor export requires torch >= 2.6.") from exc
+    aoti_compile_and_package(
+        exported,
+        package_path=str(export_path),
+        inductor_configs=kwargs.pop("inductor_configs", None),
+    )
+
+
+def _format_from_suffix(path: Path) -> ExportFormat:
+    suffix = path.suffix.lower()
+    if suffix == ".onnx":
+        return "onnx"
+    if suffix == ".pt2":
+        return "exported_program"
+    return "torchscript"
+
+
+def load_exported(
+    path: str | Path,
+    format: str | None = None,
+    *,
+    device: torch.device | str | None = None,
+) -> Callable[..., Any]:
+    """Load an exported artifact back as a callable.
+
+    Args:
+        path: Artifact written by :func:`export_model`.
+        format: Its export format. Inferred from the suffix when omitted, with
+            ``.pt2`` read as ``exported_program``; pass ``"aoti"`` for
+            AOTInductor packages, which share the suffix.
+        device: Device to move an ExportedProgram or TorchScript module to.
+
+    ONNX artifacts run through ONNX Runtime (optional dependency); the returned
+    callable takes and returns tensors like the other formats.
+    """
+    path = Path(path)
+    export_format = _normalize_format(format) if format else _format_from_suffix(path)
+    if export_format == "exported_program":
+        module = torch.export.load(str(path)).module()
+        return module.to(device) if device is not None else module
+    if export_format == "aoti":
+        from torch._inductor import aoti_load_package
+
+        runner: Callable[..., Any] = aoti_load_package(str(path))
+        return runner
+    if export_format == "onnx":
+        return _onnxruntime_callable(path)
+    if export_format == "tensorrt":
+        if util.find_spec("torch_tensorrt") is None:
+            raise RuntimeError("Loading TensorRT artifacts requires torch-tensorrt.")
+        import_module("torch_tensorrt")
+        try:
+            return torch.export.load(str(path)).module()
+        except Exception:
+            pass  # a legacy ir="ts" artifact: fall through to TorchScript
+    scripted: Callable[..., Any] = torch.jit.load(str(path), map_location=device)  # type: ignore[no-untyped-call]
+    return scripted
+
+
+def _onnxruntime_callable(path: Path) -> Callable[..., Any]:
+    if util.find_spec("onnxruntime") is None:
+        raise RuntimeError(
+            "Running ONNX artifacts requires the optional onnxruntime package."
+        )
+    ort = import_module("onnxruntime")
+    session = ort.InferenceSession(str(path), providers=ort.get_available_providers())
+    input_names = [i.name for i in session.get_inputs()]
+
+    def run(*args: torch.Tensor) -> Any:
+        feeds = {
+            name: arg.detach().cpu().numpy() for name, arg in zip(input_names, args)
+        }
+        outputs = [torch.from_numpy(o) for o in session.run(None, feeds)]
+        return outputs[0] if len(outputs) == 1 else tuple(outputs)
+
+    return run
+
+
+def verify_export(
+    module: nn.Module,
+    exported: str | Path | Callable[..., Any],
+    example_inputs: Any,
+    *,
+    format: str | None = None,
+    atol: float = 1e-4,
+    rtol: float = 1e-4,
+) -> float:
+    """Check that an exported artifact reproduces ``module`` on ``example_inputs``.
+
+    ``exported`` is an artifact path (loaded with :func:`load_exported`) or an
+    already-loaded callable. Returns the largest absolute difference over all
+    tensor outputs, and raises ``AssertionError`` if any output falls outside
+    ``atol``/``rtol``. For recurrent models also check closed-loop drift with
+    :func:`torchwm.inference.rollout_drift`: one matching step does not rule out
+    error that compounds over a rollout.
+    """
+    from torch.utils._pytree import tree_flatten
+
+    runner = (
+        load_exported(exported, format)
+        if isinstance(exported, (str, Path))
+        else exported
+    )
+    args = _inputs_to_args(example_inputs)
+    was_training = module.training
+    module.eval()
+    try:
+        with torch.no_grad():
+            expected = [
+                t for t in tree_flatten(module(*args))[0] if isinstance(t, torch.Tensor)
+            ]
+            actual = [
+                t for t in tree_flatten(runner(*args))[0] if isinstance(t, torch.Tensor)
+            ]
+    finally:
+        module.train(was_training)
+    if len(expected) != len(actual):
+        raise AssertionError(
+            f"Exported artifact returned {len(actual)} tensors; eager returned "
+            f"{len(expected)}."
+        )
+    worst = 0.0
+    for want, got in zip(expected, actual):
+        got = got.to(want.device, want.dtype)
+        if want.numel():
+            worst = max(worst, float((want - got).abs().max()))
+        torch.testing.assert_close(got, want, atol=atol, rtol=rtol)
+    return worst
+
+
 def _module_export(
     self: nn.Module, path: str | Path, format: str = "onnx", **kwargs: Any
 ) -> Path:
+    if not type(self).__module__.startswith("torchwm"):
+        warnings.warn(
+            "Calling .export() on a module defined outside TorchWM relies on the "
+            "method TorchWM installs on every torch.nn.Module. That global install "
+            "is deprecated and will be removed; use "
+            "torchwm.export_model(module, path, ...) instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
     return export_any(self, path, format=format, **kwargs)
 
 
 def install_export_method() -> None:
-    """Install ``torch.nn.Module.export`` once for every Torch model class."""
+    """Install ``torch.nn.Module.export`` once.
 
+    Skipped when the ``TORCHWM_NO_GLOBAL_EXPORT`` environment variable is set
+    to a truthy value, for applications that do not want TorchWM to modify
+    ``torch.nn.Module``. TorchWM agents keep ``.export()`` either way through
+    :class:`ExportableAgentMixin`, and :func:`export_model` always works.
+    """
+
+    if os.environ.get("TORCHWM_NO_GLOBAL_EXPORT", "").strip().lower() in {
+        "1",
+        "true",
+        "yes",
+        "on",
+    }:
+        return
     if getattr(nn.Module, "_torchwm_export_installed", False):
         return
     nn.Module.export = _module_export  # type: ignore[attr-defined]
@@ -428,4 +650,6 @@ __all__ = [
     "export_any",
     "export_model",
     "install_export_method",
+    "load_exported",
+    "verify_export",
 ]

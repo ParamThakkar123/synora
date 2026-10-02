@@ -24,19 +24,20 @@ Usage:
 
 import argparse
 import time
-import torch
-from torchwm.utils.device import default_device_name
-import numpy as np
+from typing import Any
+
 import cv2
-from typing import Any, Optional
+import numpy as np
+import torch
 
 from torchwm.configs.diamond_config import DiamondConfig
-from torchwm.training.train_diamond import DiamondAgent, _normalize_frame
 from torchwm.inference.play_base import (
     get_action_from_key,
-    resolve_checkpoint_path,
     init_video_recorder,
+    resolve_checkpoint_path,
 )
+from torchwm.training.train_diamond import DiamondAgent, _normalize_frame
+from torchwm.utils.device import default_device_name
 
 ACTION_NAMES = {
     0: "NOOP",
@@ -105,9 +106,9 @@ def imagine_next_frame(
 def make_agent(
     checkpoint: str,
     game: str,
-    device: Optional[str] = None,
+    device: str | None = None,
     seed: int = 42,
-    sampling_steps: Optional[int] = None,
+    sampling_steps: int | None = None,
 ) -> DiamondAgent:
     """Build a DIAMOND agent from a checkpoint for inference.
 
@@ -143,13 +144,13 @@ def make_agent(
 def run_play(
     checkpoint: str,
     game: str = "Breakout-v5",
-    device: Optional[str] = None,
+    device: str | None = None,
     seed: int = 42,
     deterministic: bool = True,
-    record: Optional[str] = None,
+    record: str | None = None,
     record_fps: int = 20,
     control: str = "assist",
-    sampling_steps: Optional[int] = None,
+    sampling_steps: int | None = None,
 ) -> None:
     agent = make_agent(checkpoint, game, device, seed, sampling_steps)
     device_obj = agent.device
@@ -160,7 +161,7 @@ def run_play(
     obs_history = [norm_obs] * cfg.num_conditioning_frames
     action_history: list[int] = []
 
-    policy_hidden: Optional[tuple[torch.Tensor, torch.Tensor]] = (
+    policy_hidden: tuple[torch.Tensor, torch.Tensor] | None = (
         agent.actor_critic.init_hidden(1, device_obj)
     )
     dream_mode = False

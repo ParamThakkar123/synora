@@ -1,10 +1,19 @@
 import os
 import sys
+from importlib import metadata
 
 import numpy as np
 import pytest
 
 pytestmark = [pytest.mark.integration, pytest.mark.slow]
+
+
+def _protobuf_version() -> tuple[int, int]:
+    try:
+        major, minor = metadata.version("protobuf").split(".")[:2]
+        return int(major), int(minor)
+    except (metadata.PackageNotFoundError, ValueError):
+        return (0, 0)
 
 
 def _assert_image_observation(
@@ -89,6 +98,16 @@ def test_real_robotics_env_smoke():
         env.close()
 
 
+# The `ml-agents` extra deliberately resolves protobuf >= 5.29.6 (see the
+# comment above it in pyproject.toml). mlagents-envs 0.28's gencode predates
+# protoc 3.19 and cannot load on any protobuf >= 3.21: the C++/upb backends
+# raise TypeError and the pure-Python backend raises AttributeError.
+@pytest.mark.xfail(
+    _protobuf_version() >= (3, 21),
+    reason="mlagents-envs 0.28 gencode is incompatible with protobuf >= 3.21",
+    raises=(TypeError, AttributeError),
+    strict=True,
+)
 def test_real_mlagents_sdk_importable():
     sdk = pytest.importorskip("mlagents_envs")
     from mlagents_envs.environment import UnityEnvironment

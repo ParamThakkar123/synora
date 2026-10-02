@@ -24,7 +24,6 @@ import argparse
 import sys
 import time
 from pathlib import Path
-from typing import Optional
 
 # Running this file directly puts demos/ on sys.path, not the repo root, so
 # `torchwm` would not resolve from a checkout that has not been installed.
@@ -67,7 +66,7 @@ def label(frame: np.ndarray, text: str) -> np.ndarray:
     return out
 
 
-def write_video(path: Path, frames: list[np.ndarray], fps: int) -> Optional[Path]:
+def write_video(path: Path, frames: list[np.ndarray], fps: int) -> Path | None:
     """Write RGB uint8 frames to ``path``. Returns the path, or None if empty."""
     if not frames:
         return None

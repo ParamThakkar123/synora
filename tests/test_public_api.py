@@ -175,11 +175,14 @@ def test_export_model_torchscript_writes_file(tmp_path):
             return self.linear(x)
 
     agent = TinyAgent()
-    path = agent.export(
-        tmp_path / "tiny.pt",
-        format="torchscript",
-        example_inputs=torch.zeros(1, 2),
-    )
+    # TinyAgent is defined outside torchwm, so it reaches .export() through the
+    # deprecated global nn.Module install.
+    with pytest.warns(DeprecationWarning, match="export_model"):
+        path = agent.export(
+            tmp_path / "tiny.pt",
+            format="torchscript",
+            example_inputs=torch.zeros(1, 2),
+        )
 
     assert path.exists()
     loaded = torch.jit.load(str(path))

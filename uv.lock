@@ -4991,6 +4991,7 @@ mujoco = [
 ]
 robotics = [
     { name = "gymnasium-robotics" },
+    { name = "mujoco" },
 ]
 viz = [
     { name = "h5py" },
@@ -5033,6 +5034,7 @@ requires-dist = [
     { name = "mistune", marker = "extra == 'docs'", specifier = ">=3.3.0" },
     { name = "mlagents-envs", marker = "extra == 'ml-agents'", specifier = ">=0.28.0,<0.29.0" },
     { name = "mujoco", marker = "extra == 'mujoco'", specifier = ">=3.2.0" },
+    { name = "mujoco", marker = "extra == 'robotics'", specifier = ">=3.2.0,<3.12" },
     { name = "mypy", marker = "extra == 'dev'", specifier = ">=1.19.1" },
     { name = "myst-parser", marker = "extra == 'docs'", specifier = ">=2.0.0,<5.0.0" },
     { name = "nbconvert", marker = "extra == 'docs'", specifier = ">=7.17.1" },

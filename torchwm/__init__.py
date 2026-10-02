@@ -49,6 +49,8 @@ _API_EXPORTS = {
     "make_env": "torchwm.api",
     "export_any": "torchwm.export",
     "export_model": "torchwm.export",
+    "load_exported": "torchwm.export",
+    "verify_export": "torchwm.export",
     "ExportableAgentMixin": "torchwm.export",
 }
 
@@ -217,6 +219,20 @@ _LAZY_EXPORTS: dict[str, str] = {
     "enable_performance_defaults": "torchwm.utils.memory_utils",
     "maybe_compile": "torchwm.utils.memory_utils",
     "to_channels_last": "torchwm.utils.memory_utils",
+    # Efficient inference and deployment.
+    "InferenceModel": "torchwm.inference",
+    "optimize_for_inference": "torchwm.inference",
+    "inference_context": "torchwm.inference",
+    "make_stepper": "torchwm.inference",
+    "DreamerStepper": "torchwm.inference",
+    "DreamerStepModule": "torchwm.inference",
+    "IRISStepper": "torchwm.inference",
+    "benchmark_step": "torchwm.inference",
+    "rollout_drift": "torchwm.inference",
+    "quantize_weights": "torchwm.inference",
+    "save_bundle": "torchwm.inference",
+    "load_bundle": "torchwm.inference",
+    "STKVCache": "torchwm.blocks.st_transformer",
 }
 
 _EXPORTS = {**_API_EXPORTS, **_LAZY_EXPORTS}

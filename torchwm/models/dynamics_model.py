@@ -4,7 +4,7 @@ import torch.nn.functional as F
 from typing import Tuple, Optional
 import math
 
-from torchwm.blocks.st_transformer import STTransformer
+from torchwm.blocks.st_transformer import STKVCache, STTransformer
 
 
 class MaskGITSampler:
@@ -252,6 +252,60 @@ class DynamicsModel(nn.Module):
 
         return logits
 
+    def init_cache(
+        self,
+        batch_size: int,
+        device: Optional[torch.device] = None,
+        dtype: Optional[torch.dtype] = None,
+    ) -> STKVCache:
+        """Allocate a temporal KV cache for :meth:`forward_cached`."""
+        return self.dynamics_transformer.init_cache(
+            batch_size, self.num_frames, device=device, dtype=dtype
+        )
+
+    def forward_cached(
+        self,
+        video_tokens: torch.Tensor,
+        actions: torch.Tensor,
+        cache: STKVCache,
+        commit: bool = True,
+    ) -> torch.Tensor:
+        """Inference forward over only the frames after those in ``cache``.
+
+        Equivalent to the matching frames of ``forward(all_tokens, all_actions,
+        mask_prob=0.0)`` in eval mode, without recomputing the cached prefix.
+
+        Args:
+            video_tokens: (B, T_new, N) tokens of the new frames. ``T_new`` may
+                be larger than 1 only while the cache is empty (the prompt).
+            actions: (B, T_new) latent actions for those frames.
+            cache: From :meth:`init_cache`; its length is the index of the
+                first new frame.
+            commit: Advance the cache past these frames. False evaluates a
+                candidate frame without keeping it.
+
+        Returns:
+            logits: (B, T_new, N, vocab_size)
+        """
+        B, T, N = video_tokens.shape
+        start = cache.length
+        if start + T > self.num_frames:
+            raise ValueError(
+                f"Frame {start + T} exceeds the positional capacity {self.num_frames}."
+            )
+        x = (
+            self.video_embedding(video_tokens)
+            + self.video_pos_embed[:, start : start + T]
+        )
+        action_emb = (
+            self.action_embedding(actions) + self.action_pos_embed[:, start : start + T]
+        )
+        x = x + action_emb.unsqueeze(2)
+        x = self.dynamics_transformer(
+            x.reshape(B, T * N, self.dim), cache=cache, commit=commit
+        )
+        return self.output_proj(x.reshape(B, T, N, self.dim))
+
     def sample(
         self,
         prompt_tokens: torch.Tensor,
@@ -318,6 +372,7 @@ class DynamicsModel(nn.Module):
         actions: torch.Tensor,
         num_frames: int,
         temperature: float = 1.0,
+        use_cache: bool = False,
     ) -> torch.Tensor:
         """Simple autoregressive sampling (frame by frame).
 
@@ -329,10 +384,22 @@ class DynamicsModel(nn.Module):
                 are sampled at random.
             num_frames: Total number of frames to generate
             temperature: Sampling temperature
+            use_cache: Reuse the temporal keys/values of already generated
+                frames (:class:`~torchwm.blocks.st_transformer.STKVCache`)
+                instead of re-running the transformer over the whole prefix for
+                every frame. The logits match the uncached path up to float
+                rounding. One difference: when actions must be padded at
+                random, the uncached path redraws the padding for *every*
+                earlier frame at every step, while the cached path draws each
+                frame's padding once.
 
         Returns:
             generated_tokens: (B, num_frames, N)
         """
+        if use_cache:
+            return self._autoregressive_sample_cached(
+                prompt_tokens, actions, num_frames, temperature
+            )
         B, T_prompt, N = prompt_tokens.shape
 
         current_tokens = prompt_tokens
@@ -367,6 +434,39 @@ class DynamicsModel(nn.Module):
             )
 
         return current_tokens
+
+    def _autoregressive_sample_cached(
+        self,
+        prompt_tokens: torch.Tensor,
+        actions: torch.Tensor,
+        num_frames: int,
+        temperature: float,
+    ) -> torch.Tensor:
+        B, T_prompt, N = prompt_tokens.shape
+        device = prompt_tokens.device
+        needed = max(num_frames - 1, T_prompt)
+        if actions.shape[1] < needed:
+            pad = torch.randint(
+                0,
+                self.action_vocab_size,
+                (B, needed - actions.shape[1]),
+                device=device,
+            )
+            actions = torch.cat([actions.to(device), pad], dim=1)
+
+        cache = self.init_cache(B, device=device)
+        frames = [prompt_tokens]
+        logits = self.forward_cached(prompt_tokens, actions[:, :T_prompt], cache)
+        t = T_prompt
+        while t < num_frames:
+            probs = F.softmax(logits[:, -1] / temperature, dim=-1)
+            next_tokens = torch.multinomial(probs.reshape(-1, probs.size(-1)), 1)
+            next_tokens = next_tokens.reshape(B, 1, N)
+            frames.append(next_tokens)
+            t += 1
+            if t < num_frames:
+                logits = self.forward_cached(next_tokens, actions[:, t - 1 : t], cache)
+        return torch.cat(frames, dim=1)
 
 
 def create_dynamics_model(

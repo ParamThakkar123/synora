@@ -9,7 +9,49 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 Fixes from the September 2026 code audit.
 
+### Added
+- `torchwm.inference`, an efficient-inference and deployment toolkit (see the
+  new *Efficient Inference and Deployment* guide):
+  - `optimize_for_inference` / `InferenceModel`: eval + no-grad + one precision
+    policy (`fp32`/`bf16`/`fp16`/`auto`) + optional `torch.compile` with CUDA
+    graphs, channels-last and weight casting. Defaults are numerically
+    identical to eager.
+  - A stateful step interface (`make_stepper`, `DreamerStepper`,
+    `IRISStepper`) and `DreamerStepModule`, a pure observe+act step with
+    sampling noise as an input, ready for `torch.export`.
+  - `benchmark_step` (p50/p90/p99 latency, throughput, peak memory) and
+    `rollout_drift` (closed-loop divergence of an optimized step from a
+    reference).
+  - `quantize_weights`: weight-only int8 for `nn.Linear`, skipping VQ
+    codebooks, RSSM stochastic heads and small layers by default; optional
+    torchao backend.
+  - `save_bundle` / `load_bundle`: deployment bundles with weights, config,
+    exported artifacts, a manifest and per-artifact verification.
+- `torchwm deploy inspect` and `torchwm deploy bench` CLI commands.
+- Export formats `exported_program` (`torch.export`, `.pt2`) and `aoti`
+  (AOTInductor), plus `load_exported` and `verify_export`.
+- Temporal KV cache for the ST-transformer (`STKVCache`,
+  `DynamicsModel.init_cache` / `forward_cached`). Genie generation takes
+  `use_cache=True` to generate each frame in O(1) frames of compute instead of
+  re-running the whole prefix. Off by default.
+- `RSSM.observe_step` / `imagine_step` accept explicit `noise`, and
+  `ActionDecoder.mean_action` gives a deterministic single-pass action.
+
+### Changed
+- TensorRT export compiles through Torch-TensorRT's `ir="dynamo"` frontend by
+  default (was the legacy `ir="ts"`); pass `ir="ts"` to keep the old path.
+
+### Deprecated
+- Calling `.export()` on `nn.Module` classes defined outside TorchWM (it relies
+  on the method TorchWM installs globally); use `torchwm.export_model`. Set
+  `TORCHWM_NO_GLOBAL_EXPORT=1` to skip the global install.
+- `torchwm.utils.jit_utils` (TorchScript); use `torchwm.maybe_compile`.
+
 ### Fixed
+- `maybe_compile` only guarded the `torch.compile` wrap, but compilation is
+  lazy, so a missing backend (e.g. no Triton on Windows CUDA builds) raised on
+  the first call instead of falling back. The first call is now guarded too,
+  and compiling an `nn.Module` keeps its `state_dict` keys.
 - IRIS evaluation collected every raw frame and a per-step latent even with
   `render=False`, the default during training, and then discarded them. At the
   default `eval_episodes=100` and the 27000-step episode cap that is tens of GB

@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.distributions as distributions
-from typing import Tuple
+from typing import Optional, Tuple
 
 _str_to_activation = {
     "relu": nn.ReLU(),
@@ -166,6 +166,7 @@ class RSSM(nn.Module):
         prev_action: torch.Tensor,
         obs_embed: torch.Tensor,
         nonterm: torch.Tensor = torch.tensor(1.0),
+        noise: Optional[Tuple[torch.Tensor, torch.Tensor]] = None,
     ) -> Tuple[dict, dict]:
         """Update state using actual observation (observe mode).
 
@@ -178,6 +179,11 @@ class RSSM(nn.Module):
             prev_action: Previous action a_{t-1}, shape (B, action_size)
             obs_embed: Observation embedding from encoder, shape (B, obs_embed_size)
             nonterm: Termination mask (1.0 = continue, 0.0 = terminal)
+            noise: Optional ``(prior_noise, posterior_noise)`` standard-normal
+                tensors of shape (B, stoch_size) used for the two samples
+                instead of drawing them internally. Passing noise makes the step
+                a pure function of its inputs, which exported graphs and
+                eager-vs-exported parity checks need.
 
         Returns:
             A tuple ``(posterior, prior)`` of state dictionaries. The posterior
@@ -191,14 +197,17 @@ class RSSM(nn.Module):
             swapped unpacking fails silently: acting on the prior discards the
             current observation. It is kept for backward compatibility.
         """
-        prior = self.imagine_step(prev_state, prev_action, nonterm)
+        prior_noise, posterior_noise = (None, None) if noise is None else noise
+        prior = self.imagine_step(prev_state, prev_action, nonterm, noise=prior_noise)
         posterior_embed = self.act_fn(
             self.fc_embed_posterior(torch.cat([obs_embed, prior["deter"]], dim=-1))
         )
         posterior = self.fc_state_posterior(posterior_embed)
         mean, std = torch.chunk(posterior, 2, dim=-1)
         std = F.softplus(std) + 0.1
-        sample = mean + torch.randn_like(mean) * std
+        if posterior_noise is None:
+            posterior_noise = torch.randn_like(mean)
+        sample = mean + posterior_noise * std
         posterior_state = dict(mean=mean, std=std, stoch=sample, deter=prior["deter"])
         return posterior_state, prior
 
@@ -207,6 +216,7 @@ class RSSM(nn.Module):
         prev_state: dict,
         prev_action: torch.Tensor,
         nonterm: torch.Tensor = torch.tensor(1.0),
+        noise: Optional[torch.Tensor] = None,
     ) -> dict:
         """Predict next state without observation (imagine mode).
 
@@ -218,6 +228,8 @@ class RSSM(nn.Module):
             prev_state: Dictionary with 'deter' (h_{t-1}) and 'stoch' (s_{t-1})
             prev_action: Previous action a_{t-1}, shape (B, action_size)
             nonterm: Termination mask (1.0 = continue, 0.0 = terminal)
+            noise: Optional standard-normal tensor (B, stoch_size) used for the
+                stochastic sample instead of drawing one internally.
 
         Returns:
             Dictionary with predicted state containing:
@@ -230,7 +242,9 @@ class RSSM(nn.Module):
         prior = self.fc_state_prior(prior_embed)
         mean, std = torch.chunk(prior, 2, dim=-1)
         std = F.softplus(std) + 0.1
-        sample = mean + torch.randn_like(mean) * std
+        if noise is None:
+            noise = torch.randn_like(mean)
+        sample = mean + noise * std
         return dict(mean=mean, std=std, stoch=sample, deter=prior_deter)
 
     def get_prior(

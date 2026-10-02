@@ -521,6 +521,83 @@ def benchmark(
         raise click.exceptions.Exit(1)
 
 
+@app.group("deploy")
+def deploy_app() -> None:
+    """Inspect and benchmark deployment bundles (see torchwm.inference)."""
+
+
+def _open_bundle(path: Path) -> Any:
+    from torchwm.inference.bundle import load_bundle
+
+    try:
+        return load_bundle(path)
+    except (FileNotFoundError, ValueError) as exc:
+        _echo_error(str(exc))
+        raise click.exceptions.Exit(1)
+
+
+@deploy_app.command("inspect")
+@click.argument("bundle", type=click.Path(path_type=Path))
+def deploy_inspect(bundle: Path) -> None:
+    """Print a bundle's manifest."""
+    loaded = _open_bundle(bundle)
+    click.echo(json.dumps(loaded.manifest, indent=2))
+
+
+def _zeros_from_spec(spec: Any, device: str) -> Any:
+    import torch
+
+    if isinstance(spec, dict) and "shape" in spec and "dtype" in spec:
+        return torch.zeros(
+            spec["shape"], dtype=getattr(torch, spec["dtype"]), device=device
+        )
+    if isinstance(spec, list):
+        return tuple(_zeros_from_spec(s, device) for s in spec)
+    raise click.ClickException(f"Cannot build an input from spec {spec!r}.")
+
+
+@deploy_app.command("bench")
+@click.argument("bundle", type=click.Path(path_type=Path))
+@click.option("--format", "fmt", default=None, help="Artifact format (default: first).")
+@click.option("--device", default="cpu", show_default=True)
+@click.option("--iterations", default=100, show_default=True, type=int)
+@click.option("--warmup", default=10, show_default=True, type=int)
+@click.option("--json", "as_json", is_flag=True, help="Print the report as JSON.")
+def deploy_bench(
+    bundle: Path,
+    fmt: str | None,
+    device: str,
+    iterations: int,
+    warmup: int,
+    as_json: bool,
+) -> None:
+    """Time a bundle's exported artifact on zero inputs of its recorded shapes."""
+    from torchwm.inference.benchmark import benchmark_step
+
+    loaded = _open_bundle(bundle)
+    spec = loaded.manifest.get("inputs")
+    if spec is None:
+        raise click.ClickException("The bundle records no input spec.")
+    inputs = _zeros_from_spec(spec, device)
+    args = inputs if isinstance(inputs, tuple) else (inputs,)
+    try:
+        runner = loaded.load_artifact(fmt, device=device)
+    except (KeyError, FileNotFoundError, RuntimeError) as exc:
+        raise click.ClickException(str(exc))
+    first = args[0] if args else None
+    batch = int(first.shape[0]) if first is not None and first.dim() else 1
+    report = benchmark_step(
+        runner,
+        *args,
+        warmup=warmup,
+        iterations=iterations,
+        batch_size=batch,
+        device=device,
+        name=f"{bundle.name}:{fmt or loaded.formats[0]}",
+    )
+    click.echo(json.dumps(report.as_dict(), indent=2) if as_json else report.summary())
+
+
 @app.command("collect")
 @click.option("--env", "env", required=True, help="Environment id (Gym/Atari).")
 @click.option(

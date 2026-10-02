@@ -24,6 +24,7 @@ from torchwm.api import list_models as list_models
 from torchwm.api import make_env as make_env
 from torchwm.blocks.mhsa import MultiHeadSelfAttention as MultiHeadAttention
 from torchwm.blocks.mhsa import MultiHeadSelfAttention as MultiHeadSelfAttention
+from torchwm.blocks.st_transformer import STKVCache as STKVCache
 from torchwm.blocks.st_transformer import STTransformer as STTransformer
 from torchwm.configs.diamond_config import ATARI_100K_GAMES as ATARI_100K_GAMES
 from torchwm.configs.diamond_config import DiamondConfig as DiamondConfig
@@ -86,6 +87,20 @@ from torchwm.envs.wrappers import TimeLimit as TimeLimit
 from torchwm.export import ExportableAgentMixin as ExportableAgentMixin
 from torchwm.export import export_any as export_any
 from torchwm.export import export_model as export_model
+from torchwm.export import load_exported as load_exported
+from torchwm.export import verify_export as verify_export
+from torchwm.inference.benchmark import benchmark_step as benchmark_step
+from torchwm.inference.benchmark import rollout_drift as rollout_drift
+from torchwm.inference.bundle import load_bundle as load_bundle
+from torchwm.inference.bundle import save_bundle as save_bundle
+from torchwm.inference.precision import inference_context as inference_context
+from torchwm.inference.quantize import quantize_weights as quantize_weights
+from torchwm.inference.runtime import InferenceModel as InferenceModel
+from torchwm.inference.runtime import optimize_for_inference as optimize_for_inference
+from torchwm.inference.steppers import DreamerStepModule as DreamerStepModule
+from torchwm.inference.steppers import DreamerStepper as DreamerStepper
+from torchwm.inference.steppers import IRISStepper as IRISStepper
+from torchwm.inference.steppers import make_stepper as make_stepper
 from torchwm.layers.ada_ln_norm import AdaLNNormalization as AdaLNNormalization
 from torchwm.layers.rms_norm import RMSNorm as RMSNorm
 from torchwm.memory.dreamer_memory import ReplayBuffer as ReplayBuffer
@@ -200,6 +215,8 @@ __all__ = [
     "DreamerConfig",
     "DreamerRSSM",
     "DreamerRewardModel",
+    "DreamerStepModule",
+    "DreamerStepper",
     "DreamerV1",
     "DreamerV2",
     "DreamerV3",
@@ -225,8 +242,10 @@ __all__ = [
     "IRISOnPolicyBuffer",
     "IRISPolicy",
     "IRISReplayBuffer",
+    "IRISStepper",
     "IRISTransformer",
     "IRISWorldModel",
+    "InferenceModel",
     "JEPAAgent",
     "JEPAConfig",
     "LPIPSPerceptualLoss",
@@ -259,6 +278,7 @@ __all__ = [
     "RewardObs",
     "RewardTerminationModel",
     "RolloutGenerator",
+    "STKVCache",
     "STTransformer",
     "STTransformerConfig",
     "SampleDist",
@@ -276,6 +296,7 @@ __all__ = [
     "WorldModelEnv",
     "__version__",
     "api",
+    "benchmark_step",
     "build_perceptual_loss",
     "compute_lambda_return",
     "compute_return",
@@ -302,6 +323,7 @@ __all__ = [
     "get_env_backend_spec",
     "get_model_spec",
     "get_registered_model_spec",
+    "inference_context",
     "jepa_linear_probe",
     "list_available_atari_envs",
     "list_available_bsuite_ids",
@@ -312,6 +334,8 @@ __all__ = [
     "list_models",
     "list_registered_env_backends",
     "list_registered_models",
+    "load_bundle",
+    "load_exported",
     "load_jepa_encoder",
     "make_atari_env",
     "make_atari_vector_env",
@@ -324,15 +348,21 @@ __all__ = [
     "make_mujoco_env",
     "make_mujoco_env_from_config",
     "make_robotics_env",
+    "make_stepper",
     "make_unity_mlagents_env",
     "make_world_model_env",
     "maybe_compile",
     "measure_steps",
+    "optimize_for_inference",
     "preprocess_obs",
+    "quantize_weights",
     "register_env_backend",
     "register_gymnasium_robotics_envs",
     "register_world_model",
+    "rollout_drift",
+    "save_bundle",
     "sinusoidal_time_embedding",
     "tensor_nbytes",
     "to_channels_last",
+    "verify_export",
 ]

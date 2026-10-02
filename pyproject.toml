@@ -56,10 +56,11 @@ gym = [
 # the 3.x line. Newer mlagents-envs releases do not help: 1.1.0 still caps
 # `protobuf<3.21` and requires Python <= 3.10.12, so it cannot be installed on
 # the Python versions TorchWM supports. TorchWM therefore resolves a patched
-# protobuf; if you drive a Unity binary built against the legacy gencode and
-# hit "Descriptors cannot not be created directly", run with
-# `PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=python` or pin `protobuf<3.21`
-# yourself, accepting that pin's known CVEs.
+# protobuf, against which `mlagents_envs.environment` cannot be imported: the
+# default backend raises "Descriptors cannot be created directly", and
+# `PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=python` only trades that for an
+# AttributeError on protobuf >= 4. To drive a Unity binary, pin
+# `protobuf<3.21` yourself, accepting that pin's known CVEs.
 ml-agents = [
     "mlagents-envs>=0.28.0,<0.29.0",
     "protobuf>=5.29.6",
@@ -109,6 +110,12 @@ mujoco = [
 ]
 robotics = [
     "gymnasium-robotics>=1.3.0",
+    # From mujoco 3.12, on Linux, the numpy ints in `model.jnt_type` no longer
+    # compare equal to `mujoco.mjtJoint` members, so gymnasium-robotics' own
+    # `set_joint_qpos` assertion rejects the Fetch slide joints and every Fetch
+    # environment fails to construct. pip ignores the uv constraint below, so
+    # the cap has to live on the extra itself.
+    "mujoco>=3.2.0,<3.12",
 ]
 brax = [
     "brax>=0.13.0",

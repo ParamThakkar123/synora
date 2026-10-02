@@ -121,28 +121,81 @@ def maybe_compile(
     test wants to pay for.
 
     Falls back to the eager callable if compilation is unsupported, so callers
-    never need to guard.
+    never need to guard. ``torch.compile`` is lazy: a missing backend (for
+    example no Triton on a Windows CUDA build) surfaces on the *first call*, not
+    when wrapping, so the fallback also covers that first call. Once a compiled
+    call has succeeded, later errors propagate unchanged - by then they are
+    genuine errors, not a missing backend.
 
-    Prefer compiling a *function* over an ``nn.Module``. ``torch.compile`` on a
-    module returns an ``OptimizedModule`` whose ``state_dict`` keys gain an
-    ``_orig_mod.`` prefix, so checkpoints written from a compiled model will not
-    load into an uncompiled one. Compiling the step function sidesteps that
-    entirely.
+    An ``nn.Module`` is compiled by swapping its instance ``forward``, so the
+    module object, its attributes and its ``state_dict`` keys are unchanged.
+    (``torch.compile(module)`` would return an ``OptimizedModule`` whose keys
+    gain an ``_orig_mod.`` prefix, and checkpoints written from it would not load
+    into an uncompiled model.)
     """
     if not enabled:
         return module_or_fn
     compile_fn = getattr(torch, "compile", None)
     if compile_fn is None:  # pragma: no cover - very old torch
         return module_or_fn
+
+    if isinstance(module_or_fn, nn.Module):
+        eager_forward = module_or_fn.forward
+        compiled_forward = _compile_with_fallback(compile_fn, eager_forward, mode)
+        if compiled_forward is not eager_forward:
+            module_or_fn.forward = compiled_forward
+        return module_or_fn
+    return _compile_with_fallback(compile_fn, module_or_fn, mode)
+
+
+class _CompiledWithFallback:
+    """Call a compiled callable, dropping to eager if its first call fails."""
+
+    def __init__(self, compiled: Callable[..., Any], eager: Callable[..., Any]):
+        self._compiled = compiled
+        self._eager = eager
+        self._succeeded = False
+        self._failed = False
+        self.__wrapped__ = eager
+
+    @property
+    def is_compiled(self) -> bool:
+        """False once compilation has failed and calls run eagerly."""
+        return not self._failed
+
+    def __call__(self, *args: Any, **kwargs: Any) -> Any:
+        if self._failed:
+            return self._eager(*args, **kwargs)
+        try:
+            result = self._compiled(*args, **kwargs)
+        except Exception as exc:
+            if self._succeeded:
+                raise
+            self._failed = True
+            warnings.warn(
+                f"torch.compile failed on first call ({type(exc).__name__}: "
+                f"{exc}); continuing without it.",
+                RuntimeWarning,
+                stacklevel=2,
+            )
+            return self._eager(*args, **kwargs)
+        self._succeeded = True
+        return result
+
+
+def _compile_with_fallback(
+    compile_fn: Callable[..., Any], fn: Callable[..., Any], mode: str
+) -> Callable[..., Any]:
     try:
-        return compile_fn(module_or_fn, mode=mode)
+        compiled = compile_fn(fn, mode=mode)
     except Exception:  # pragma: no cover - backend unavailable on this platform
         warnings.warn(
             "torch.compile is unavailable here; continuing without it.",
             RuntimeWarning,
-            stacklevel=2,
+            stacklevel=3,
         )
-        return module_or_fn
+        return fn
+    return _CompiledWithFallback(compiled, fn)
 
 
 def to_channels_last(model: nn.Module) -> nn.Module:
@@ -155,4 +208,4 @@ def to_channels_last(model: nn.Module) -> nn.Module:
     """
     # `Module.to` has no typed overload accepting only `memory_format`, though
     # it is a documented and supported call.
-    return model.to(memory_format=torch.channels_last)  # type: ignore[call-overload]
+    return model.to(memory_format=torch.channels_last)  # type: ignore[call-overload, unused-ignore]

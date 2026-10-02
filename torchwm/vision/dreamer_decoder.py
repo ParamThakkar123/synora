@@ -403,6 +403,19 @@ class ActionDecoder(nn.Module):
         else:
             return dist.rsample()
 
+    def mean_action(self, features: torch.Tensor) -> torch.Tensor:
+        """Deterministic action ``tanh(mean)`` of the squashed Gaussian policy.
+
+        ``forward(deter=True)`` estimates the mode by drawing 100 samples and
+        keeping the most likely, so it is random and ~100x the cost of one
+        sample. This is the usual deployment choice instead: one pass, no
+        randomness, and traceable by every exporter. It is not bit-identical to
+        the Monte Carlo mode, so evaluation numbers can differ slightly.
+        """
+        out = self.action_model(features)
+        mean, _ = torch.chunk(out, 2, dim=-1)
+        return torch.tanh(self._mean_scale * torch.tanh(mean / self._mean_scale))
+
     def add_exploration(
         self, action: torch.Tensor, action_noise: float = 0.3
     ) -> torch.Tensor:

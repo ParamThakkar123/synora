@@ -1,9 +1,18 @@
-import torch
-import numpy as np
+"""Play Breakout with a trained IRIS agent, using the torchwm inference API.
+
+The stepper threads the policy's LSTM state from frame to frame and resets it at
+episode boundaries. Calling ``agent.act(frame)`` without ``hidden`` would make
+the recurrent policy memoryless.
+"""
+
 import cv2
+import numpy as np
+import torch
+
 from torchwm.configs.iris_config import IRISConfig
-from torchwm.models.iris_agent import IRISAgent
 from torchwm.envs.ale_atari_env import make_atari_env
+from torchwm.inference import IRISStepper
+from torchwm.models.iris_agent import IRISAgent
 
 
 def preprocess_frame(frame, size=64):
@@ -24,41 +33,37 @@ def main():
 
     agent = IRISAgent(config=config, action_size=action_size, device=device)
     agent.load("checkpoints/iris/best_Breakout-v5.pt")
-    agent.eval()
+    stepper = IRISStepper(agent, temperature=0.5)
     print("Model loaded!")
 
     num_episodes = 100
     total_reward = 0
 
-    for ep in range(num_episodes):
-        obs, _ = env.reset()
-        obs = preprocess_frame(obs)
-        episode_reward = 0
-        steps = 0
+    with torch.inference_mode():
+        for ep in range(num_episodes):
+            obs, _ = env.reset()
+            state = stepper.init_state(batch_size=1)
+            episode_reward = 0
+            steps = 0
 
-        print(f"\n--- Episode {ep + 1} ---")
+            print(f"\n--- Episode {ep + 1} ---")
 
-        while True:
-            env.render()
+            while True:
+                env.render()
 
-            frame_tensor = (
-                torch.tensor(obs, dtype=torch.float32).unsqueeze(0).to(device)
-            )
-            action = agent.act(frame_tensor, epsilon=0.0, temperature=0.5).item()
+                frame = torch.from_numpy(preprocess_frame(obs)).unsqueeze(0)
+                state = stepper.observe(state, frame, None)
+                action = stepper.act(state).item()
 
-            obs, reward, terminated, truncated, _ = env.step(action)
-            done = terminated or truncated
+                obs, reward, terminated, truncated, _ = env.step(action)
+                episode_reward += reward
+                steps += 1
 
-            episode_reward += reward
-            steps += 1
+                if terminated or truncated:
+                    break
 
-            if not done:
-                obs = preprocess_frame(obs)
-            else:
-                break
-
-        total_reward += episode_reward
-        print(f"Episode {ep + 1}: Reward = {episode_reward}, Steps = {steps}")
+            total_reward += episode_reward
+            print(f"Episode {ep + 1}: Reward = {episode_reward}, Steps = {steps}")
 
     env.close()
     print(
