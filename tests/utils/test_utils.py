@@ -383,6 +383,58 @@ class TestUtils:
             assert os.path.exists(path)
 
 
+def _video_codec(path):
+    import cv2
+
+    cap = cv2.VideoCapture(str(path))
+    try:
+        assert cap.isOpened()
+        fourcc = int(cap.get(cv2.CAP_PROP_FOURCC))
+        frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+    finally:
+        cap.release()
+    return fourcc.to_bytes(4, "little").decode("ascii", "replace").lower(), frames
+
+
+def test_mp4_writer_writes_browser_playable_h264(tmp_path):
+    pytest.importorskip("imageio_ffmpeg")
+    from torchwm.utils.utils import Mp4Writer
+
+    path = tmp_path / "clip.mp4"
+    # Odd dimensions exercise the even-size padding yuv420p needs.
+    with Mp4Writer(str(path), 10, (63, 47)) as writer:
+        assert writer.codec == "h264"
+        for _ in range(5):
+            writer.write(np.random.randint(0, 255, (47, 63, 3), dtype=np.uint8))
+
+    codec, frames = _video_codec(path)
+    assert codec in ("h264", "avc1")
+    assert frames == 5
+
+
+def test_mp4_writer_accepts_grayscale_and_rejects_wrong_size(tmp_path):
+    from torchwm.utils.utils import Mp4Writer
+
+    with Mp4Writer(str(tmp_path / "gray.mp4"), 10, (32, 32)) as writer:
+        writer.write(np.zeros((32, 32), dtype=np.uint8))
+        with pytest.raises(ValueError):
+            writer.write(np.zeros((16, 32, 3), dtype=np.uint8))
+
+
+def test_streaming_video_writer_uses_h264(tmp_path):
+    pytest.importorskip("imageio_ffmpeg")
+    from torchwm.utils.utils import StreamingVideoWriter
+
+    path = tmp_path / "stream.mp4"
+    writer = StreamingVideoWriter(str(path), fps=20)
+    for _ in range(3):
+        writer.write_frame(np.random.rand(40, 64, 3).astype(np.float32))
+    writer.close()
+
+    codec, _ = _video_codec(path)
+    assert codec in ("h264", "avc1")
+
+
 def test_metrics_logger_writes_jsonl(tmp_path):
     import json
 

@@ -233,16 +233,15 @@ class Logger:
 
             video_u8 = _video_to_uint8(videos[i])
             if format.lower() == "mp4":
-                import cv2
+                from torchwm.utils.utils import Mp4Writer
 
-                # OpenCV writes BGR
+                # Mp4Writer takes BGR, like OpenCV
                 if video_u8.shape[-1] == 3:
                     video_u8 = video_u8[..., ::-1]
                 new_video_title = video_title + "{}_{}".format(step, i) + ".mp4"
                 filename = os.path.join(self._log_dir, new_video_title)
                 height, width = video_u8.shape[1], video_u8.shape[2]
-                fourcc = getattr(cv2, "VideoWriter_fourcc")(*"mp4v")
-                out = cv2.VideoWriter(filename, fourcc, fps, (width, height))
+                out = Mp4Writer(filename, fps, (width, height))
                 for frame in np.ascontiguousarray(video_u8):
                     out.write(frame)
                 out.release()

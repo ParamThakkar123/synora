@@ -48,6 +48,12 @@ Fixes from the September 2026 code audit.
 - `torchwm.utils.jit_utils` (TorchScript); use `torchwm.maybe_compile`.
 
 ### Fixed
+- MP4 videos (`StreamingVideoWriter`, `save_video`, `combine_videos`, Dreamer
+  rollout videos and every `demos/record_*.py`) were encoded with OpenCV's
+  `mp4v` fourcc (MPEG-4 Part 2), which no browser plays. They now go through
+  the new `torchwm.utils.utils.Mp4Writer`, which writes H.264 via
+  `imageio-ffmpeg` (added to the `viz` and `worldmodels` extras), falls back
+  to OpenCV `avc1`, and only then to `mp4v` with a warning.
 - `maybe_compile` only guarded the `torch.compile` wrap, but compilation is
   lazy, so a missing backend (e.g. no Triton on Windows CUDA builds) raised on
   the first call instead of falling back. The first call is now guarded too,

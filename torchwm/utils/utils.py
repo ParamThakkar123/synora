@@ -128,6 +128,111 @@ def get_combined_params(*models: Any) -> list:
     return params
 
 
+class Mp4Writer:
+    """Write BGR uint8 frames to a browser-playable MP4.
+
+    Browsers only decode H.264 in MP4, but OpenCV's ``mp4v`` fourcc produces
+    MPEG-4 Part 2, which no browser plays. Backends are tried in order:
+
+    1. ``imageio-ffmpeg`` (bundled ffmpeg, libx264, yuv420p, faststart) -
+       H.264 on every platform. Installed by the ``viz`` extra.
+    2. OpenCV ``avc1`` - H.264 where the OpenCV build has an encoder
+       (typically Windows/macOS; usually not pip wheels on Linux).
+    3. OpenCV ``mp4v`` - always available, but not browser-playable; a
+       warning is emitted.
+
+    Args:
+        path: output ``.mp4`` path
+        fps: frames per second
+        size: ``(width, height)`` of every frame
+    """
+
+    def __init__(self, path: str, fps: float, size: tuple[int, int]) -> None:
+        self.path = str(path)
+        self.fps = float(fps)
+        self.size = (int(size[0]), int(size[1]))
+        self.codec: str
+        self._ffmpeg: Any = None
+        self._cv2: Any = None
+        try:
+            import imageio_ffmpeg
+
+            self._ffmpeg = imageio_ffmpeg.write_frames(
+                self.path,
+                self.size,
+                fps=self.fps,
+                codec="libx264",
+                pix_fmt_in="bgr24",
+                pix_fmt_out="yuv420p",
+                # yuv420p needs even dimensions; pad rather than rescale.
+                macro_block_size=1,
+                output_params=[
+                    "-vf",
+                    "pad=ceil(iw/2)*2:ceil(ih/2)*2",
+                    "-movflags",
+                    "+faststart",
+                ],
+                ffmpeg_log_level="error",
+            )
+            self._ffmpeg.send(None)
+            self.codec = "h264"
+            return
+        except ImportError:
+            pass
+
+        import cv2
+
+        for fourcc, codec in (("avc1", "h264"), ("mp4v", "mpeg4")):
+            writer = cv2.VideoWriter(
+                self.path, cv2.VideoWriter.fourcc(*fourcc), self.fps, self.size, True
+            )
+            if writer.isOpened():
+                self._cv2 = writer
+                self.codec = codec
+                break
+            writer.release()
+        else:
+            raise RuntimeError(f"Could not open a video writer for {self.path}")
+        if self.codec != "h264":
+            warnings.warn(
+                f"{self.path} is encoded as MPEG-4 Part 2 (mp4v), which browsers "
+                "cannot play. Install imageio-ffmpeg (`pip install torchwm[viz]`) "
+                "for H.264 output.",
+                stacklevel=2,
+            )
+
+    def write(self, frame: np.ndarray) -> None:
+        """Append one HWC (or HW) uint8 BGR frame of size ``self.size``."""
+        if frame.ndim == 2:
+            frame = np.repeat(frame[..., None], 3, axis=-1)
+        elif frame.shape[-1] == 1:
+            frame = np.repeat(frame, 3, axis=-1)
+        frame = np.ascontiguousarray(frame, dtype=np.uint8)
+        if (frame.shape[1], frame.shape[0]) != self.size:
+            raise ValueError(
+                f"Frame size {(frame.shape[1], frame.shape[0])} does not match "
+                f"writer size {self.size}"
+            )
+        if self._ffmpeg is not None:
+            self._ffmpeg.send(frame)
+        else:
+            self._cv2.write(frame)
+
+    def release(self) -> None:
+        if self._ffmpeg is not None:
+            self._ffmpeg.close()
+            self._ffmpeg = None
+        if self._cv2 is not None:
+            self._cv2.release()
+            self._cv2 = None
+
+    def __enter__(self) -> "Mp4Writer":
+        return self
+
+    def __exit__(self, *exc: Any) -> None:
+        self.release()
+
+
 def save_video(frames: Any, path: str, name: str) -> str:
     """
     Saves a video containing frames.
@@ -210,13 +315,7 @@ def save_video(frames: Any, path: str, name: str) -> str:
     else:
         raise RuntimeError("Unexpected frames_u8 shape after conversion")
 
-    writer = cv2.VideoWriter(
-        str(out_dir / f"{name}.mp4"),
-        cv2.VideoWriter.fourcc(*"mp4v"),
-        25.0,
-        (W, H),
-        True,
-    )
+    writer = Mp4Writer(str(out_dir / f"{name}.mp4"), 25.0, (W, H))
     try:
         for frame in frames_u8:
             # ensure contiguous HWC uint8
@@ -258,9 +357,8 @@ def combine_videos(
     height = int(cap0.get(cv2.CAP_PROP_FRAME_HEIGHT))
     cap0.release()
 
-    fourcc = cv2.VideoWriter.fourcc(*"mp4v")
     out_path = str(pathlib.Path(video_dir) / output_name)
-    writer = cv2.VideoWriter(out_path, fourcc, float(fps), (width, height), True)
+    writer = Mp4Writer(out_path, float(fps), (width, height))
 
     try:
         for f in files:
@@ -988,20 +1086,19 @@ class StreamingVideoWriter:
     Args:
         path: output video file path
         fps: frames per second
-        frame_shape: (height, width) of frames
+        frame_shape: (width, height) of frames; inferred from the first frame if None
         format: 'mp4' or 'avi'
     """
 
     def __init__(
         self, path: str, fps: int = 20, frame_shape: Any = None, format: str = "mp4"
     ) -> None:
-        import cv2
 
         self.path = path
         self.fps = fps
         self.frame_shape = frame_shape
         self.format = format.lower()
-        self.writer: cv2.VideoWriter | None = None
+        self.writer: Any = None
 
     def write_frame(self, frame: np.ndarray) -> None:
         """
@@ -1016,12 +1113,16 @@ class StreamingVideoWriter:
             if self.frame_shape is None:
                 self.frame_shape = frame.shape[:2][::-1]  # (W, H)
             if self.format == "mp4":
-                fourcc = cv2.VideoWriter.fourcc(*"mp4v")
+                self.writer = Mp4Writer(self.path, self.fps, self.frame_shape)
             elif self.format == "avi":
-                fourcc = cv2.VideoWriter.fourcc(*"XVID")
+                self.writer = cv2.VideoWriter(
+                    self.path,
+                    cv2.VideoWriter.fourcc(*"XVID"),
+                    self.fps,
+                    self.frame_shape,
+                )
             else:
                 raise ValueError("Unsupported format")
-            self.writer = cv2.VideoWriter(self.path, fourcc, self.fps, self.frame_shape)
 
         # Convert frame to uint8 HWC BGR
         if frame.dtype != np.uint8:
