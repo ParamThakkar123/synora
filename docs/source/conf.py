@@ -143,6 +143,10 @@ html_theme_options = {
     "navbar_persistent": [],
 }
 
+# Open in dark mode. Readers can still switch with the theme toggle, and their
+# choice is remembered by the browser.
+html_context = {"default_mode": "dark"}
+
 # Include client-side assets. MathJax itself is loaded by sphinx.ext.mathjax;
 # adding custom MathJax bootstrap files here can race with Sphinx's runtime and
 # prevent equations from being typeset.
