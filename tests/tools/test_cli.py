@@ -173,7 +173,6 @@ def test_dmlab_backend_specs_are_public_api():
     assert "dmlab" in synora.ENV_BACKEND_SPECS
 
 
-
 def test_play_supports_dreamer_as_well_as_diamond():
     assert set(cli.PLAY_MODULES) == {"diamond", "dreamer"}
     assert cli.PLAY_MODULES["dreamer"] == "synora.inference.play_dreamer"

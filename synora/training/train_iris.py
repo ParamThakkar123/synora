@@ -324,9 +324,7 @@ class IRISTrainer:
                     0, len(self.replay_buffer), size=self.config.autoencoder_batch_size
                 )
 
-                frames = self.to_float_tensor(
-                    self.replay_buffer.observations[indices]
-                )
+                frames = self.to_float_tensor(self.replay_buffer.observations[indices])
 
                 ae_metrics = self.agent.update_autoencoder(frames)
 

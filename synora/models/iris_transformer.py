@@ -391,7 +391,9 @@ class IRISTransformer(nn.Module):
 
         # Interleave frames 0..S-1 with actions 0..S-2. The sequence ends on the
         # last frame block (z_{S-1}) with no trailing action.
-        tok_emb = self.token_embedding(tokens.reshape(B, S * K)).reshape(B, S, K, self.embed_dim)
+        tok_emb = self.token_embedding(tokens.reshape(B, S * K)).reshape(
+            B, S, K, self.embed_dim
+        )
         act_emb = self.action_embedding(actions)  # (B, S-1, E)
 
         head_blocks = torch.cat(
@@ -477,9 +479,7 @@ class IRISTransformer(nn.Module):
                 f"Position {end} exceeds positional-embedding capacity "
                 f"{self.max_seq_len}."
             )
-        seq = self.embed_dropout(
-            embeddings + self.pos_embedding[:, start_pos:end, :]
-        )
+        seq = self.embed_dropout(embeddings + self.pos_embedding[:, start_pos:end, :])
         return self.layer_norm(self._run_transformer(seq, cache=cache))
 
     @torch.no_grad()
@@ -713,9 +713,9 @@ class IRISTransformer(nn.Module):
             tokens, actions, sample=True, temperature=temperature
         )
         log_probs = F.log_softmax(step_logits / temperature, dim=-1)
-        log_probs = torch.gather(
-            log_probs, -1, sampled_tokens.unsqueeze(-1)
-        ).squeeze(-1)
+        log_probs = torch.gather(log_probs, -1, sampled_tokens.unsqueeze(-1)).squeeze(
+            -1
+        )
         return sampled_tokens, log_probs
 
 

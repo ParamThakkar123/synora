@@ -1076,9 +1076,7 @@ class DiamondAgent:
                 obs_file = checkpoint["obs_history_file"]
                 obs_arr = np.load(obs_file, allow_pickle=False)
                 self.obs_history_raw = [o for o in obs_arr]
-                self.obs_history = [
-                    _normalize_frame(o) for o in self.obs_history_raw
-                ]
+                self.obs_history = [_normalize_frame(o) for o in self.obs_history_raw]
             except Exception:
                 print(
                     "Warning: failed to load obs_history from file; trying embedded state"
@@ -1096,9 +1094,7 @@ class DiamondAgent:
         ):
             try:
                 self.obs_history_raw = checkpoint["obs_history_raw"]
-                self.obs_history = [
-                    _normalize_frame(o) for o in self.obs_history_raw
-                ]
+                self.obs_history = [_normalize_frame(o) for o in self.obs_history_raw]
             except Exception:
                 print("Warning: failed to load obs_history_raw from checkpoint")
 

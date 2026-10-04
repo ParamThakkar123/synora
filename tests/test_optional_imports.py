@@ -21,6 +21,9 @@ def test_train_iris_helpers_import_without_gym():
         default_collect_temperature,
     )
 
-    assert default_collect_temperature("ALE/Freeway-v5", 1.0) == FREEWAY_COLLECT_TEMPERATURE
+    assert (
+        default_collect_temperature("ALE/Freeway-v5", 1.0)
+        == FREEWAY_COLLECT_TEMPERATURE
+    )
     assert _action_size(SimpleNamespace(n=6)) == 6
     assert _action_size(SimpleNamespace(shape=(2, 3), n=None)) == 6

@@ -61,6 +61,6 @@ def test_decoder_owns_no_codebook():
     L1, commitment or perceptual terms, so decoding through it returns noise.
     """
     dec, _ = _decoder_and_codebook()
-    assert not any(
-        isinstance(module, nn.Embedding) for module in dec.modules()
-    ), "IRISDecoder must not carry its own token embedding table"
+    assert not any(isinstance(module, nn.Embedding) for module in dec.modules()), (
+        "IRISDecoder must not carry its own token embedding table"
+    )

@@ -658,11 +658,7 @@ class IRISAgent(nn.Module):
                 cache = self.transformer.init_cache(B, self.device)
                 pos = self.transformer.prime_cache(
                     torch.stack(token_history, dim=1),
-                    (
-                        torch.stack(action_history, dim=1)
-                        if action_history
-                        else None
-                    ),
+                    (torch.stack(action_history, dim=1) if action_history else None),
                     cache,
                     start_pos=0,
                 )
@@ -711,9 +707,9 @@ class IRISAgent(nn.Module):
         with torch.no_grad():
             final_grid = current_tokens.reshape(B, tokens_per_dim, tokens_per_dim)
             frames_imagined.append(
-                self.decoder(
-                    self.encoder.quantizer.decode_indices(final_grid)
-                ).clamp(0.0, 1.0)
+                self.decoder(self.encoder.quantizer.decode_indices(final_grid)).clamp(
+                    0.0, 1.0
+                )
             )
 
         self.train(was_training)
@@ -756,16 +752,12 @@ class IRISAgent(nn.Module):
 
             # Paper A.1: L1 + commitment + perceptual, equally weighted.
             recon_loss = F.l1_loss(reconstruction, frames)
-            loss = (
-                self.config.reconstruction_weight * recon_loss + vq_loss["vq_loss"]
-            )
+            loss = self.config.reconstruction_weight * recon_loss + vq_loss["vq_loss"]
 
             if self.perceptual_loss is not None:
                 # VGG expects [0, 1]; the decoder is unbounded, so clamp rather
                 # than let out-of-range values distort the feature statistics.
-                perc_loss = self.perceptual_loss(
-                    frames, reconstruction.clamp(0.0, 1.0)
-                )
+                perc_loss = self.perceptual_loss(frames, reconstruction.clamp(0.0, 1.0))
                 loss = loss + self.config.perceptual_weight * perc_loss
             else:
                 perc_loss = torch.zeros((), device=frames.device)
@@ -865,9 +857,7 @@ class IRISAgent(nn.Module):
                     reward_targets.reshape(-1),
                 )
             else:
-                reward_loss = F.mse_loss(
-                    rewards_pred, self.transform_reward(rewards)
-                )
+                reward_loss = F.mse_loss(rewards_pred, self.transform_reward(rewards))
 
             # Termination loss (cross-entropy)
             term_loss = F.cross_entropy(

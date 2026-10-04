@@ -203,9 +203,7 @@ class MultiAgentBenchmarkRunner:
         assert train_epochs is not None
 
         checkpoints = {}
-        device = extra_kwargs.get(
-            "device", default_device_name()
-        )
+        device = extra_kwargs.get("device", default_device_name())
         preset = extra_kwargs.get("preset", None)
 
         for adapter_cls in self.adapter_classes:

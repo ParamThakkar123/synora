@@ -771,9 +771,7 @@ class Dreamer:
                 # trained on continuation flags, so its mean is P(continue);
                 # scale by gamma as in the Dreamer reference
                 # (pcont_target = discount * data["discount"]).
-                discounts = (
-                    self.args.discount * imag_disc_dist.mean.detach()
-                )
+                discounts = self.args.discount * imag_disc_dist.mean.detach()
             else:
                 discounts = self.args.discount * torch.ones_like(imag_rews).detach()
 
@@ -834,9 +832,7 @@ class Dreamer:
         # ``1.0 - terms`` runs on the device now; it used to allocate a second
         # host array before the transfer.
         nonterms = (1.0 - self._to_device(terms).to(torch.float32)).unsqueeze(-1)
-        continues = (
-            1.0 - self._to_device(terminated).to(torch.float32)
-        ).unsqueeze(-1)
+        continues = (1.0 - self._to_device(terminated).to(torch.float32)).unsqueeze(-1)
 
         with torch.amp.autocast(
             device_type=getattr(self.device, "type", str(self.device)),

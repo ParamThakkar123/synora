@@ -22,7 +22,9 @@ import numpy as np
 from synora import WorldModelEnv
 
 
-trained_model = ...  # Load a Synora model, an exported module, or your own adapter object.
+trained_model = (
+    ...
+)  # Load a Synora model, an exported module, or your own adapter object.
 initial_latent = ...  # Optional: pass None if reset_fn creates the initial state.
 
 obs_space = gym.spaces.Box(-np.inf, np.inf, shape=(64,), dtype=np.float32)

@@ -77,7 +77,7 @@ class TestAutoencoderTable2:
         assert widths == [64, 64, 64, 64]
 
     def test_decoder_width_is_constant(self):
-        """"the same ones apply for the decoder" -- including the bottleneck.
+        """ "the same ones apply for the decoder" -- including the bottleneck.
 
         The stack that runs before upsampling sits at the convolutional width,
         not at the 512-d token embedding; running it at 512 put ~5M parameters
@@ -197,9 +197,7 @@ class TestTransformerLossWeighting:
             torch.zeros(b, t),
             torch.zeros(b, t, dtype=torch.long),
         )
-        expected = (
-            metrics["token_loss"] + metrics["reward_loss"] + metrics["term_loss"]
-        )
+        expected = metrics["token_loss"] + metrics["reward_loss"] + metrics["term_loss"]
         assert metrics["total_loss"] == pytest.approx(expected, rel=1e-5)
 
 

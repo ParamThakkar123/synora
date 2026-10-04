@@ -130,7 +130,7 @@ cfg = DreamerConfig()
 cfg.algo = "Dreamerv1"
 
 # Gaussian latent (V1 default)
-cfg.stoch_size = 30       # diagonal Gaussian dimensions
+cfg.stoch_size = 30  # diagonal Gaussian dimensions
 cfg.deter_size = 200
 
 # Environment
@@ -261,8 +261,8 @@ cfg = DreamerConfig()
 cfg.algo = "Dreamerv2"
 
 # Categorical latent (V2)
-cfg.stoch_size = 32       # number of categorical classes per category
-cfg.num_categories = 32   # number of categorical distributions
+cfg.stoch_size = 32  # number of categorical classes per category
+cfg.num_categories = 32  # number of categorical distributions
 cfg.deter_size = 200
 
 # Environment
@@ -588,23 +588,23 @@ Dreamer supports multiple backends:
 ```python
 cfg = DreamerConfig()
 
-cfg.env_backend = "dmc"         # DeepMind Control Suite
+cfg.env_backend = "dmc"  # DeepMind Control Suite
 cfg.env = "walker-walk"
 
-cfg.env_backend = "gym"         # Gym/Gymnasium
+cfg.env_backend = "gym"  # Gym/Gymnasium
 cfg.env = "Pendulum-v1"
 
-cfg.env_backend = "dmlab"       # DeepMind Lab
+cfg.env_backend = "dmlab"  # DeepMind Lab
 cfg.env = "rooms_collect_good_objects_train"
 cfg.dmlab_action_repeat = 4
 
-cfg.env_backend = "mujoco"      # MuJoCo
+cfg.env_backend = "mujoco"  # MuJoCo
 cfg.env = "Humanoid-v4"
 
-cfg.env_backend = "brax"        # JAX/Brax
+cfg.env_backend = "brax"  # JAX/Brax
 cfg.env = "ant"
 
-cfg.env_backend = "procgen"     # Procgen
+cfg.env_backend = "procgen"  # Procgen
 cfg.env = "coinrun"
 
 cfg.env_backend = "unity_mlagents"  # Unity ML-Agents

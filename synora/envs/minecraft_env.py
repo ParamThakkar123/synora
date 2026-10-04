@@ -145,7 +145,10 @@ def _extract_pov(observation: Any) -> NDArray[np.uint8]:
         array = array[:, :, None]
     if array.dtype != np.uint8:
         # MineDojo can hand back float images in [0, 1].
-        if np.issubdtype(array.dtype, np.floating) and float(array.max(initial=0.0)) <= 1.0:
+        if (
+            np.issubdtype(array.dtype, np.floating)
+            and float(array.max(initial=0.0)) <= 1.0
+        ):
             array = array * 255.0
         array = np.clip(array, 0, 255).astype(np.uint8)
     return np.ascontiguousarray(array)

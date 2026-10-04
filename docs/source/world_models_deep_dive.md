@@ -132,7 +132,7 @@ validation:
 dataset = ObservationDataset(
     root="./data",
     train=True,
-    num_test_files=600,   # last 600 files → test set
+    num_test_files=600,  # last 600 files → test set
 )
 ```
 
@@ -367,7 +367,7 @@ ctrl.load_state_dict(torch.load("ctrl/best.tar")["state_dict"])
 
 # 2. Reset environment and hidden state
 obs, _ = env.reset()
-h, c = cell_rnn.get_init_hidden(1)   # fresh hidden state per episode
+h, c = cell_rnn.get_init_hidden(1)  # fresh hidden state per episode
 
 # 3. Rollout loop
 for step in range(1000):

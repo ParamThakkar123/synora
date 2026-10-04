@@ -202,7 +202,6 @@ class TestGenieTraining:
         assert "total_loss" in losses
         assert losses["total_loss"] > 0
 
-
     def test_video_dataset_loads_npy_clips(self, tmp_path):
         from synora.training.train_genie import VideoDataset
 

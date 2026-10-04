@@ -737,10 +737,14 @@ def collect(env: str, steps: int, out: Path, random_policy: bool) -> None:
     "--dataset", default="imagenet", help="[jepa] imagenet | cifar10 | imagefolder"
 )
 @click.option(
-    "--model-name", default="vit_base", help="[jepa] Backbone the checkpoint was trained with"
+    "--model-name",
+    default="vit_base",
+    help="[jepa] Backbone the checkpoint was trained with",
 )
 @click.option("--patch-size", default=16, type=int, help="[jepa] ViT patch size")
-@click.option("--crop-size", default=224, type=int, help="[jepa] Probe input resolution")
+@click.option(
+    "--crop-size", default=224, type=int, help="[jepa] Probe input resolution"
+)
 @click.option(
     "--weights",
     default="target_encoder",
@@ -1013,4 +1017,3 @@ def run_train() -> None:
 
 if __name__ == "__main__":
     run()
-

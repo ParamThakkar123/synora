@@ -247,8 +247,7 @@ class TestDynamicsMasking:
         """Paper 2.1 found additive action embeddings beat concatenation."""
         model = _dynamics()
         assert model.action_embedding.embedding_dim == model.dim, (
-            "action embeddings must share the token width to be added, not "
-            "concatenated"
+            "action embeddings must share the token width to be added, not concatenated"
         )
 
     def test_output_covers_the_token_vocabulary(self):

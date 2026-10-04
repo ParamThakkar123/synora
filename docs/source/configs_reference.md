@@ -362,7 +362,6 @@ class DiamondConfig:
     log_interval: int = 10
     eval_interval: int = 50
     save_interval: int = 100
-
 ```
 
 ## Usage Patterns

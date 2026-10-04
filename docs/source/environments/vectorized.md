@@ -32,8 +32,10 @@ from synora import make_env
 # For arbitrary Gym-like factories, create each environment through synora.
 # Pass this factory to your vectorization utility of choice.
 
+
 def env_factory():
     return make_env("CartPole-v1", backend="gym", size=(64, 64))
+
 
 # Example: hand `env_factory` to your multiprocessing/vector rollout code.
 env = env_factory()

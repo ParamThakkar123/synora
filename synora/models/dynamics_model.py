@@ -92,9 +92,9 @@ class MaskGITSampler:
         # Reveal the highest-confidence masked positions this step.
         reveal = mask_bool.clone()
         if num_keep_masked < N:
-            threshold = torch.topk(
-                confidence, k=N - num_keep_masked, dim=-1
-            ).values[..., -1:]
+            threshold = torch.topk(confidence, k=N - num_keep_masked, dim=-1).values[
+                ..., -1:
+            ]
             reveal = mask_bool & (confidence >= threshold)
 
         new_tokens = torch.where(reveal, sampled, tokens)
@@ -216,7 +216,9 @@ class DynamicsModel(nn.Module):
                     .item()
                 )
             if mask_prob > 0.0:
-                mask_2d = torch.rand(B, T - 2, N, device=video_tokens.device) < mask_prob
+                mask_2d = (
+                    torch.rand(B, T - 2, N, device=video_tokens.device) < mask_prob
+                )
                 full_mask = torch.zeros(
                     B, T, N, dtype=torch.bool, device=video_tokens.device
                 )
@@ -338,7 +340,6 @@ class DynamicsModel(nn.Module):
         current_actions = prompt_actions
 
         for step in range(T_remaining):
-
             logits = self.forward(current_tokens, current_actions)
 
             next_token_logits = logits[:, -1, :, :]

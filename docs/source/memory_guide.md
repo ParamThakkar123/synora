@@ -35,11 +35,11 @@ learning.
 from synora import ReplayBuffer
 
 buffer = ReplayBuffer(
-    size=100000,            # max transitions before FIFO eviction
+    size=100000,  # max transitions before FIFO eviction
     obs_shape=(3, 64, 64),  # C, H, W
-    action_size=6,          # continuous action dimension
-    seq_len=50,             # sequence length per sample
-    batch_size=50,          # parallel sequences per batch
+    action_size=6,  # continuous action dimension
+    seq_len=50,  # sequence length per sample
+    batch_size=50,  # parallel sequences per batch
 )
 
 # Add a transition during environment interaction
@@ -145,8 +145,12 @@ while not done:
 
 # Transfer to main buffer
 for i in range(len(on_policy)):
-    buffer.add(on_policy.observations[i], on_policy.actions[i],
-               on_policy.rewards[i], on_policy.terminals[i])
+    buffer.add(
+        on_policy.observations[i],
+        on_policy.actions[i],
+        on_policy.rewards[i],
+        on_policy.terminals[i],
+    )
 on_policy.clear()
 ```
 

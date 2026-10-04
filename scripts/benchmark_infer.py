@@ -276,13 +276,21 @@ def _label_frame(frame: "Any", text: str, scale: int = 4) -> "Any":
     )
     cv2.rectangle(img, (0, 0), (img.shape[1], 22), (0, 0, 0), -1)
     cv2.putText(
-        img, text, (6, 16), cv2.FONT_HERSHEY_SIMPLEX, 0.45, (255, 255, 255), 1,
+        img,
+        text,
+        (6, 16),
+        cv2.FONT_HERSHEY_SIMPLEX,
+        0.45,
+        (255, 255, 255),
+        1,
         cv2.LINE_AA,
     )
     return img
 
 
-def record_dreamer_dream(args: argparse.Namespace, player: "Any", out_dir: Path) -> list:
+def record_dreamer_dream(
+    args: argparse.Namespace, player: "Any", out_dir: Path
+) -> list:
     """Open-loop imagination beside the real env, the Dreamer paper's figure.
 
     The model sees ``--dream-context`` real frames, then its observations are cut
@@ -382,18 +390,12 @@ def record_dreamer(args: argparse.Namespace, model: str) -> int:
         # in a gallery instead of one being a 64px thumbnail.
         writer.write_frame(_label_frame(_observation_frame(obs), "REAL"))
         with torch.no_grad():
-            state, _ = player.rssm.observe_step(
-                state, prev_action, player.encode(obs)
-            )
-            action = player.actor(
-                player.features(state), deter=not args.stochastic
-            )
+            state, _ = player.rssm.observe_step(state, prev_action, player.encode(obs))
+            action = player.actor(player.features(state), deter=not args.stochastic)
         action_np = action[0].cpu().numpy()
         obs, reward, done, info = player.env.step(action_np)
         executed = (
-            info["action"]
-            if isinstance(info, dict) and "action" in info
-            else action_np
+            info["action"] if isinstance(info, dict) and "action" in info else action_np
         )
         prev_action = torch.tensor(
             np.asarray(executed, dtype=np.float32), device=player.device
@@ -695,7 +697,9 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.mode == "record":
         if model not in RECORDERS:
-            parser.error(f"{model} cannot be recorded. Choose: {', '.join(RECORD_MODELS)}")
+            parser.error(
+                f"{model} cannot be recorded. Choose: {', '.join(RECORD_MODELS)}"
+            )
         if model in {"diamond", "dreamer", "iris"} and not args.checkpoint:
             parser.error(f"{model} record needs --checkpoint / -c")
         print(f"recording {model} -> {args.out_dir}")

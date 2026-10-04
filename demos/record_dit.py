@@ -230,7 +230,9 @@ def main() -> int:
     grid = to_uint8_grid(samples, args.nrow)
     grid_path = out_dir / "dit_samples.png"
     _write_png(grid, grid_path, args.scale)
-    print(f"Wrote {grid_path}  ({args.samples} samples, {grid.shape[1]}x{grid.shape[0]})")
+    print(
+        f"Wrote {grid_path}  ({args.samples} samples, {grid.shape[1]}x{grid.shape[0]})"
+    )
 
     video_path = out_dir / "dit_denoising.mp4"
     writer = StreamingVideoWriter(str(video_path), fps=args.fps)

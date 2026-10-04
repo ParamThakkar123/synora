@@ -23,7 +23,6 @@ agent = synora.create_model(
 
 # Create standalone environments through a consistent backend selector.
 env = synora.make_env("CartPole-v1", backend="gym")
-
 ```
 
 ## Factory Helpers

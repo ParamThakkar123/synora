@@ -47,10 +47,11 @@ def _require_procgen_env_class() -> type[Any]:
             "Install it with `pip install synora[procgen]` or `pip install procgen`."
         )
         if sys.version_info >= (3, 11):
-            install_hint += " Upstream Procgen wheels currently support Python 3.10 and below."
+            install_hint += (
+                " Upstream Procgen wheels currently support Python 3.10 and below."
+            )
         raise ImportError(
-            "Procgen support requires the optional 'procgen' package. "
-            + install_hint
+            "Procgen support requires the optional 'procgen' package. " + install_hint
         )
 
     if _PROCGEN_PACKAGE in sys.modules:
@@ -232,7 +233,6 @@ class ProcgenImageEnv:
                     space.seed(seed)
                 except Exception:
                     pass
-
 
     def _to_native_action(self, action: Any) -> tuple[int, NDArray[np.float32]]:
         return encode_discrete_action(action, self._discrete_n)

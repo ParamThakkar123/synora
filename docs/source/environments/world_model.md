@@ -54,6 +54,7 @@ def action_transform(model, action):
     one_hot[int(action)] = 1.0
     return one_hot
 
+
 env = WorldModelEnv(
     trained_model,
     observation_space=obs_space,

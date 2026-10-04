@@ -29,9 +29,9 @@ class TestTensorNbytes:
     def test_uint8_batch_is_a_quarter_of_the_float32_one(self):
         # The property the observation-transfer path relies on.
         shape = (4, 3, 8, 8)
-        assert tensor_nbytes(torch.zeros(shape, dtype=torch.float32)) == 4 * tensor_nbytes(
-            torch.zeros(shape, dtype=torch.uint8)
-        )
+        assert tensor_nbytes(
+            torch.zeros(shape, dtype=torch.float32)
+        ) == 4 * tensor_nbytes(torch.zeros(shape, dtype=torch.uint8))
 
 
 class TestThroughputMeter:

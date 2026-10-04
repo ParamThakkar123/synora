@@ -68,17 +68,22 @@ def find_lpips_weights(download: bool = True) -> Optional[Path]:
         import torch.hub
 
         cache_dir.mkdir(parents=True, exist_ok=True)
-        torch.hub.download_url_to_file(
-            LPIPS_VGG_WEIGHTS_URL, str(path), progress=False
-        )
+        torch.hub.download_url_to_file(LPIPS_VGG_WEIGHTS_URL, str(path), progress=False)
         return path if path.is_file() else None
     except Exception as exc:  # noqa: BLE001 - offline is a normal condition
         _LOGGER.warning("Could not fetch LPIPS linear weights: %s", exc)
         return None
 
+
 # Indices of the ReLU ending each VGG16 conv block, and that block's channel
 # count. LPIPS compares all five.
-_VGG16_BLOCKS: Sequence[tuple[int, int]] = ((3, 64), (8, 128), (15, 256), (22, 512), (29, 512))
+_VGG16_BLOCKS: Sequence[tuple[int, int]] = (
+    (3, 64),
+    (8, 128),
+    (15, 256),
+    (22, 512),
+    (29, 512),
+)
 _VGG16_BN_BLOCKS: Sequence[tuple[int, int]] = (
     (5, 64),
     (12, 128),
@@ -214,7 +219,9 @@ class LPIPSPerceptualLoss(nn.Module):
                 len(self.lins),
             )
         except Exception as exc:  # noqa: BLE001 - any failure means "unavailable"
-            _LOGGER.warning("Could not load LPIPS linear weights from %s: %s", path, exc)
+            _LOGGER.warning(
+                "Could not load LPIPS linear weights from %s: %s", path, exc
+            )
         return False
 
     def train(self, mode: bool = True) -> "LPIPSPerceptualLoss":

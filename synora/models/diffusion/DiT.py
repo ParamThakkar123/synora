@@ -338,9 +338,7 @@ class FinalLayer(nn.Module):
     rather than an arbitrary field.
     """
 
-    def __init__(
-        self, hidden_size: int, patch_size: int, out_channels: int
-    ) -> None:
+    def __init__(self, hidden_size: int, patch_size: int, out_channels: int) -> None:
         super().__init__()
         self.norm_final = nn.LayerNorm(hidden_size, elementwise_affine=False, eps=1e-6)
         self.linear = nn.Linear(
@@ -906,9 +904,7 @@ class DiT(nn.Module):
                     f"early_stopping is on but no held-out loader was built for "
                     f"dataset={dataset!r}"
                 )
-            stopper = EarlyStopping(
-                mode="min", patience=patience, threshold=min_delta
-            )
+            stopper = EarlyStopping(mode="min", patience=patience, threshold=min_delta)
 
         def diffusion_loss(batch_images: torch.Tensor) -> torch.Tensor:
             """L_simple on one batch, identical to the training objective."""

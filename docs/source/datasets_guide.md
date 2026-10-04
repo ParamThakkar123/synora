@@ -64,7 +64,7 @@ dataset, loader, sampler = make_imagenet1k(
     root_path="/data/imagenet",
     image_folder="imagenet_full_size/061417/",
     training=True,
-    copy_data=False,      # set True for SLURM with network storage
+    copy_data=False,  # set True for SLURM with network storage
 )
 ```
 
@@ -84,7 +84,7 @@ dataset, loader, sampler = make_imagefolder(
     batch_size=64,
     root_path="./my_dataset",
     image_folder="train",
-    val_split=0.1,         # hold out 10% for validation
+    val_split=0.1,  # hold out 10% for validation
 )
 ```
 
@@ -173,7 +173,7 @@ dataset = HDF5Dataset(
     key="videos",
     num_frames=16,
     image_size=64,
-    memmap=False,          # set True for large files
+    memmap=False,  # set True for large files
 )
 ```
 
@@ -271,6 +271,7 @@ dataset, loader = create_tinyworlds_dataloader(
 
 # List available datasets
 from synora.datasets.tinyworlds import TinyWorldsDataLoader
+
 print(TinyWorldsDataLoader.list_available_datasets())
 
 # Get metadata without downloading

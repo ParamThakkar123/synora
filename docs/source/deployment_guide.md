@@ -59,8 +59,8 @@ from synora.inference import optimize_for_inference
 
 policy = optimize_for_inference(
     agent.dreamer.actor,
-    precision="auto",      # bf16 on Ampere+ GPUs, fp16 on older GPUs, fp32 on CPU
-    compile=True,          # torch.compile, mode="reduce-overhead" (CUDA graphs)
+    precision="auto",  # bf16 on Ampere+ GPUs, fp16 on older GPUs, fp32 on CPU
+    compile=True,  # torch.compile, mode="reduce-overhead" (CUDA graphs)
 )
 action = policy(features, deter=True)
 ```
@@ -109,18 +109,20 @@ shape, with state as an explicit `dict[str, Tensor]` whose batch is on dim 0:
 import torch
 from synora.inference import make_stepper
 
-stepper = make_stepper(agent)             # DreamerStepper or IRISStepper
+stepper = make_stepper(agent)  # DreamerStepper or IRISStepper
 state = stepper.init_state(batch_size=8)  # 8 environments, one batched step
 prev_action = None
 
 with torch.inference_mode():
     while running:
         state = stepper.observe(state, obs, prev_action)  # filter the real frame
-        prev_action = stepper.act(state)                  # explore=False by default
+        prev_action = stepper.act(state)  # explore=False by default
         obs = envs.step(prev_action)
 
-        if stepper.supports_imagination:                  # plan or dream
-            step = stepper.imagine(state, prev_action)    # .state, .reward, .continue_prob
+        if stepper.supports_imagination:  # plan or dream
+            step = stepper.imagine(
+                state, prev_action
+            )  # .state, .reward, .continue_prob
 ```
 
 | Stepper | `observe` input | `imagine` | Notes |
@@ -161,7 +163,9 @@ observe+act step as a pure `nn.Module`.
 
 ```python
 module = stepper.step_module()
-deter, stoch, action = module(deter, stoch, prev_action, obs, prior_noise, posterior_noise)
+deter, stoch, action = module(
+    deter, stoch, prev_action, obs, prior_noise, posterior_noise
+)
 inputs = module.example_inputs(batch_size=1)  # zero tensors of the right shapes
 ```
 
@@ -192,14 +196,17 @@ its own state.
 ```python
 from synora.inference import rollout_drift
 
+
 def step(fn):
     def run(state, obs, prior_noise, post_noise):
         deter, stoch, action = state
         return fn(deter, stoch, action, obs, prior_noise, post_noise)
+
     return run
 
+
 report = rollout_drift(step(eager_module), step(candidate), init_state, per_step_inputs)
-print(report.summary())            # drift over 50 steps: final max|err| 3.1e-06, ...
+print(report.summary())  # drift over 50 steps: final max|err| 3.1e-06, ...
 assert report.within(atol=1e-3)
 ```
 
@@ -223,7 +230,7 @@ from synora.inference import quantize_weights
 from synora.inference.quantize import weight_memory_bytes
 
 before = weight_memory_bytes(module)
-quantized = quantize_weights(module)   # names of the replaced layers
+quantized = quantize_weights(module)  # names of the replaced layers
 print(before / weight_memory_bytes(module))
 ```
 
@@ -281,9 +288,11 @@ are selected automatically on supported GPUs.
 ```python
 from synora import export_model, load_exported, verify_export
 
-path = export_model(module, "step.pt2", format="exported_program", example_inputs=inputs)
-verify_export(module, path, inputs)        # raises if outputs differ; returns max |err|
-runner = load_exported(path)               # callable, no model source needed
+path = export_model(
+    module, "step.pt2", format="exported_program", example_inputs=inputs
+)
+verify_export(module, path, inputs)  # raises if outputs differ; returns max |err|
+runner = load_exported(path)  # callable, no model source needed
 ```
 
 | Format | Output | Use it for |
@@ -328,8 +337,8 @@ save_bundle(
 )
 
 bundle = load_bundle("dreamer_walker_bundle")
-step = bundle.load_artifact("exported_program")   # deployment path
-bundle.load_weights(eager_module)                 # or restore eager weights
+step = bundle.load_artifact("exported_program")  # deployment path
+bundle.load_weights(eager_module)  # or restore eager weights
 ```
 
 ```text

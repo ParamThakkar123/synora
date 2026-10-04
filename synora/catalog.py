@@ -151,7 +151,9 @@ def _list_available_bsuite_ids() -> list[str]:
 
         return list_available_bsuite_ids()
     except Exception:
-        logger.debug("BSuite environment ids unavailable; using examples", exc_info=True)
+        logger.debug(
+            "BSuite environment ids unavailable; using examples", exc_info=True
+        )
         return [
             "bandit/0",
             "cartpole/0",

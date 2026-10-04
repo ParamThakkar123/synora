@@ -46,8 +46,8 @@ obs = env.reset()
 action = env.action_space.sample()
 next_obs, reward, done, info = env.step(action)
 
-print(obs["image"].shape)                 # (3, 64, 64)
-print(info["vector_observation"].shape)   # Raw Brax observation vector.
+print(obs["image"].shape)  # (3, 64, 64)
+print(info["vector_observation"].shape)  # Raw Brax observation vector.
 ```
 
 ## Observation format
@@ -62,9 +62,7 @@ state observation for debugging or custom losses.
 The adapter always advertises this observation space:
 
 ```python
-{
-    "image": Box(low=0, high=255, shape=(3, height, width), dtype=uint8)
-}
+{"image": Box(low=0, high=255, shape=(3, height, width), dtype=uint8)}
 ```
 
 ## Action format

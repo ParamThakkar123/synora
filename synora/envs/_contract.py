@@ -21,9 +21,7 @@ def finalize_step_info(
 
     if truncated is None:
         truncated = bool(
-            normalized.get(
-                "truncated", normalized.get("TimeLimit.truncated", False)
-            )
+            normalized.get("truncated", normalized.get("TimeLimit.truncated", False))
         )
     else:
         truncated = bool(truncated)

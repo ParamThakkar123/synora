@@ -212,10 +212,7 @@ def main(argv: list[str] | None = None) -> None:
         save_video(safe_frames, res_dir, f"vid_{i + 1}")
         summary.update(eval_metrics)
 
-        if (
-            args.checkpoint_interval > 0
-            and (i + 1) % args.checkpoint_interval == 0
-        ):
+        if args.checkpoint_interval > 0 and (i + 1) % args.checkpoint_interval == 0:
             path = os.path.join(res_dir, f"ckpt_{i + 1}.pth")
             torch.save(rssm_model.state_dict(), path)
             print(f"Wrote {path}")

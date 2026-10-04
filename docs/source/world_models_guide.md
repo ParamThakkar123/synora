@@ -290,27 +290,46 @@ from synora.training.train_mdn_rnn import train_mdn_rnn
 from synora.training.train_controller import train_controller
 
 # Stage 1: Train VAE
-vae_config = WMVAEConfig({
-    "height": 64, "width": 64, "latent_size": 32,
-    "data_dir": "./data/carracing", "logdir": "./results/carracing",
-    "num_epochs": 10, "learning_rate": 1e-3,
-})
+vae_config = WMVAEConfig(
+    {
+        "height": 64,
+        "width": 64,
+        "latent_size": 32,
+        "data_dir": "./data/carracing",
+        "logdir": "./results/carracing",
+        "num_epochs": 10,
+        "learning_rate": 1e-3,
+    }
+)
 train_convae(vae_config)
 
 # Stage 2: Train MDN-RNN
-mdrnn_config = WMMDNRNNConfig({
-    "latent_size": 32, "action_size": 3, "hidden_size": 256,
-    "gmm_components": 5, "data_dir": "./data/carracing",
-    "logdir": "./results/carracing", "num_epochs": 30,
-})
+mdrnn_config = WMMDNRNNConfig(
+    {
+        "latent_size": 32,
+        "action_size": 3,
+        "hidden_size": 256,
+        "gmm_components": 5,
+        "data_dir": "./data/carracing",
+        "logdir": "./results/carracing",
+        "num_epochs": 30,
+    }
+)
 train_mdn_rnn(vae_config, mdrnn_config)
 
 # Stage 3: Train Controller with CMA-ES
-ctrl_config = WMControllerConfig({
-    "latent_size": 32, "hidden_size": 256, "action_size": 3,
-    "env_name": "CarRacing-v2", "logdir": "./results/carracing",
-    "pop_size": 10, "n_samples": 4, "target_return": 950.0,
-})
+ctrl_config = WMControllerConfig(
+    {
+        "latent_size": 32,
+        "hidden_size": 256,
+        "action_size": 3,
+        "env_name": "CarRacing-v2",
+        "logdir": "./results/carracing",
+        "pop_size": 10,
+        "n_samples": 4,
+        "target_return": 950.0,
+    }
+)
 train_controller(ctrl_config)
 ```
 

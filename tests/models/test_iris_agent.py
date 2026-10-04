@@ -114,9 +114,7 @@ class TestIRISAgentImagineRollout:
         with torch.no_grad():
             # logits [-inf-ish, +big] => argmax is class 1 (terminal).
             agent.transformer.termination_head.weight.zero_()
-            agent.transformer.termination_head.bias.copy_(
-                torch.tensor([-10.0, 10.0])
-            )
+            agent.transformer.termination_head.bias.copy_(torch.tensor([-10.0, 10.0]))
             trajectory = agent.imagine_rollout(initial_frame, horizon=5)
 
         steps = trajectory["actions"].shape[1]
@@ -138,9 +136,7 @@ class TestIRISAgentImagineRollout:
         K = agent.config.tokens_per_frame
         agent.transformer.max_seq_len = K + capacity_steps * (K + 1)
         # Never terminate, so the full horizon is always attempted.
-        agent.transformer.termination_head.bias.data.copy_(
-            torch.tensor([10.0, -10.0])
-        )
+        agent.transformer.termination_head.bias.data.copy_(torch.tensor([10.0, -10.0]))
 
         horizon = 14
         with torch.no_grad():
@@ -165,9 +161,7 @@ class TestIRISAgentImagineRollout:
         with torch.no_grad():
             # Never terminate, so the rollout runs the full horizon.
             agent.transformer.termination_head.weight.zero_()
-            agent.transformer.termination_head.bias.copy_(
-                torch.tensor([10.0, -10.0])
-            )
+            agent.transformer.termination_head.bias.copy_(torch.tensor([10.0, -10.0]))
             cache = agent.transformer.init_cache(B, torch.device("cpu"))
             tokens = torch.randint(0, agent.config.vocab_size, (B, 1, K))
             pos = agent.transformer.prime_cache(tokens, None, cache, start_pos=0)
@@ -274,8 +268,6 @@ class TestIRISAgentCheckpointSecurity:
         """
         stale = {"encoder": agent.encoder.state_dict()}
 
-        with patch(
-            "synora.models.iris_agent.torch.load", return_value=stale
-        ):
+        with patch("synora.models.iris_agent.torch.load", return_value=stale):
             with pytest.raises(RuntimeError, match="checkpoint format v1"):
                 agent.load("old.pt")

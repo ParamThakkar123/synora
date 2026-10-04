@@ -306,9 +306,7 @@ class CNNFeatureExtractor(nn.Module):
         in_channels = frame_shape[0]
 
         for out_channels in channels:
-            layers.append(
-                nn.Conv2d(in_channels, out_channels, 3, stride=1, padding=1)
-            )
+            layers.append(nn.Conv2d(in_channels, out_channels, 3, stride=1, padding=1))
             layers.append(nn.ReLU())
             layers.append(nn.MaxPool2d(kernel_size=2, stride=2))
             in_channels = out_channels

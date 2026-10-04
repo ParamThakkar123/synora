@@ -83,7 +83,9 @@ class _ShortImageEnv:
     """Three-step episodes with Dreamer's ``{"image": ...}`` observations."""
 
     def __init__(self):
-        self.observation_space = {"image": gym.spaces.Box(0, 255, (3, 64, 64), np.uint8)}
+        self.observation_space = {
+            "image": gym.spaces.Box(0, 255, (3, 64, 64), np.uint8)
+        }
         self.action_space = gym.spaces.Box(-1.0, 1.0, (2,), np.float32)
         self.t = 0
 

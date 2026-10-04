@@ -31,11 +31,11 @@ Gaussian to the best candidates.
 from synora import RSSMPolicy
 
 policy = RSSMPolicy(
-    model=rssm,               # RecurrentStateSpaceModel instance
-    planning_horizon=20,      # H — imagined steps per candidate
-    num_candidates=1000,      # N — candidates per iteration
-    num_iterations=10,        # I — CEM refitting iterations
-    top_candidates=100,       # K — elite candidates kept
+    model=rssm,  # RecurrentStateSpaceModel instance
+    planning_horizon=20,  # H — imagined steps per candidate
+    num_candidates=1000,  # N — candidates per iteration
+    num_iterations=10,  # I — CEM refitting iterations
+    top_candidates=100,  # K — elite candidates kept
     device=torch.device("cuda"),
 )
 
@@ -65,9 +65,9 @@ episode-based `Memory`.
 from synora import RSSMPolicy, RolloutGenerator, Episode
 
 generator = RolloutGenerator(
-    env,                          # Gymnasium-compatible environment
+    env,  # Gymnasium-compatible environment
     device=torch.device("cuda"),
-    policy=policy,                # RSSMPolicy (or None for random actions)
+    policy=policy,  # RSSMPolicy (or None for random actions)
     episode_gen=lambda: Episode(postprocess_fn),
     max_episode_steps=1000,
     enable_streaming_video=False,  # set True to stream rollouts to disk
@@ -105,7 +105,8 @@ and logs prediction quality metrics.
 
 ```python
 generator = RolloutGenerator(
-    env, device,
+    env,
+    device,
     policy=policy,
     enable_streaming_video=True,
     streaming_video_path="rollouts/",
@@ -132,7 +133,7 @@ cnn = CNNFeatureExtractor(
 )
 
 frames = torch.randn(4, 3, 64, 64)
-features = cnn(frames)   # (4, 512)
+features = cnn(frames)  # (4, 512)
 ```
 
 Architecture: `Conv2D(3→32) → Conv2D(32→64) → Conv2D(64→128) → Conv2D(128→256) → Linear(4096 → output_size)`, each conv with kernel 3, stride 2, padding 1 and ReLU.
@@ -150,8 +151,8 @@ actor = IRISActor(
 )
 
 # Forward with time dimension:
-frames = torch.randn(4, 20, 3, 64, 64)   # (B, T, C, H, W)
-logits, hidden = actor(frames)            # logits: (B, T, 6)
+frames = torch.randn(4, 20, 3, 64, 64)  # (B, T, C, H, W)
+logits, hidden = actor(frames)  # logits: (B, T, 6)
 
 # Single-step action selection:
 action = actor.get_action(frame, temperature=1.0, deterministic=False)
@@ -173,7 +174,7 @@ critic = IRISCritic(
 )
 
 frames = torch.randn(4, 20, 3, 64, 64)
-values, hidden = critic(frames)   # values: (B, T)
+values, hidden = critic(frames)  # values: (B, T)
 ```
 
 The critic matches the actor's CNN + LSTM architecture but outputs a scalar
@@ -188,8 +189,8 @@ from synora import IRISPolicy
 policy = IRISPolicy(action_size=6)
 
 frames = torch.randn(4, 3, 64, 64)
-logits = policy(frames)                # (4, 6)
-action = policy.act(frames[0])         # scalar action index
+logits = policy(frames)  # (4, 6)
+action = policy.act(frames[0])  # scalar action index
 hidden = policy.init_hidden(4, "cuda")
 ```
 
@@ -207,11 +208,11 @@ critic = synora.IRISCritic()
 
 # Imagined rollout loop:
 frames = torch.randn(1, 20, 3, 64, 64)
-action_logits, _ = actor(frames)       # (1, 20, 6)
-values, _ = critic(frames)             # (1, 20)
+action_logits, _ = actor(frames)  # (1, 20, 6)
+values, _ = critic(frames)  # (1, 20)
 
 # REINFORCE with λ-return baseline:
-advantages = ...   # computed from values and predicted rewards
+advantages = ...  # computed from values and predicted rewards
 actor_loss = -(action_logits * advantages).mean()
 critic_loss = F.mse_loss(values, target_values)
 ```
@@ -225,7 +226,7 @@ deterministic states to an action vector:
 from synora.models.controller import Controller
 
 ctrl = Controller(latent_size=32, hidden_size=256, action_size=3)
-action = ctrl(torch.cat([z, h], dim=-1))   # (B, action_size)
+action = ctrl(torch.cat([z, h], dim=-1))  # (B, action_size)
 ```
 
 Weights are trained with CMA-ES (black-box evolution) rather than gradient

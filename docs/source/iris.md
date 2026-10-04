@@ -148,9 +148,9 @@ plus, from the aₜ position:   predict reward rₜ and termination dₜ
 # Imagine H steps: sample tokens autoregressively, decode to frames, feed to actor-critic
 for h in range(imagination_horizon):
     tokens = transformer.generate(prev_tokens, action)
-    frame = autoencoder.decode(tokens)          # decode to pixels
-    action = actor(frame, hidden_state)          # policy
-    reward = transformer.reward_head(tokens)     # predicted reward
+    frame = autoencoder.decode(tokens)  # decode to pixels
+    action = actor(frame, hidden_state)  # policy
+    reward = transformer.reward_head(tokens)  # predicted reward
     hidden_state = lstm(hidden_state, action, tokens)
 ```
 
@@ -289,9 +289,16 @@ used without the Atari training loop:
 
 ```python
 from synora import (
-    IRISAgent, IRISConfig, IRISEncoder, IRISDecoder,
-    IRISTransformer, IRISWorldModel, IRISReplayBuffer,
-    LPIPSPerceptualLoss, build_perceptual_loss, compute_lambda_return,
+    IRISAgent,
+    IRISConfig,
+    IRISEncoder,
+    IRISDecoder,
+    IRISTransformer,
+    IRISWorldModel,
+    IRISReplayBuffer,
+    LPIPSPerceptualLoss,
+    build_perceptual_loss,
+    compute_lambda_return,
 )
 
 agent = IRISAgent.from_config(IRISConfig(), action_size=6, device="cuda")
@@ -321,7 +328,7 @@ CHW inputs are all handled.
 from synora.envs import make_minecraft_env
 from synora.training.train_iris import IRISTrainer
 
-env = make_minecraft_env("MineRLTreechop-v0")          # or backend="minedojo"
+env = make_minecraft_env("MineRLTreechop-v0")  # or backend="minedojo"
 trainer = IRISTrainer(game="MineRLTreechop-v0", config=cfg, env=env)
 ```
 

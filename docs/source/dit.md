@@ -77,25 +77,25 @@ The simplified DDPM loss trains the model to predict the noise `ε` at each time
 ```
 
 ```python
-x0 = batch                       # clean images
-t = randint(0, T)                # random timestep
-eps = randn_like(x0)             # random noise
+x0 = batch  # clean images
+t = randint(0, T)  # random timestep
+eps = randn_like(x0)  # random noise
 xt = sqrt(alpha_bar[t]) * x0 + sqrt(1 - alpha_bar[t]) * eps
-eps_pred = model(xt, t)          # predict noise
-loss = mse(eps_pred, eps)        # simple noise-prediction loss
+eps_pred = model(xt, t)  # predict noise
+loss = mse(eps_pred, eps)  # simple noise-prediction loss
 loss.backward()
 ```
 
 ### Sampling
 
 ```python
-x = torch.randn(shape)           # pure noise
+x = torch.randn(shape)  # pure noise
 for t in reversed(range(T)):
-    eps_pred = model(x, t)       # predict noise
+    eps_pred = model(x, t)  # predict noise
     x = (x - sqrt(1 - alpha_bar[t]) * eps_pred) / sqrt(alpha_bar[t])
     if t > 0:
         x += sigma[t] * torch.randn_like(x)
-return x                         # generated image
+return x  # generated image
 ```
 
 ## DiT: Diffusion Transformer

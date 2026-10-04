@@ -202,9 +202,7 @@ class SelfAttentionBlock(nn.Module):
         # Apply fused scaled dot-product attention over spatial tokens.
         out = F.scaled_dot_product_attention(
             q.unsqueeze(1), k.unsqueeze(1), v.unsqueeze(1)
-        ).squeeze(
-            1
-        )  # (B, HW, C)
+        ).squeeze(1)  # (B, HW, C)
         out = out.permute(0, 2, 1).reshape(B, C, H, W)
 
         # Residual connection with learned weight

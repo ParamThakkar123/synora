@@ -114,7 +114,6 @@ def _frechet_distance(
     return float(diff @ diff + np.trace(sigma1 + sigma2 - 2.0 * covmean))
 
 
-
 @lru_cache(maxsize=None)
 def _cached_extractor(device_str: str) -> "InceptionFeatureExtractor":
     """Return a shared, frozen InceptionFeatureExtractor for ``device_str``.
@@ -127,6 +126,7 @@ def _cached_extractor(device_str: str) -> "InceptionFeatureExtractor":
     extractor = InceptionFeatureExtractor(torch.device(device_str))
     extractor.requires_grad_(False)
     return extractor
+
 
 class FID:
     """Fréchet Inception Distance.

@@ -117,6 +117,7 @@ For interactive applications:
 import torch
 from synora import DreamerAgent
 
+
 class InferenceServer:
     def __init__(self, device="cuda"):
         self.device = torch.device(device)
@@ -129,6 +130,7 @@ class InferenceServer:
         }
         with torch.no_grad():
             return self.agent.predict(inputs)
+
 
 server = InferenceServer()
 ```
@@ -266,6 +268,7 @@ class CustomEnv:
         # Your environment logic
         return obs, reward, done
 
+
 env = CustomEnv()
 agent = DreamerAgent.from_pretrained("custom_checkpoint")
 
@@ -275,9 +278,7 @@ for episode in range(10):
 
     while True:
         with torch.no_grad():
-            next_obs_pred, reward_pred = agent.predict(
-                {"obs": obs, "action": action}
-            )
+            next_obs_pred, reward_pred = agent.predict({"obs": obs, "action": action})
 
         # Use predictions for planning/control
         action = agent.plan(obs, next_obs_pred, reward_pred)

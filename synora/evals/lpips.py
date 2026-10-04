@@ -15,7 +15,6 @@ import torch.nn as nn
 from torchvision import models
 
 
-
 class VGGFeatureExtractor(nn.Module):
     """VGG16 truncated to output features from multiple intermediate layers."""
 
@@ -59,7 +58,6 @@ class VGGFeatureExtractor(nn.Module):
         return features
 
 
-
 @lru_cache(maxsize=None)
 def _cached_extractor(device_str: str) -> "VGGFeatureExtractor":
     """Return a shared, frozen VGGFeatureExtractor for ``device_str``.
@@ -72,6 +70,7 @@ def _cached_extractor(device_str: str) -> "VGGFeatureExtractor":
     extractor = VGGFeatureExtractor(torch.device(device_str))
     extractor.requires_grad_(False)
     return extractor
+
 
 class LPIPS:
     """Learned Perceptual Image Patch Similarity.

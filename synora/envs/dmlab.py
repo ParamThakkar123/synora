@@ -147,7 +147,9 @@ class DMLabEnv:
         )
         self._last_obs: dict[str, np.ndarray] | None = None
 
-        self._action_space = _OneHotActionSpace(self._action_set.shape[0], seed=self._seed)
+        self._action_space = _OneHotActionSpace(
+            self._action_set.shape[0], seed=self._seed
+        )
         self._observation_space = self._build_observation_space()
         self._seed_spaces(self._seed)
 
@@ -223,7 +225,6 @@ class DMLabEnv:
                     space.seed(seed)
                 except Exception:
                     pass
-
 
     def reset(self, seed: int | None = None) -> dict[str, np.ndarray]:
         if seed is not None:

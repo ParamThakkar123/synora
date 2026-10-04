@@ -22,6 +22,7 @@ Use `register_world_model` as a decorator on your model class:
 ```python
 from synora import register_world_model
 
+
 @register_world_model(
     "my-agent",
     import_path="my_package.models:MyAgent",
@@ -44,9 +45,9 @@ cfg = synora.create_config("my-agent", learning_rate=1e-4)
 agent = synora.create_model("my-agent", cfg)
 
 # Discovery:
-print(synora.list_models())       # includes "my-agent"
+print(synora.list_models())  # includes "my-agent"
 spec = synora.get_model_spec("my-agent")
-print(spec.description)            # "My custom world model agent"
+print(spec.description)  # "My custom world model agent"
 ```
 
 ### Without a config class
@@ -55,8 +56,7 @@ If your model does not need a config object, omit `config_path`:
 
 ```python
 @register_world_model("simple-model", import_path="my_package.models:create_simple")
-class SimpleModel:
-    ...
+class SimpleModel: ...
 ```
 
 `create_config("simple-model")` returns `None`; keyword overrides are forwarded
@@ -93,8 +93,7 @@ Aliases let users refer to your model by multiple names:
     import_path="...",
     aliases=("my_agent", "custom", "ma"),
 )
-class MyAgent:
-    ...
+class MyAgent: ...
 ```
 
 All of the following resolve to the same model:
@@ -117,8 +116,7 @@ built-in models — use with caution):
     import_path="my_package.models:MyDreamer",
     override=True,
 )
-class MyDreamer:
-    ...
+class MyDreamer: ...
 ```
 
 This shadows the built-in `dreamer` spec. All existing scripts calling
@@ -169,10 +167,10 @@ point users to its replacement:
 ```python
 from synora import deprecated_class
 
+
 @deprecated_class(version="0.6.0", alternative="MyNewAgent")
 @register_world_model("old-agent", import_path="my_package.models:OldAgent")
-class OldAgent:
-    ...
+class OldAgent: ...
 ```
 
 Instantiating `OldAgent` (or using `create_model("old-agent")`) emits a
@@ -215,8 +213,7 @@ class ResearchModel:
     def __init__(self, config):
         self.config = config
 
-    def forward(self, obs):
-        ...
+    def forward(self, obs): ...
 ```
 
 Usage in any experiment script:
@@ -226,7 +223,7 @@ import synora
 
 model = synora.create_model(
     "research-model",
-    learning_rate=3e-4,    # overrides the default in MyConfig
+    learning_rate=3e-4,  # overrides the default in MyConfig
 )
 ```
 

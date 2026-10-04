@@ -125,11 +125,11 @@ I-JEPA uses **multi-block masking**: random rectangular blocks are masked
 rather than individual patches.
 
 ```python
-config.num_enc_masks = 1              # 1 context block
-config.enc_mask_scale = (0.85, 1.0)   # Context covers 85-100% of the image
-config.num_pred_masks = 4             # 4 target blocks
+config.num_enc_masks = 1  # 1 context block
+config.enc_mask_scale = (0.85, 1.0)  # Context covers 85-100% of the image
+config.num_pred_masks = 4  # 4 target blocks
 config.pred_mask_scale = (0.15, 0.2)  # Each target is 15-20%
-config.aspect_ratio = (0.75, 1.5)     # Target block aspect ratio range
+config.aspect_ratio = (0.75, 1.5)  # Target block aspect ratio range
 ```
 
 The context block is sampled at unit aspect ratio, and every region overlapping
@@ -192,7 +192,7 @@ import synora
 agent = synora.create_model(
     "jepa",
     dataset="imagenet",
-    batch_size=64,   # the paper uses 2048 across 16 GPUs; the LR follows it
+    batch_size=64,  # the paper uses 2048 across 16 GPUs; the LR follows it
     epochs=100,
 )
 agent.train()
@@ -217,7 +217,7 @@ agent.train()
 ### Data pipeline
 
 ```python
-cfg.dataset = "imagenet1k"     # ImageNet-1K (requires download)
+cfg.dataset = "imagenet1k"  # ImageNet-1K (requires download)
 cfg.root_path = "/data/imagenet"
 
 # Or use a generic image folder:
@@ -258,7 +258,7 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 encoder = load_jepa_encoder("results/jepa/jepa_run-latest.pth.tar", device)
 
 with torch.no_grad():
-    representations = encoder(images).mean(dim=1)   # [batch, embed_dim]
+    representations = encoder(images).mean(dim=1)  # [batch, embed_dim]
 ```
 
 ### Linear probing protocol

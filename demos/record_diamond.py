@@ -139,7 +139,9 @@ def rollout(
 
         if (step + 1) % 50 == 0:
             rate = (step + 1) / max(1e-6, time.time() - started)
-            print(f"  {'dream' if dream else 'real'}: {step + 1}/{steps} ({rate:.1f} fps)")
+            print(
+                f"  {'dream' if dream else 'real'}: {step + 1}/{steps} ({rate:.1f} fps)"
+            )
 
     return frames, episode_reward
 
@@ -203,7 +205,9 @@ def main() -> int:
         )
         print(f"  episode reward across clip: {reward:.1f}")
         path = write_video(
-            out_dir / "diamond_real.mp4", [label(f, "REAL") for f in real_frames], args.fps
+            out_dir / "diamond_real.mp4",
+            [label(f, "REAL") for f in real_frames],
+            args.fps,
         )
         if path:
             written.append(path)
@@ -215,7 +219,9 @@ def main() -> int:
             agent, args.dream_steps, True, deterministic, args.scale
         )
         path = write_video(
-            out_dir / "diamond_dream.mp4", [label(f, "DREAM") for f in dream_frames], args.fps
+            out_dir / "diamond_dream.mp4",
+            [label(f, "DREAM") for f in dream_frames],
+            args.fps,
         )
         if path:
             written.append(path)

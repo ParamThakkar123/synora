@@ -86,7 +86,7 @@ PlaNet stores **complete episodes** rather than individual transitions:
 ```python
 from synora import Memory, Episode
 
-memory = Memory(size=100)           # keep at most 100 episodes
+memory = Memory(size=100)  # keep at most 100 episodes
 episode = Episode()
 episode.append(obs, action, reward, done)
 episode.terminate(final_obs)
@@ -121,14 +121,14 @@ from synora import Planet
 
 agent = Planet(
     env="CartPole-v1",
-    bit_depth=5,              # image bit depth for preprocessing
-    state_size=200,           # deterministic GRU state dimension
-    latent_size=30,           # stochastic latent dimension
-    embedding_size=1024,      # encoder output dimension
-    memory_size=100,          # number of episodes to keep
+    bit_depth=5,  # image bit depth for preprocessing
+    state_size=200,  # deterministic GRU state dimension
+    latent_size=30,  # stochastic latent dimension
+    embedding_size=1024,  # encoder output dimension
+    memory_size=100,  # number of episodes to keep
     action_repeats=1,
     max_episode_steps=1000,
-    headless=False,           # set True for headless servers
+    headless=False,  # set True for headless servers
 )
 ```
 
@@ -139,11 +139,11 @@ results_dir = agent.train(
     epochs=100,
     steps_per_epoch=150,
     batch_size=32,
-    H=50,                     # sequence length for training
-    beta=1.0,                 # KL weight
+    H=50,  # sequence length for training
+    beta=1.0,  # KL weight
     save_every=25,
     record_grads=False,
-    scheduler_type="step",    # LR scheduler: "step", "cosine", "exponential", "plateau", None
+    scheduler_type="step",  # LR scheduler: "step", "cosine", "exponential", "plateau", None
     scheduler_kwargs={"step_size": 50, "gamma": 0.5},
 )
 ```

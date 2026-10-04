@@ -34,7 +34,9 @@ def main() -> None:
         help="Override the autoencoder, transformer and actor-critic batch sizes",
     )
     parser.add_argument("--seed", type=int, default=42)
-    parser.add_argument("--device", default=None, help="cuda, mps or cpu (default: best available)")
+    parser.add_argument(
+        "--device", default=None, help="cuda, mps or cpu (default: best available)"
+    )
     parser.add_argument("--save-dir", default="checkpoints/iris")
     args = parser.parse_args()
 
@@ -45,7 +47,9 @@ def main() -> None:
         config.actor_critic_batch_size = args.batch_size
 
     device = args.device or default_device_name()
-    logger.info("Training IRIS on %s for %d epochs (%s)", args.game, args.epochs, device)
+    logger.info(
+        "Training IRIS on %s for %d epochs (%s)", args.game, args.epochs, device
+    )
 
     trainer = IRISTrainer(game=args.game, device=device, seed=args.seed, config=config)
     trainer.train(total_epochs=args.epochs, save_dir=args.save_dir)

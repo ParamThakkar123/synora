@@ -114,7 +114,6 @@ def _frechet_distance(
     return float(diff @ diff + np.trace(sigma1 + sigma2 - 2.0 * covmean))
 
 
-
 @lru_cache(maxsize=None)
 def _cached_extractor(device_str: str) -> "VideoFeatureExtractor":
     """Return a shared, frozen VideoFeatureExtractor for ``device_str``.
@@ -127,6 +126,7 @@ def _cached_extractor(device_str: str) -> "VideoFeatureExtractor":
     extractor = VideoFeatureExtractor(torch.device(device_str))
     extractor.requires_grad_(False)
     return extractor
+
 
 class FVD:
     """Fréchet Video Distance.

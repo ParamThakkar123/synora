@@ -153,9 +153,7 @@ class ReplayBuffer:
             done_seq.append(self.dones[indices[:-1]])
             next_obs_seq.append(self.next_observations[indices[:-1]])
 
-        obs = to_model_domain(
-            torch.from_numpy(np.stack(obs_seq)).to(self.device)
-        )
+        obs = to_model_domain(torch.from_numpy(np.stack(obs_seq)).to(self.device))
         # obs: (B, T, H, W, C) -> (B, T, C, H, W)
         obs = obs.permute(0, 1, 4, 2, 3)
 

@@ -228,9 +228,7 @@ class IRISReplayBuffer:
             empty = np.zeros((batch_size, 0, *self.obs_shape), dtype=np.uint8)
             return start_obs, empty
 
-        burn_in_obs = np.zeros(
-            (batch_size, burn_in, *self.obs_shape), dtype=np.uint8
-        )
+        burn_in_obs = np.zeros((batch_size, burn_in, *self.obs_shape), dtype=np.uint8)
         for i, start in enumerate(starts):
             first = max(0, start - burn_in)
             window = self.observations[first:start]

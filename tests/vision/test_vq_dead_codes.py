@@ -117,8 +117,7 @@ def test_revival_rescues_a_collapsed_encoder_codebook(quantizer):
     with_revival = final_perplexity(True)
 
     assert without_revival < 8.0, (
-        "expected collapse without revival, got perplexity "
-        f"{without_revival:.2f}/128"
+        f"expected collapse without revival, got perplexity {without_revival:.2f}/128"
     )
     assert with_revival > 24.0, (
         f"codebook stayed collapsed despite revival: {with_revival:.2f}/128"

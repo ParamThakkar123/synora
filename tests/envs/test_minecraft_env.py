@@ -99,9 +99,7 @@ class TestActionTranslation:
     def test_noop_presses_nothing(self):
         env = MinecraftDiscreteEnv(env=FakeMineRLEnv())
         native = env.translate_action(env.action_names.index("noop"))
-        assert all(
-            v == 0 for k, v in native.items() if k != "camera"
-        ), native
+        assert all(v == 0 for k, v in native.items() if k != "camera"), native
         assert np.allclose(native["camera"], 0.0)
 
     def test_movement_sets_only_its_own_key(self):

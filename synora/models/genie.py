@@ -621,7 +621,6 @@ class Genie(nn.Module):
         return sum(p.numel() for p in self.parameters())
 
 
-
 def genie_kwargs_from_config(
     config: GenieConfig | GenieSmallConfig | dict[str, Any],
 ) -> dict[str, Any]:
@@ -657,6 +656,7 @@ def genie_kwargs_from_config(
         tokenizer_num_heads=config.tokenizer_num_heads,
         action_num_heads=config.action_num_heads,
     )
+
 
 def create_genie(
     num_frames: int = 16,

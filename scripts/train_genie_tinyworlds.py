@@ -59,10 +59,24 @@ def main():
     # smallest run possible was still the full 462M-parameter model, which does
     # not fit on a small GPU no matter how low batch_size goes.
     handled = {
-        "dataset", "num_frames", "image_size", "batch_size", "num_workers",
-        "max_steps", "log_interval", "val_interval", "learning_rate",
-        "cache_dir", "data_file", "checkpoint_dir", "checkpoint_interval",
-        "device", "early_stopping", "patience", "min_delta", "val_split",
+        "dataset",
+        "num_frames",
+        "image_size",
+        "batch_size",
+        "num_workers",
+        "max_steps",
+        "log_interval",
+        "val_interval",
+        "learning_rate",
+        "cache_dir",
+        "data_file",
+        "checkpoint_dir",
+        "checkpoint_interval",
+        "device",
+        "early_stopping",
+        "patience",
+        "min_delta",
+        "val_split",
     }
     fields = {f.name: f.type for f in dataclasses.fields(config)}
     for key, value in cli_cfg.items():

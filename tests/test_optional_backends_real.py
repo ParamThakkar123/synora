@@ -202,7 +202,9 @@ def test_dmc_installer_never_resolves_upstream_labmaze():
 
     steps = install_steps()
     assert any("labmaze-new" in arg for step in steps for arg in step)
-    dm_control_step = next(step for step in steps if any("dm-control" in a for a in step))
+    dm_control_step = next(
+        step for step in steps if any("dm-control" in a for a in step)
+    )
     assert "--no-deps" in dm_control_step
     # Upstream `labmaze` must never be requested: it has no CPython 3.13 wheel
     # and its sdist builds with Bazel.

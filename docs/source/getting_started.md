@@ -74,7 +74,7 @@ need lower-level control:
 from synora import DreamerAgent, DreamerConfig
 
 cfg = DreamerConfig()
-cfg.env_backend = "gym"       # or the default "dmc" with synora[dmc] installed
+cfg.env_backend = "gym"  # or the default "dmc" with synora[dmc] installed
 cfg.env = "Pendulum-v1"
 agent = DreamerAgent(cfg)
 ```

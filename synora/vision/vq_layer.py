@@ -174,7 +174,9 @@ class VectorQuantizer(nn.Module):
         z_q = z_flat + (z_q - z_flat).detach()
 
         # Perplexity: measure of how many codebook entries are used
-        encodings: torch.Tensor = F.one_hot(indices.reshape(-1), self.vocab_size).float()
+        encodings: torch.Tensor = F.one_hot(
+            indices.reshape(-1), self.vocab_size
+        ).float()
         avg_probs: torch.Tensor = torch.mean(encodings, dim=0)
         perplexity: torch.Tensor = torch.exp(
             -torch.sum(avg_probs * torch.log(avg_probs + 1e-10))
@@ -323,9 +325,7 @@ class VectorQuantizerEMA(nn.Module):
                 # Laplace smoothing to avoid dividing by zero for unused codes.
                 n = self.ema_cluster_size.sum()
                 smoothed = (
-                    (self.ema_cluster_size + self.epsilon)
-                    / (n + V * self.epsilon)
-                    * n
+                    (self.ema_cluster_size + self.epsilon) / (n + V * self.epsilon) * n
                 )  # (V,)
                 self.codebook.weight.data.copy_(
                     self.ema_embed_avg / smoothed.unsqueeze(1)

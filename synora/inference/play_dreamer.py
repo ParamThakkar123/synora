@@ -256,18 +256,20 @@ def run_play(
         human_action = get_human_action(key, player.action_size)
 
         with torch.no_grad():
-            agent_action = player.actor(
-                player.features(state), deter=deterministic
-            )
+            agent_action = player.actor(player.features(state), deter=deterministic)
             if control == "human":
                 control_mode = "HUMAN"
-                chosen = human_action if human_action is not None else np.zeros(
-                    player.action_size, dtype=np.float32
+                chosen = (
+                    human_action
+                    if human_action is not None
+                    else np.zeros(player.action_size, dtype=np.float32)
                 )
             elif control == "versus":
                 control_mode = "HUMAN vs AGENT"
-                chosen = human_action if human_action is not None else np.zeros(
-                    player.action_size, dtype=np.float32
+                chosen = (
+                    human_action
+                    if human_action is not None
+                    else np.zeros(player.action_size, dtype=np.float32)
                 )
             elif human_action is not None:
                 control_mode = "HUMAN"
@@ -295,9 +297,7 @@ def run_play(
                     action_np = action[0].cpu().numpy()
                 else:
                     action_np = chosen
-                    action = torch.tensor(
-                        chosen, device=player.device
-                    ).unsqueeze(0)
+                    action = torch.tensor(chosen, device=player.device).unsqueeze(0)
 
                 next_obs, reward, done, info = env.step(action_np)
                 executed = (
@@ -354,7 +354,9 @@ def run_play(
         cv2.imshow("Dreamer Play", display_bgr)
 
         if video_recorder is not None:
-            video_recorder.write_frame((np.clip(display_rgb, 0, 1) * 255).astype(np.uint8))
+            video_recorder.write_frame(
+                (np.clip(display_rgb, 0, 1) * 255).astype(np.uint8)
+            )
 
     if video_recorder is not None:
         video_recorder.close()
@@ -389,7 +391,9 @@ def main() -> None:
         help="assist: keys override the policy. human: you always drive. "
         "versus: you drive, the policy's action is shown as the opponent.",
     )
-    parser.add_argument("--versus", action="store_true", help="Shortcut for --control versus.")
+    parser.add_argument(
+        "--versus", action="store_true", help="Shortcut for --control versus."
+    )
     args = parser.parse_args()
     run_play(
         checkpoint=args.checkpoint,

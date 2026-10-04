@@ -309,9 +309,7 @@ def jepa_linear_probe(
     sweep under ``"sweep"``. ``representations`` lists how many trailing blocks
     to average-pool and concatenate -- the paper tries 1 and 4.
     """
-    torch_device = torch.device(
-        device or default_device_name()
-    )
+    torch_device = torch.device(device or default_device_name())
     encoder = load_jepa_encoder(
         checkpoint=checkpoint,
         device=torch_device,

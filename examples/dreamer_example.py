@@ -31,7 +31,9 @@ def main() -> None:
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--logdir", default=None)
     parser.add_argument(
-        "--device", choices=("auto", "gpu", "cpu"), default="auto",
+        "--device",
+        choices=("auto", "gpu", "cpu"),
+        default="auto",
         help="auto/gpu use CUDA or Apple MPS when available",
     )
     args = parser.parse_args()

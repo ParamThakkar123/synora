@@ -195,9 +195,7 @@ def make_prompt(
             # (C, T, H, W) in [0, 1].
             clip = dataset[0]
             frame = clip[:, min(args.prompt_index, clip.shape[1] - 1)]
-            print(
-                f"Prompt: {args.prompt_dataset} clip 0 frame {args.prompt_index}"
-            )
+            print(f"Prompt: {args.prompt_dataset} clip 0 frame {args.prompt_index}")
             return frame.unsqueeze(0).to(device)
         except Exception as exc:  # dataset absent, or not downloaded
             print(f"Could not read a dataset prompt ({exc}); using noise instead.")
@@ -306,10 +304,7 @@ def main() -> int:
     writer.close()
     # args.fps frames of the last image are appended so the clip does not snap
     # back instantly on loop; count them.
-    print(
-        f"Wrote {video_path}  ({args.num_frames} generated "
-        f"+ {args.fps} hold frames)"
-    )
+    print(f"Wrote {video_path}  ({args.num_frames} generated + {args.fps} hold frames)")
 
     return 0
 

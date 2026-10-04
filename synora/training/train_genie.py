@@ -119,9 +119,7 @@ class VideoDataset(Dataset):
 
     def _to_thwc(self, array: np.ndarray) -> np.ndarray:
         if array.ndim != 4:
-            raise ValueError(
-                f"Expected a 4-D clip, got shape {array.shape}"
-            )
+            raise ValueError(f"Expected a 4-D clip, got shape {array.shape}")
         array = np.asarray(array)
         # Channel-first (C, T, H, W) vs channel-last (T, H, W, C).
         if array.shape[0] in (1, 3) and array.shape[-1] not in (1, 3):
@@ -159,9 +157,7 @@ class VideoDataset(Dataset):
             ) from exc
         resized = []
         for frame in frames:
-            image = Image.fromarray(
-                np.clip(frame * 255.0, 0, 255).astype(np.uint8)
-            )
+            image = Image.fromarray(np.clip(frame * 255.0, 0, 255).astype(np.uint8))
             image = image.resize((self.image_size, self.image_size))
             resized.append(np.asarray(image, dtype=np.float32) / 255.0)
         return np.stack(resized, axis=0)

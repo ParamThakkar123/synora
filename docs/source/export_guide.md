@@ -41,8 +41,8 @@ symbolic.
 from synora import export_model, load_exported, verify_export
 
 path = export_model(module, "step.pt2", format="exported_program", example_inputs=x)
-max_err = verify_export(module, path, x)   # raises AssertionError on mismatch
-runner = load_exported(path)               # format inferred from the suffix
+max_err = verify_export(module, path, x)  # raises AssertionError on mismatch
+runner = load_exported(path)  # format inferred from the suffix
 runner = load_exported("step_aoti.pt2", format="aoti")
 ```
 
@@ -69,6 +69,7 @@ modifying `torch.nn.Module`; Synora agents keep `.export()` through
 import torch
 from synora import export_model
 
+
 class MyModel(torch.nn.Module):
     def __init__(self):
         super().__init__()
@@ -77,11 +78,14 @@ class MyModel(torch.nn.Module):
     def forward(self, x):
         return self.linear(x)
 
+
 model = MyModel()
 model.eval()
 
 # torch.export program (recommended)
-export_model(model, "model.pt2", format="exported_program", example_inputs=torch.zeros(1, 64))
+export_model(
+    model, "model.pt2", format="exported_program", example_inputs=torch.zeros(1, 64)
+)
 
 # ONNX (requires example_inputs)
 export_model(model, "model.onnx", format="onnx", example_inputs=torch.zeros(1, 64))
@@ -162,7 +166,7 @@ agent.export(
     input_names=["latent"],
     output_names=["action"],
     dynamic_axes={"latent": {0: "batch"}, "action": {0: "batch"}},
-    opset_version=17,        # default
+    opset_version=17,  # default
 )
 ```
 
@@ -210,6 +214,7 @@ If you build a custom agent that is not an `nn.Module`, inherit
 
 ```python
 from synora import ExportableAgentMixin
+
 
 class MyAgent(ExportableAgentMixin):
     def __init__(self):
