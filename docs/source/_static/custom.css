@@ -127,6 +127,12 @@ p {
   text-decoration: none !important;
 }
 
+/* The logo is the full wordmark; size it to sit inside the 48px navbar. */
+.navbar-brand img.logo__image {
+  height: 30px;
+  width: auto;
+}
+
 .navbar-logo-icon {
   display: flex;
   align-items: center;

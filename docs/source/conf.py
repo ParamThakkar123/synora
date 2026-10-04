@@ -132,14 +132,14 @@ html_theme_options = {
     "logo": {
         "image_light": "synora-logo-light.svg",
         "image_dark": "synora-logo-dark.svg",
-        "text": "Synora",
+        # The logo image is the wordmark, so no separate text label.
         "alt_text": "Synora",
     },
-    # Keep the top navbar intentionally minimal: project title/logo,
-    # documentation search, and the GitHub redirect link only.
+    # Keep the top navbar intentionally minimal: logo, documentation search,
+    # the light/dark switch (the docs open in dark mode), and the GitHub link.
     "navbar_start": ["navbar-logo"],
     "navbar_center": [],
-    "navbar_end": ["search-field", "navbar-icon-links"],
+    "navbar_end": ["search-field", "theme-switcher", "navbar-icon-links"],
     "navbar_persistent": [],
 }
 

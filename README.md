@@ -1,4 +1,9 @@
-# Synora
+<h1 align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/ParamThakkar123/synora/main/docs/source/_static/synora-logo-dark.svg">
+    <img alt="Synora" src="https://raw.githubusercontent.com/ParamThakkar123/synora/main/docs/source/_static/synora-logo-light.svg" height="72">
+  </picture>
+</h1>
 
 <div align="center">
   <p>
