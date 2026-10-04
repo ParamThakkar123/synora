@@ -3,9 +3,10 @@ from __future__ import annotations
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from synora.export import ExportableAgentMixin
 
 
-class DDPM(nn.Module):
+class DDPM(ExportableAgentMixin, nn.Module):
     """Utility module implementing forward and reverse DDPM diffusion steps.
 
     Precomputes diffusion schedule terms and exposes helpers for noising

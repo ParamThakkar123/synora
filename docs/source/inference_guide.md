@@ -155,14 +155,13 @@ with torch.inference_mode():
 ```
 
 Prefer `torch.compile` (via `optimize_for_inference` or `synora.maybe_compile`)
-over `torch.jit.script`. TorchScript is in maintenance mode upstream, and
-`synora.utils.jit_utils` is deprecated. Always run inference under
+over `torch.jit.script`, which is in maintenance mode upstream. Always run inference under
 `torch.inference_mode()`: it skips autograd bookkeeping that `no_grad` still
 performs.
 
 ## Exporting Models
 
-Synora installs a deployment-oriented `export()` method on `torch.nn.Module`, so every model class in the library can be exported with the same API. High-level wrapper agents such as Dreamer and PlaNet use the same exporter for their contained modules:
+Every model class in the top-level `synora` namespace has a deployment-oriented `export()` method, and `synora.export_model(module, ...)` exports any other `nn.Module` with the same options. High-level wrapper agents such as Dreamer and PlaNet use the same exporter for their contained modules:
 
 ```python
 model.export("model.pt2", format="exported_program", example_inputs=example_inputs)
@@ -228,7 +227,7 @@ images = torch.randn(1, 3, 224, 224)
 vit.export("vit.onnx", format="onnx", example_inputs=images)
 ```
 
-Agents that contain multiple deployable modules accept either short target names such as `"obs_encoder"` or fully qualified paths such as `"dreamer.obs_encoder"`. JEPA exports a ViT encoder target by default, while lower-level JEPA `VisionTransformer` modules can be exported directly like any other `torch.nn.Module`.
+Agents that contain multiple deployable modules accept either short target names such as `"obs_encoder"` or fully qualified paths such as `"dreamer.obs_encoder"`. JEPA exports a ViT encoder target by default, while lower-level JEPA `VisionTransformer` modules have `.export()` themselves.
 
 TensorRT export requires `torch-tensorrt` in the deployment environment:
 

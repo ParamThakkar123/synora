@@ -1,6 +1,7 @@
 from torch import nn
 import torch
 import torch.nn.functional as F
+from synora.export import ExportableAgentMixin
 
 
 # A code that is never selected decays as ``usage *= ema_decay`` each step. With
@@ -70,7 +71,7 @@ def restart_dead_codes(
     return torch.tensor(float(num_dead), device=codebook.weight.device), dead
 
 
-class VectorQuantizer(nn.Module):
+class VectorQuantizer(ExportableAgentMixin, nn.Module):
     """Vector Quantizer for discrete autoencoder.
 
     Implements the VQ-VAE quantization from:
@@ -241,7 +242,7 @@ class VectorQuantizer(nn.Module):
         return z_q
 
 
-class VectorQuantizerEMA(nn.Module):
+class VectorQuantizerEMA(ExportableAgentMixin, nn.Module):
     """Vector Quantizer with Exponential Moving Average updates.
 
     Uses EMA updates for the codebook instead of gradient-based updates,

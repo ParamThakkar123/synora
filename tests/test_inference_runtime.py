@@ -420,32 +420,44 @@ def test_unknown_export_format_lists_new_formats(tmp_path):
         export_model(nn.Linear(2, 2), tmp_path / "x", format="nope")
 
 
-def test_global_export_warns_for_foreign_modules(tmp_path):
+def test_importing_synora_does_not_patch_nn_module():
+    import synora  # noqa: F401
     import synora.export  # noqa: F401
 
-    with pytest.warns(DeprecationWarning, match="export_model"):
-        nn.Linear(2, 1).export(
-            tmp_path / "lin.pt2",
-            format="exported_program",
-            example_inputs=torch.zeros(1, 2),
-        )
-
-
-def test_global_export_install_can_be_disabled(monkeypatch):
-    from synora.export import install_export_method
-
-    monkeypatch.delattr(nn.Module, "_synora_export_installed")
-    monkeypatch.delattr(nn.Module, "export")
-    monkeypatch.setenv("SYNORA_NO_GLOBAL_EXPORT", "1")
-    install_export_method()
     assert not hasattr(nn.Module, "export")
 
 
-def test_jit_utils_are_deprecated():
-    from synora.utils.jit_utils import jit_compile_module
+def test_every_public_module_class_is_exportable():
+    """Public ``nn.Module`` classes carry ``.export()`` through the mixin."""
+    import inspect
 
-    with pytest.warns(DeprecationWarning):
-        jit_compile_module(nn.Linear(2, 2))
+    import synora
+    from synora.export import ExportableAgentMixin
+
+    missing = []
+    for name in synora.__all__:
+        try:
+            obj = getattr(synora, name)
+        except ImportError:  # optional backend not installed
+            continue
+        if (
+            inspect.isclass(obj)
+            and issubclass(obj, nn.Module)
+            and not issubclass(obj, ExportableAgentMixin)
+        ):
+            missing.append(name)
+    assert not missing, f"public nn.Module classes without .export(): {missing}"
+
+
+def test_public_module_export_method_round_trips(tmp_path):
+    from synora import RMSNorm, load_exported
+
+    norm = RMSNorm(4).eval()
+    x = torch.randn(2, 4)
+    path = norm.export(
+        tmp_path / "norm.pt2", format="exported_program", example_inputs=x
+    )
+    torch.testing.assert_close(load_exported(path)(x), norm(x))
 
 
 # --------------------------------------------------------------------------

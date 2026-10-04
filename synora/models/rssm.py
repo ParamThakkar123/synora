@@ -3,9 +3,10 @@ import torch.nn as nn
 import torch.nn.functional as F
 from synora.vision.planet_encoder import CNNEncoder
 from synora.vision.planet_decoder import CNNDecoder
+from synora.export import ExportableAgentMixin
 
 
-class RecurrentStateSpaceModel(nn.Module):
+class RecurrentStateSpaceModel(ExportableAgentMixin, nn.Module):
     """
     A Recurrent State Space Model (RSSM) for modeling latent dynamics in sequential data.
     """

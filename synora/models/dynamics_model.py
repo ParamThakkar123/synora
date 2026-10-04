@@ -5,6 +5,7 @@ from typing import Tuple, Optional
 import math
 
 from synora.blocks.st_transformer import STKVCache, STTransformer
+from synora.export import ExportableAgentMixin
 
 
 class MaskGITSampler:
@@ -103,7 +104,7 @@ class MaskGITSampler:
         return new_tokens, new_mask.to(mask.dtype)
 
 
-class DynamicsModel(nn.Module):
+class DynamicsModel(ExportableAgentMixin, nn.Module):
     """Dynamics Model for action-controllable video generation.
 
     A decoder-only transformer that predicts future frame tokens given

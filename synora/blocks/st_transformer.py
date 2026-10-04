@@ -3,6 +3,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torch.utils.checkpoint import checkpoint
 from typing import List, Optional, Tuple
+from synora.export import ExportableAgentMixin
 
 
 class STKVCache:
@@ -433,7 +434,7 @@ class DropPath(nn.Module):
         return output
 
 
-class STTransformer(nn.Module):
+class STTransformer(ExportableAgentMixin, nn.Module):
     """Spatiotemporal Transformer for video modeling.
 
     Contains L spatiotemporal blocks with interleaved spatial and temporal attention.

@@ -4,9 +4,10 @@ import torch.nn.functional as F
 from typing import Tuple, Optional, cast
 
 from synora.models.diffusion.reward_termination import ResidualBlock
+from synora.export import ExportableAgentMixin
 
 
-class ActorCriticNetwork(nn.Module):
+class ActorCriticNetwork(ExportableAgentMixin, nn.Module):
     """
     Actor-Critic network for DIAMOND RL training.
     Shared CNN-LSTM trunk with separate policy and value heads.

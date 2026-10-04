@@ -4,13 +4,14 @@ import torch.nn.functional as F
 from typing import Tuple
 
 from synora.vision.vq_layer import VectorQuantizer, VectorQuantizerEMA
+from synora.export import ExportableAgentMixin
 
 # Paper Table 2: "Self-attention layers at resolution 8 / 16", for both the
 # encoder and the decoder.
 ATTENTION_RESOLUTIONS = (8, 16)
 
 
-class IRISEncoder(nn.Module):
+class IRISEncoder(ExportableAgentMixin, nn.Module):
     """CNN Encoder for IRIS discrete autoencoder.
 
     Encodes image observations into latent features, which are then quantized

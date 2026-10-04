@@ -23,6 +23,7 @@ import time
 from torchvision.utils import save_image
 import os
 from pathlib import Path
+from synora.export import ExportableAgentMixin
 
 
 def sinusoidal_time_embedding(
@@ -170,7 +171,7 @@ def modulate(x: torch.Tensor, shift: torch.Tensor, scale: torch.Tensor) -> torch
     return x * (1 + scale.unsqueeze(1)) + shift.unsqueeze(1)
 
 
-class PatchEmbed(nn.Module):
+class PatchEmbed(ExportableAgentMixin, nn.Module):
     """Patchify an image into a sequence of learnable patch tokens.
 
     Used in Vision Transformers (ViT) and DiT to convert 2D images into
@@ -235,7 +236,7 @@ class PatchEmbed(nn.Module):
         return x
 
 
-class PatchUnEmbed(nn.Module):
+class PatchUnEmbed(ExportableAgentMixin, nn.Module):
     """Reconstruct image-like tensors from patch-token sequences.
 
     The inverse of `PatchEmbed`, this module reshapes token sequences into
@@ -356,7 +357,7 @@ class FinalLayer(nn.Module):
         return self.linear(modulate(self.norm_final(x), shift, scale))
 
 
-class DiT(nn.Module):
+class DiT(ExportableAgentMixin, nn.Module):
     """Diffusion Transformer model for image denoising and generation.
 
     The module maps noisy images and timesteps to predicted noise residuals

@@ -17,7 +17,7 @@ The export system is built around three levels of API:
 
 | Level | Function / Method | When to use |
 |---|---|---|
-| **Module method** | `module.export(path, format, ...)` | Any `torch.nn.Module` — works automatically after importing `synora.export` |
+| **Module method** | `module.export(path, format, ...)` | Every `nn.Module` class exported from the top-level `synora` namespace (`Genie`, `VisionTransformer`, `RSSM`, ...) |
 | **Agent method** | `agent.export(path, format, ...)` | High-level agents (`DreamerAgent`, `JEPAAgent`, `IRISAgent`) that inherit `ExportableAgentMixin` |
 | **Standalone** | `export_any(obj, path, ...)` / `export_model(module, path, ...)` | When you need explicit control over which submodule is exported or want to bypass automatic target resolution |
 
@@ -53,17 +53,10 @@ through ONNX Runtime when it is installed.
 
 ### Exporting any `nn.Module`
 
-Importing `synora.export` installs the `.export()` method on every
-`torch.nn.Module` instance once.
-
-:::{note}
-Calling `.export()` on a module class defined **outside** Synora relies on
-this global install and is deprecated (it emits a `DeprecationWarning`). Use
-`synora.export_model(module, path, ...)` for your own modules. Set the
-environment variable `SYNORA_NO_GLOBAL_EXPORT=1` to stop Synora from
-modifying `torch.nn.Module`; Synora agents keep `.export()` through
-`ExportableAgentMixin` either way.
-:::
+`synora.export_model(module, path, ...)` exports any `torch.nn.Module`,
+including your own. Synora does not add methods to `torch.nn.Module`; its
+public model classes get `.export()` from `ExportableAgentMixin`, which you can
+also inherit in your own classes (see [Custom agents](#custom-agents)).
 
 ```python
 import torch
@@ -209,8 +202,8 @@ agent.export(
 
 ## Custom agents
 
-If you build a custom agent that is not an `nn.Module`, inherit
-`ExportableAgentMixin` to get the `.export()` method:
+Inherit `ExportableAgentMixin` to give a custom agent (or your own
+`nn.Module`) the `.export()` method:
 
 ```python
 from synora import ExportableAgentMixin

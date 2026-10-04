@@ -5,9 +5,10 @@ from typing import Tuple, Dict, Literal
 
 from synora.vision.vq_layer import VectorQuantizer
 from synora.blocks.st_transformer import STTransformer
+from synora.export import ExportableAgentMixin
 
 
-class LatentActionModel(nn.Module):
+class LatentActionModel(ExportableAgentMixin, nn.Module):
     """Latent Action Model (LAM) for unsupervised action learning.
 
     Learns discrete latent actions from unlabeled video frames using a VQ-VAE

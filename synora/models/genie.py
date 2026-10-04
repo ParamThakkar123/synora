@@ -15,9 +15,10 @@ from synora.models.model_io import (
     resolve_pretrained_file,
     save_config_next_to_checkpoint,
 )
+from synora.export import ExportableAgentMixin
 
 
-class Genie(nn.Module):
+class Genie(ExportableAgentMixin, nn.Module):
     """Genie: Generative Interactive Environment.
 
     A generative model trained from video-only data that can be used as an

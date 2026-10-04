@@ -31,6 +31,7 @@ import torch
 import torch.nn as nn
 
 from synora.utils.logging_utils import setup_logging
+from synora.export import ExportableAgentMixin
 
 _LOGGER = setup_logging("PerceptualLoss")
 
@@ -93,7 +94,7 @@ _VGG16_BN_BLOCKS: Sequence[tuple[int, int]] = (
 )
 
 
-class LPIPSPerceptualLoss(nn.Module):
+class LPIPSPerceptualLoss(ExportableAgentMixin, nn.Module):
     """LPIPS-structured perceptual distance over VGG16 features.
 
     Pipeline, following Zhang et al. (2018) as used by VQGAN:

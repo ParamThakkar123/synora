@@ -25,15 +25,6 @@ from typing import Any
 
 from synora._version import __version__  # noqa: F401
 
-
-try:
-    from synora.export import install_export_method as _install_export_method
-
-    _install_export_method()
-except ModuleNotFoundError as exc:  # pragma: no cover - torch-free metadata imports
-    if exc.name != "torch":
-        raise
-
 _API_EXPORTS = {
     "EnvBackendSpec": "synora.api",
     "ModelSpec": "synora.api",
@@ -59,7 +50,6 @@ _LAZY_EXPORTS: dict[str, str] = {
     "Dreamer": "synora.models",
     "DreamerV1": "synora.models",
     "DreamerV2": "synora.models",
-    "DreamerV3": "synora.models",
     "DreamerAgent": "synora.models",
     "Planet": "synora.models",
     "JEPAAgent": "synora.models",

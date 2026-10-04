@@ -2,9 +2,10 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from typing import Tuple, Optional
+from synora.export import ExportableAgentMixin
 
 
-class IRISActor(nn.Module):
+class IRISActor(ExportableAgentMixin, nn.Module):
     """Actor network for the IRIS (Imagination with auto-Regression over an Inner
     Speech) policy.
 
@@ -159,7 +160,7 @@ class IRISActor(nn.Module):
         return action
 
 
-class IRISCritic(nn.Module):
+class IRISCritic(ExportableAgentMixin, nn.Module):
     """Critic network for IRIS value estimation.
 
     Estimates the value function for given frame sequences. It uses the same
@@ -258,7 +259,7 @@ class IRISCritic(nn.Module):
         return (h, c)
 
 
-class CNNFeatureExtractor(nn.Module):
+class CNNFeatureExtractor(ExportableAgentMixin, nn.Module):
     """CNN feature extractor shared between actor and critic networks.
 
     Reproduces the convolutional block of the IRIS actor-critic (paper A.3):
@@ -338,7 +339,7 @@ class CNNFeatureExtractor(nn.Module):
         return features
 
 
-class IRISPolicy(nn.Module):
+class IRISPolicy(ExportableAgentMixin, nn.Module):
     """Combined policy module for IRIS (Imagination with auto-Regression over an Inner Speech).
 
     Provides a unified interface for actor-only or actor-critic policies.

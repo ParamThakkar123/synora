@@ -1,9 +1,10 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from synora.export import ExportableAgentMixin
 
 
-class RewardModel(nn.Module):
+class RewardModel(ExportableAgentMixin, nn.Module):
     """Predict scalar rewards from Dreamer latent belief and state vectors.
 
     Implemented as an MLP used for model-based reward supervision and

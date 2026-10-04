@@ -28,6 +28,7 @@ from synora.inference.precision import (
     resolve_precision,
 )
 from synora.utils.memory_utils import maybe_compile, to_channels_last
+from synora.export import ExportableAgentMixin
 
 
 def _module_device(module: nn.Module) -> torch.device:
@@ -48,7 +49,7 @@ def _clone_tensor(value: Any) -> Any:
     return value.clone() if isinstance(value, torch.Tensor) else value
 
 
-class InferenceModel(nn.Module):
+class InferenceModel(ExportableAgentMixin, nn.Module):
     """A module wrapped for fast, gradient-free inference.
 
     Args:

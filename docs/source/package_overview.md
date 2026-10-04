@@ -31,7 +31,7 @@ agent = DreamerAgent(cfg)
 | Category | Exports |
 |----------|--------|
 | **Friendly factories** | `create_config`, `create_model`, `make_env`, `list_models`, `list_env_backends`, `list_envs` |
-| **Models / Agents** | `Dreamer`, `DreamerV1`, `DreamerV2`, `DreamerV3`, `DreamerAgent`, `Planet`, `JEPAAgent`, `IRISAgent`, `Genie`, `create_genie`, `DiT`, `create_dit` |
+| **Models / Agents** | `Dreamer`, `DreamerV1`, `DreamerV2`, `DreamerAgent`, `Planet`, `JEPAAgent`, `IRISAgent`, `Genie`, `create_genie`, `DiT`, `create_dit` |
 | **State-space models** | `RSSM`, `RecurrentStateSpaceModel`, `DreamerRSSM`, `ModularRSSM`, `create_modular_rssm` |
 | **Vision** | `ConvEncoder`, `CNNEncoder`, `IRISEncoder`, `ConvDecoder`, `CNNDecoder`, `DenseDecoder`, `ActionDecoder`, `IRISDecoder`, `VideoTokenizer`, `create_video_tokenizer` |
 | **Quantization** | `VectorQuantizer`, `VectorQuantizerEMA` |

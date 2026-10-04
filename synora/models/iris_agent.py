@@ -22,6 +22,7 @@ from synora.models.iris_transformer import IRISTransformer
 from synora.controller.iris_policy import (
     CNNFeatureExtractor,
 )
+from synora.export import ExportableAgentMixin
 
 
 def compute_lambda_return(
@@ -57,7 +58,7 @@ def compute_lambda_return(
     return lambda_returns
 
 
-class IRISAgent(nn.Module):
+class IRISAgent(ExportableAgentMixin, nn.Module):
     """Complete IRIS Agent with world model and policy.
 
     Combines:

@@ -1,8 +1,9 @@
 import torch
 import torch.nn as nn
+from synora.export import ExportableAgentMixin
 
 
-class RMSNorm(nn.Module):
+class RMSNorm(ExportableAgentMixin, nn.Module):
     """Root Mean Square Layer Normalization with a learned gain parameter.
 
     RMSNorm rescales activations using their RMS magnitude without centering,

@@ -15,17 +15,13 @@ The public entry points are :func:`export_model` / :func:`export_any` and the
 :func:`load_exported` loads any of these back and :func:`verify_export` checks
 an artifact against its eager module.
 
-Importing this module installs an ``export`` method on ``torch.nn.Module`` so
-Synora models can call ``model.export(...)`` without a Synora base class.
-Calling it on a class defined outside Synora is deprecated (the method will
-stop being installed globally); set ``SYNORA_NO_GLOBAL_EXPORT=1`` to skip the
-install. Non-``nn.Module`` agent wrappers inherit :class:`ExportableAgentMixin`.
+Synora's public models and agents get ``.export()`` from
+:class:`ExportableAgentMixin`. Any other ``nn.Module`` goes through
+:func:`export_model`; Synora does not modify ``torch.nn.Module``.
 """
 
 from __future__ import annotations
 
-import os
-import warnings
 from importlib import import_module, util
 from pathlib import Path
 from typing import Any, Callable, Literal
@@ -293,7 +289,12 @@ def _infer_example_inputs(
 
 
 class ExportableAgentMixin:
-    """Mixin for non-``nn.Module`` agents that delegates to the shared exporter."""
+    """Adds ``.export()`` to an agent or ``nn.Module``.
+
+    Delegates to :func:`export_any`, which resolves the deployable module (the
+    object itself, or ``target`` / a preferred submodule such as ``policy`` for
+    agent wrappers) and infers example inputs where it can.
+    """
 
     def export(
         self,
@@ -602,46 +603,6 @@ def verify_export(
     return worst
 
 
-def _module_export(
-    self: nn.Module, path: str | Path, format: str = "onnx", **kwargs: Any
-) -> Path:
-    if not type(self).__module__.startswith("synora"):
-        warnings.warn(
-            "Calling .export() on a module defined outside Synora relies on the "
-            "method Synora installs on every torch.nn.Module. That global install "
-            "is deprecated and will be removed; use "
-            "synora.export_model(module, path, ...) instead.",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-    return export_any(self, path, format=format, **kwargs)
-
-
-def install_export_method() -> None:
-    """Install ``torch.nn.Module.export`` once.
-
-    Skipped when the ``SYNORA_NO_GLOBAL_EXPORT`` environment variable is set
-    to a truthy value, for applications that do not want Synora to modify
-    ``torch.nn.Module``. Synora agents keep ``.export()`` either way through
-    :class:`ExportableAgentMixin`, and :func:`export_model` always works.
-    """
-
-    if os.environ.get("SYNORA_NO_GLOBAL_EXPORT", "").strip().lower() in {
-        "1",
-        "true",
-        "yes",
-        "on",
-    }:
-        return
-    if getattr(nn.Module, "_synora_export_installed", False):
-        return
-    nn.Module.export = _module_export  # type: ignore[attr-defined]
-    nn.Module._synora_export_installed = True  # type: ignore[attr-defined]
-
-
-install_export_method()
-
-
 __all__ = [
     "DreamerPolicyExport",
     "ExportFormat",
@@ -649,7 +610,6 @@ __all__ = [
     "IRISActorCriticExport",
     "export_any",
     "export_model",
-    "install_export_method",
     "load_exported",
     "verify_export",
 ]

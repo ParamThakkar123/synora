@@ -11,6 +11,7 @@ import torch.nn.functional as F
 import torch.distributions as distributions
 from abc import ABC, abstractmethod
 from typing import Optional, Dict, Any, List, Tuple, Union
+from synora.export import ExportableAgentMixin
 
 _str_to_activation = {
     "relu": nn.ReLU(),
@@ -586,7 +587,7 @@ class TransformerBackbone(BackboneBase):
         return {"mean": mean, "std": std, "stoch": sample, "deter": prior_embed}
 
 
-class ModularRSSM(nn.Module):
+class ModularRSSM(ExportableAgentMixin, nn.Module):
     """Modular RSSM with swappable encoder, decoder, and backbone.
 
     This class allows researchers to easily experiment with different:

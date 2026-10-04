@@ -25,7 +25,7 @@ A clear and concise description of what you expected to happen.
 - Synora version: [e.g. 0.4.2]
 - Installed extras: [e.g. `pip install synora[gym,ml]`, or "base install"]
 - Environment backend: [e.g. gym, dmc, mujoco, atari, procgen, brax, bsuite, ml-agents, world-model]
-- Model / algorithm: [e.g. dreamer-v3, iris, diamond, genie — output of `synora.list_models()` if unsure]
+- Model / algorithm: [e.g. dreamer-v2, iris, diamond, genie — output of `synora.list_models()` if unsure]
 
 **Additional context**
 Add any other context about the problem here.

@@ -142,7 +142,6 @@ def resolve_model(args: argparse.Namespace) -> str:
         "dreamerv1": "dreamer",
         "dreamer-v2": "dreamer",
         "dreamerv2": "dreamer",
-        "dreamer-v3": "dreamer",
         "ijepa": "jepa",
         "i-jepa": "jepa",
         "genie-small": "genie",

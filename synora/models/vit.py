@@ -8,6 +8,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 from synora.utils.jepa_utils import trunc_normal_, repeat_interleave_batch
 from synora.utils.utils import apply_masks
+from synora.export import ExportableAgentMixin
 
 
 def get_2d_sincos_pos_embed(
@@ -446,7 +447,7 @@ class VisionTransformerPredictor(nn.Module):
         return x
 
 
-class VisionTransformer(nn.Module):
+class VisionTransformer(ExportableAgentMixin, nn.Module):
     """Vision Transformer"""
 
     def __init__(

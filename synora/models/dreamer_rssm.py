@@ -3,6 +3,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.distributions as distributions
 from typing import Optional, Tuple
+from synora.export import ExportableAgentMixin
 
 _str_to_activation = {
     "relu": nn.ReLU(),
@@ -16,7 +17,7 @@ _str_to_activation = {
 }
 
 
-class RSSM(nn.Module):
+class RSSM(ExportableAgentMixin, nn.Module):
     """Recurrent State-Space Model used by Dreamer for latent dynamics learning.
 
     The RSSM is the core world model component that learns compact representations

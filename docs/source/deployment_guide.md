@@ -311,11 +311,8 @@ See the {doc}`export_guide` for target resolution on agents
 (`agent.export(..., target="obs_encoder")`).
 
 :::{note}
-Synora installs an `export()` method on `torch.nn.Module` so Synora models
-can call `model.export(...)`. Calling it on classes defined outside Synora is
-deprecated. Use `synora.export_model(module, ...)` instead. Set
-`SYNORA_NO_GLOBAL_EXPORT=1` to stop Synora from modifying `torch.nn.Module`
-at all.
+Synora's public models have an `export()` method. For any other module, use
+`synora.export_model(module, ...)`.
 :::
 
 ## Deployment bundles

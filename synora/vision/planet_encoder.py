@@ -1,9 +1,10 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from synora.export import ExportableAgentMixin
 
 
-class CNNEncoder(nn.Module):
+class CNNEncoder(ExportableAgentMixin, nn.Module):
     """A Convolutional Neural Network (CNN) encoder for processing image inputs."""
 
     def __init__(self, embedding_size: int, activation_function: str = "relu") -> None:

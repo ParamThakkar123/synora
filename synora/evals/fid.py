@@ -101,17 +101,31 @@ def _compute_statistics(
     return mu, sigma
 
 
+def _sqrt_psd(m: np.ndarray) -> np.ndarray:
+    """Square root of a symmetric positive semi-definite matrix."""
+    w, v = np.linalg.eigh(m)
+    return (v * np.sqrt(np.clip(w, 0.0, None))) @ v.T
+
+
 def _frechet_distance(
     mu1: np.ndarray, sigma1: np.ndarray, mu2: np.ndarray, sigma2: np.ndarray
 ) -> float:
-    """Compute the Fréchet distance between two Gaussians."""
-    from scipy import linalg
+    """Compute the Fréchet distance between two Gaussians.
 
+    Only the trace of ``sqrtm(sigma1 @ sigma2)`` enters the distance, and it
+    equals the trace of ``sqrtm(S @ sigma2 @ S)`` with ``S = sqrtm(sigma1)``.
+    That matrix is symmetric PSD, so its eigenvalues are real and non-negative
+    and ``eigh`` gives the trace directly. ``scipy.linalg.sqrtm`` on the
+    non-symmetric product instead runs a recursive Schur decomposition, which
+    on a 2048x2048 rank-deficient covariance (any FID over fewer samples than
+    feature dimensions) can take minutes.
+    """
     diff = mu1 - mu2
-    covmean = linalg.sqrtm(sigma1 @ sigma2)
-    if isinstance(covmean, np.ndarray) and np.iscomplexobj(covmean):
-        covmean = covmean.real
-    return float(diff @ diff + np.trace(sigma1 + sigma2 - 2.0 * covmean))
+    s1 = _sqrt_psd(sigma1)
+    m = s1 @ sigma2 @ s1
+    eig = np.linalg.eigvalsh((m + m.T) / 2.0)
+    tr_covmean = np.sqrt(np.clip(eig, 0.0, None)).sum()
+    return float(diff @ diff + np.trace(sigma1) + np.trace(sigma2) - 2.0 * tr_covmean)
 
 
 @lru_cache(maxsize=None)

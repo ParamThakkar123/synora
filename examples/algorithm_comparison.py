@@ -35,7 +35,7 @@ import synora
 
 # Algorithms with a `train(total_steps)` entry point, cheap enough to be
 # runnable by a reader on CPU.
-DEFAULT_ALGOS = ["dreamer-v1", "dreamer-v2", "dreamer-v3"]
+DEFAULT_ALGOS = ["dreamer-v1", "dreamer-v2"]
 
 
 def trains_by_step_budget(agent: Any) -> bool:

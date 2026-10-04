@@ -1,5 +1,6 @@
 import torch
 import torch.nn as nn
+from synora.export import ExportableAgentMixin
 
 _str_to_activation = {
     "relu": nn.ReLU(),
@@ -13,7 +14,7 @@ _str_to_activation = {
 }
 
 
-class ConvEncoder(nn.Module):
+class ConvEncoder(ExportableAgentMixin, nn.Module):
     """Convolutional observation encoder used by Dreamer world models.
 
     This encoder transforms raw image observations (typically RGB frames from

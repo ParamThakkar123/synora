@@ -1,9 +1,10 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from synora.export import ExportableAgentMixin
 
 
-class MultiHeadSelfAttention(nn.Module):
+class MultiHeadSelfAttention(ExportableAgentMixin, nn.Module):
     """Multi-head scaled dot-product self-attention over sequence tokens.
 
     This module projects the input sequence into query/key/value heads, performs

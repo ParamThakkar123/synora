@@ -8,6 +8,7 @@ import numpy as np
 import torch.distributions as distributions
 from torch.distributions import constraints
 import torch.nn.functional as F
+from synora.export import ExportableAgentMixin
 
 
 _str_to_activation = {
@@ -76,7 +77,7 @@ class TanhBijector(distributions.Transform):
         return 2.0 * (np.log(2) - x - F.softplus(-2.0 * x))
 
 
-class ConvDecoder(nn.Module):
+class ConvDecoder(ExportableAgentMixin, nn.Module):
     """Convolutional decoder for reconstructing observations from latent states.
 
     Part of Dreamer's world model, this decoder reconstructs image observations
@@ -197,7 +198,7 @@ class _TwoHotDistribution:
         return symexp(expectation)
 
 
-class DenseDecoder(nn.Module):
+class DenseDecoder(ExportableAgentMixin, nn.Module):
     """MLP decoder for reward/value/discount prediction from latent features.
 
     Part of Dreamer's world model, this decoder predicts scalar quantities
@@ -343,7 +344,7 @@ class SampleDist:
         return self._dist.sample()
 
 
-class ActionDecoder(nn.Module):
+class ActionDecoder(ExportableAgentMixin, nn.Module):
     """Dreamer actor head producing squashed continuous actions from latent features.
 
     Outputs a transformed Gaussian policy with optional deterministic mode and

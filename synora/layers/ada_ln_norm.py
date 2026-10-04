@@ -1,9 +1,10 @@
 import torch
 import torch.nn as nn
 from synora.layers.rms_norm import RMSNorm
+from synora.export import ExportableAgentMixin
 
 
-class AdaLNNormalization(nn.Module):
+class AdaLNNormalization(ExportableAgentMixin, nn.Module):
     """Adaptive layer normalization conditioned on an external embedding.
 
     The module applies RMS normalization and predicts per-channel scale/shift

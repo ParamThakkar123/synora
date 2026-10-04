@@ -7,10 +7,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
-Fixes from the September 2026 code audit.
+## [1.0.0] — 2026-10-04
+
+First stable release, and the first under the name **Synora** (formerly
+TorchWM). The public API surface documented in `docs/source/public_api.md` is
+now covered by semantic versioning: breaking changes to it require a major
+version bump and a deprecation cycle.
+
+Because 0.5.0 below was never tagged or published, upgrading from TorchWM 0.4.2
+— the last `torchwm` release on PyPI — also brings in every 0.5.0 change.
+
+### Renamed
+- **TorchWM is now Synora.** The distribution is `synora` on PyPI, the package
+  is `import synora`, the CLI commands are `synora` / `synora-train`, and
+  environment variables use the `SYNORA_` prefix. There is no `torchwm`
+  import alias. Checkpoints load unchanged: they are saved as state dicts
+  and read with `weights_only=True`, so they hold no module paths. Deployment
+  bundle manifests record `synora_version` instead of `torchwm_version`.
+
+### Known limitations
+- Shared step-budget `train()` covers the Dreamer family; other models use
+  their own trainers or `synora train`
+- On CPython 3.13 the `dmc` extra installs everything except `dm_control`
+  itself; run `python -m synora.install_dmc` to add it
 
 ### Added
-- `torchwm.inference`, an efficient-inference and deployment toolkit (see the
+- `synora.inference`, an efficient-inference and deployment toolkit (see the
   new *Efficient Inference and Deployment* guide):
   - `optimize_for_inference` / `InferenceModel`: eval + no-grad + one precision
     policy (`fp32`/`bf16`/`fp16`/`auto`) + optional `torch.compile` with CUDA
@@ -27,7 +49,7 @@ Fixes from the September 2026 code audit.
     torchao backend.
   - `save_bundle` / `load_bundle`: deployment bundles with weights, config,
     exported artifacts, a manifest and per-artifact verification.
-- `torchwm deploy inspect` and `torchwm deploy bench` CLI commands.
+- `synora deploy inspect` and `synora deploy bench` CLI commands.
 - Export formats `exported_program` (`torch.export`, `.pt2`) and `aoti`
   (AOTInductor), plus `load_exported` and `verify_export`.
 - Temporal KV cache for the ST-transformer (`STKVCache`,
@@ -36,90 +58,7 @@ Fixes from the September 2026 code audit.
   re-running the whole prefix. Off by default.
 - `RSSM.observe_step` / `imagine_step` accept explicit `noise`, and
   `ActionDecoder.mean_action` gives a deterministic single-pass action.
-
-### Changed
-- TensorRT export compiles through Torch-TensorRT's `ir="dynamo"` frontend by
-  default (was the legacy `ir="ts"`); pass `ir="ts"` to keep the old path.
-
-### Deprecated
-- Calling `.export()` on `nn.Module` classes defined outside TorchWM (it relies
-  on the method TorchWM installs globally); use `torchwm.export_model`. Set
-  `TORCHWM_NO_GLOBAL_EXPORT=1` to skip the global install.
-- `torchwm.utils.jit_utils` (TorchScript); use `torchwm.maybe_compile`.
-
-### Fixed
-- MP4 videos (`StreamingVideoWriter`, `save_video`, `combine_videos`, Dreamer
-  rollout videos and every `demos/record_*.py`) were encoded with OpenCV's
-  `mp4v` fourcc (MPEG-4 Part 2), which no browser plays. They now go through
-  the new `torchwm.utils.utils.Mp4Writer`, which writes H.264 via
-  `imageio-ffmpeg` (added to the `viz` and `worldmodels` extras), falls back
-  to OpenCV `avc1`, and only then to `mp4v` with a warning.
-- `maybe_compile` only guarded the `torch.compile` wrap, but compilation is
-  lazy, so a missing backend (e.g. no Triton on Windows CUDA builds) raised on
-  the first call instead of falling back. The first call is now guarded too,
-  and compiling an `nn.Module` keeps its `state_dict` keys.
-- IRIS evaluation collected every raw frame and a per-step latent even with
-  `render=False`, the default during training, and then discarded them. At the
-  default `eval_episodes=100` and the 27000-step episode cap that is tens of GB
-  held until the evaluation returns, so the OS could kill the process outright
-  (in a notebook, the kernel just restarts). Both are now render-only
-- IRIS evaluation reset the same environment `collect_experience` keeps a
-  partial episode on, so the next collection step paired the stale pre-eval
-  observation with the post-eval environment and wrote a transition that never
-  happened into the replay buffer. Evaluation now runs on its own environment;
-  when the caller supplied the environment, the in-flight collection episode is
-  dropped instead
-- Genie training on TinyWorlds could kill the process with no traceback (a
-  notebook kernel just restarts) whenever `num_workers > 0`, the default:
-  `TinyWorldsDataset` kept one HDF5 handle open from `__init__`, and forked
-  DataLoader workers all read through that inherited handle, which HDF5 does
-  not support. Each process now opens its own handle on first read. The same
-  handle made spawned workers (Windows, macOS) fail with
-  `TypeError: h5py objects cannot be pickled`
-- System-metrics logging crashed training on GPU machines: `collect_system_stats`
-  guarded `torch.cuda.utilization` with `hasattr`, which is always true, while
-  calling it raises `ModuleNotFoundError` without NVML (`nvidia-ml-py`). The
-  counter is now skipped with a single warning, and `nvidia-ml-py` is part of the
-  `ml` extra
-- Dreamer acted on the RSSM prior instead of the posterior, so the current
-  observation was encoded and then ignored during collection and evaluation
-  (also in `play dreamer` and `scripts/benchmark_infer.py`)
-- Dreamer checkpoints omitted the critic (`value_model`); older checkpoints
-  still load, keeping a fresh critic and skipping its optimizer state
-- `Dreamer.evaluate(render=True)` raised `KeyError: 0`
-- `use_disc_model=True` raised `TypeError` in the actor loss; the discount head
-  output is now also scaled by `discount`, as in the reference implementation
-- Time-limit truncations were stored as terminal transitions; the replay buffer
-  now keeps episode boundaries and true terminations separately
-- `DreamerConfig.env_instance` made startup crash while writing `config.yaml`
-- `Dreamer(restore=...)` ignored its argument
-- `DreamerAgent.train()` now always writes a final checkpoint
-- PlaNet sampled latents with uniform instead of Gaussian noise; `rollout_prior`
-  returned tuples; `get_init_state` conditioned the posterior on the stale
-  deterministic state
-- Genie's default 5120-wide dynamics model used 36 heads, which do not divide
-  the width (now 40); attention layers validate `dim % num_heads`
-- `create_model("genie"/"genie-small")` silently dropped tokenizer and
-  latent-action widths/depths from the config; `tokenizer_num_heads` and
-  `action_num_heads` are now honoured (default 16, which is what was always
-  built)
-- DIAMOND collection kept every frame of the current episode in memory
-- `torchwm train --inproc` re-ran training without arguments on `TypeError`
-  and in a subprocess on any other error
-- `torchwm eval` / `torchwm play` imported modules that are not in the wheel;
-  they now live in `torchwm.inference`, and the metrics package moved from the
-  top-level `evals` to `torchwm.evals`
-- `register_env_backend` backends were never used by `make_env`; a `dmc`
-  backend was added
-- Every `torch.load` in scripts and demos now uses `weights_only=True`
-- IRIS play in `scripts/benchmark_infer.py` reset the policy LSTM every step
-- MP4 video logging wrapped uint8 frames around; GIFs are written with Pillow
-  instead of the undeclared moviepy
-- `MUJOCO_GL=egl` is only defaulted on Linux (macOS has no EGL)
-- A broken W&B install no longer breaks importing JEPA training
-
-### Added
-- `python -m torchwm.install_dmc` (also `make install-dmc`) installs the
+- `python -m synora.install_dmc` (also `make install-dmc`) installs the
   DeepMind Control backend on CPython 3.13, where dm-control's `labmaze`
   dependency has no wheel and builds with Bazel. It uses the pure-Python
   `labmaze-new` and installs dm-control with `--no-deps`. `--check` verifies an
@@ -128,76 +67,49 @@ Fixes from the September 2026 code audit.
   uses and upgrading would break the `brax` extra; `--upgrade-mujoco` opts out.
   `[tool.uv] constraint-dependencies` caps `mujoco<3.13` for the same reason
 - CUDA, then Apple MPS, then CPU device selection
-  (`torchwm.utils.device`)
+  (`synora.utils.device`)
 - `worldmodels` extra (albumentations, cma); `hydra-core`/`omegaconf` in `ml`;
   `h5py` in `viz`; `ruff` in `dev`
-
-### Removed
-- The `procgen` extra, which could never install on Python >= 3.11
-- `dm-control` from the `dmc` extra on CPython 3.13 only, so
-  `pip install torchwm[dmc]` no longer fails there. New `dmc-uv` extra keeps it
-  unconditional for uv, which drops the `labmaze` pin through
-  `[tool.uv] override-dependencies`
-- `tools` is no longer installed as a top-level package
-- `nginx.conf`, which proxied a frontend that no longer exists
-
-## [1.0.0] — 2026-08-19
-
-First stable release. The public API surface documented in
-`docs/source/public_api.md` is now covered by semantic versioning: breaking
-changes to it require a major version bump and a deprecation cycle.
-
-Because 0.5.0 below was never tagged or published, upgrading from 0.4.2 — the
-last release on PyPI — also brings in every 0.5.0 change.
-
-### Known limitations
-- `dreamer-v3` is a registry name for `DreamerAgent`, not a paper-complete
-  DreamerV3 implementation
-- Shared step-budget `train()` covers the Dreamer family; other models use
-  their own trainers or `torchwm train`
-- On CPython 3.13 the `dmc` extra installs everything except `dm_control`
-  itself; run `python -m torchwm.install_dmc` to add it (see the Unreleased
-  section)
-
-### Added
-- Throughput instrumentation: `torchwm.ThroughputMeter`, `torchwm.measure_steps`
-  and `torchwm.tensor_nbytes` report steps/sec, ms/step and bytes shipped to the
+- Throughput instrumentation: `synora.ThroughputMeter`, `synora.measure_steps`
+  and `synora.tensor_nbytes` report steps/sec, ms/step and bytes shipped to the
   device per step, synchronising on CUDA so the timer measures execution rather
   than queueing
-- Performance helpers: `torchwm.enable_performance_defaults` (cuDNN autotuning
-  and TF32, no-ops without CUDA), `torchwm.maybe_compile` (opt-in
-  `torch.compile` with an eager fallback) and `torchwm.to_channels_last`
+- Performance helpers: `synora.enable_performance_defaults` (cuDNN autotuning
+  and TF32, no-ops without CUDA), `synora.maybe_compile` (opt-in
+  `torch.compile` with an eager fallback) and `synora.to_channels_last`
 - `GenieConfig.use_amp` / `GenieSmallConfig.use_amp` — autocast for Genie
   training, preferring bfloat16 where supported so no gradient scaler is needed
 - Genie `VideoDataset` loads `.npy` / `.npz` / `.pt` clips, or video files when
-  OpenCV (`torchwm[viz]`) is installed
+  OpenCV (`synora[viz]`) is installed
 - `DreamerConfig.perf_defaults` and `DreamerConfig.tf32`
 - `RSSMPolicy(..., compile_rollout=True)` compiles the CEM candidate-rollout
   step, which runs `num_iterations * planning_horizon` tiny kernels per env step
-- I-JEPA linear evaluation (`torchwm.training.eval_jepa`, exported as
-  `torchwm.jepa_linear_probe` / `torchwm.load_jepa_encoder`), implementing the
+- I-JEPA linear evaluation (`synora.training.eval_jepa`, exported as
+  `synora.jepa_linear_probe` / `synora.load_jepa_encoder`), implementing the
   paper's Appendix A.2 protocol: frozen target-encoder, average-pooled patch
   tokens, LARS-trained linear head, and the published sweep over learning rate,
   weight decay, batch-norm head, and last-layer vs last-four-layer features
 - `VisionTransformer.get_intermediate_layers()`, needed for the last-four-layer
   probe representation
-- `torchwm/configs/experiments/jepa_small_gpu.yaml` — single-GPU preset
+- `synora/configs/experiments/jepa_small_gpu.yaml` — single-GPU preset
   that reduces only batch size, backbone, and epochs, leaving every method
   parameter at the paper's value
 - `tests/models/test_jepa_paper_alignment.py`, pinning the I-JEPA masking,
   architecture, loss, and schedule details against the paper
-- `torchwm eval --model jepa` runs the linear probe from the CLI, alongside the
+- `synora eval --model jepa` runs the linear probe from the CLI, alongside the
   existing `--model diamond` FID/FVD/LPIPS path. The two evaluations share only
   `--checkpoint`, `--batch-size`, `--device` and `--output`; passing an option
   that belongs to the other model is an error rather than a silent no-op
 
 ### Changed
+- TensorRT export compiles through Torch-TensorRT's `ir="dynamo"` frontend by
+  default (was the legacy `ir="ts"`); pass `ir="ts"` to keep the old path.
 - **Breaking: one package.** The implementation moved from `world_models/` into
-  `torchwm/`, and the alias layer that made `torchwm.<name>` resolve to
-  `world_models.<name>` is gone. `torchwm` is now the only import path —
+  `synora/`, and the alias layer that made `synora.<name>` resolve to
+  `world_models.<name>` is gone. `synora` is now the only import path —
   `import world_models` raises `ModuleNotFoundError`. Replace
-  `from world_models.x import y` with `from torchwm.x import y`; the public
-  `torchwm` surface is unchanged
+  `from world_models.x import y` with `from synora.x import y`; the public
+  `synora` surface is unchanged
 - **I-JEPA defaults now reproduce the paper.** The shipped configuration
   previously combined the two worst settings in the paper's own ablations:
   `enc_mask_scale` was `(0.15, 0.2)` where the context block calls for
@@ -255,23 +167,124 @@ last release on PyPI — also brings in every 0.5.0 change.
   your platform explicitly if you need a specific wheel set
 
 ### Removed
-- **Breaking:** the `torchwm.inference` operator
+These were deprecated, or would have been frozen into the 1.x API, and go
+before 1.0 instead of being carried through it:
+- The `.export()` method TorchWM installed on every `torch.nn.Module` at import,
+  and the `TORCHWM_NO_GLOBAL_EXPORT` switch for it. Synora no longer modifies
+  `torch.nn.Module`: every `nn.Module` class in the top-level `synora`
+  namespace gets `.export()` from `ExportableAgentMixin` (a test enforces
+  this), and any other module goes through `synora.export_model`.
+  `install_export_method` is gone with it.
+- `torchwm.utils.jit_utils` (TorchScript helpers); use `synora.maybe_compile`
+  for speed or `synora.export_model(..., format="exported_program")` for
+  deployment.
+- The `dreamer-v3` / `dreamerv3` registry names and the `DreamerV3` export.
+  They built the same `DreamerAgent` as `dreamer` - there is no DreamerV3
+  implementation - so the name promised an algorithm the library does not have.
+- The `procgen` extra, which could never install on Python >= 3.11
+- `dm-control` from the `dmc` extra on CPython 3.13 only, so
+  `pip install synora[dmc]` no longer fails there. New `dmc-uv` extra keeps it
+  unconditional for uv, which drops the `labmaze` pin through
+  `[tool.uv] override-dependencies`
+- `tools` is no longer installed as a top-level package
+- `nginx.conf`, which proxied a frontend that no longer exists
+- **Breaking:** the `synora.inference` operator
   package (`get_operator`, `OperatorABC`, `TensorSpec`, `DreamerOperator`,
   `JEPAOperator`, `IrisOperator`, `PlaNetOperator`). The operators only resized
   and normalized tensors, and `JEPAOperator` masked uniformly at random, which
   is not I-JEPA's masking at all. Preprocess inputs directly, or use
-  `torchwm.transforms.image.make_transforms` and
-  `torchwm.masks.MultiblockMaskCollator`
+  `synora.transforms.image.make_transforms` and
+  `synora.masks.MultiblockMaskCollator`
 - **Breaking:** the unused `operator_state_dim` / `operator_action_dim` fields
   on `DiamondConfig`
 - **Breaking:** the `minerl` and `minedojo` extras, and the `selenium` extra.
   Neither Minecraft extra could ever install — MineRL 1.x has no Python 3.11+
   release and MineDojo pins `gym==0.21.0`, whose sdist no longer builds — and
   between them they made `uv lock` unresolvable for the whole project.
-  `torchwm.envs.minecraft_env` is unchanged; `docs/source/iris.md` documents the
+  `synora.envs.minecraft_env` is unchanged; `docs/source/iris.md` documents the
   manual Python 3.10 install
 
 ### Fixed
+- FID and FVD could stall for minutes: `scipy.linalg.sqrtm` ran a recursive
+  Schur decomposition on the product of two 2048x2048 covariances, which is
+  rank-deficient whenever there are fewer samples than feature dimensions.
+  The Fréchet distance now takes only the trace it needs, from the
+  eigenvalues of a symmetric PSD matrix (`numpy.linalg.eigh`), which is exact
+  and no longer needs SciPy.
+- Constructing a `DreamerAgent` called `setup_logging("synora")`, which turned
+  off propagation on the package logger, so every `synora.*` record stopped
+  reaching the application's own logging handlers (and pytest's `caplog`).
+  `setup_logging` now leaves propagation on and only adds its console handler
+  when the root logger has none, so messages still print exactly once.
+- MP4 videos (`StreamingVideoWriter`, `save_video`, `combine_videos`, Dreamer
+  rollout videos and every `demos/record_*.py`) were encoded with OpenCV's
+  `mp4v` fourcc (MPEG-4 Part 2), which no browser plays. They now go through
+  the new `synora.utils.utils.Mp4Writer`, which writes H.264 via
+  `imageio-ffmpeg` (added to the `viz` and `worldmodels` extras), falls back
+  to OpenCV `avc1`, and only then to `mp4v` with a warning.
+- `maybe_compile` only guarded the `torch.compile` wrap, but compilation is
+  lazy, so a missing backend (e.g. no Triton on Windows CUDA builds) raised on
+  the first call instead of falling back. The first call is now guarded too,
+  and compiling an `nn.Module` keeps its `state_dict` keys.
+- IRIS evaluation collected every raw frame and a per-step latent even with
+  `render=False`, the default during training, and then discarded them. At the
+  default `eval_episodes=100` and the 27000-step episode cap that is tens of GB
+  held until the evaluation returns, so the OS could kill the process outright
+  (in a notebook, the kernel just restarts). Both are now render-only
+- IRIS evaluation reset the same environment `collect_experience` keeps a
+  partial episode on, so the next collection step paired the stale pre-eval
+  observation with the post-eval environment and wrote a transition that never
+  happened into the replay buffer. Evaluation now runs on its own environment;
+  when the caller supplied the environment, the in-flight collection episode is
+  dropped instead
+- Genie training on TinyWorlds could kill the process with no traceback (a
+  notebook kernel just restarts) whenever `num_workers > 0`, the default:
+  `TinyWorldsDataset` kept one HDF5 handle open from `__init__`, and forked
+  DataLoader workers all read through that inherited handle, which HDF5 does
+  not support. Each process now opens its own handle on first read. The same
+  handle made spawned workers (Windows, macOS) fail with
+  `TypeError: h5py objects cannot be pickled`
+- System-metrics logging crashed training on GPU machines: `collect_system_stats`
+  guarded `torch.cuda.utilization` with `hasattr`, which is always true, while
+  calling it raises `ModuleNotFoundError` without NVML (`nvidia-ml-py`). The
+  counter is now skipped with a single warning, and `nvidia-ml-py` is part of the
+  `ml` extra
+- Dreamer acted on the RSSM prior instead of the posterior, so the current
+  observation was encoded and then ignored during collection and evaluation
+  (also in `play dreamer` and `scripts/benchmark_infer.py`)
+- Dreamer checkpoints omitted the critic (`value_model`); older checkpoints
+  still load, keeping a fresh critic and skipping its optimizer state
+- `Dreamer.evaluate(render=True)` raised `KeyError: 0`
+- `use_disc_model=True` raised `TypeError` in the actor loss; the discount head
+  output is now also scaled by `discount`, as in the reference implementation
+- Time-limit truncations were stored as terminal transitions; the replay buffer
+  now keeps episode boundaries and true terminations separately
+- `DreamerConfig.env_instance` made startup crash while writing `config.yaml`
+- `Dreamer(restore=...)` ignored its argument
+- `DreamerAgent.train()` now always writes a final checkpoint
+- PlaNet sampled latents with uniform instead of Gaussian noise; `rollout_prior`
+  returned tuples; `get_init_state` conditioned the posterior on the stale
+  deterministic state
+- Genie's default 5120-wide dynamics model used 36 heads, which do not divide
+  the width (now 40); attention layers validate `dim % num_heads`
+- `create_model("genie"/"genie-small")` silently dropped tokenizer and
+  latent-action widths/depths from the config; `tokenizer_num_heads` and
+  `action_num_heads` are now honoured (default 16, which is what was always
+  built)
+- DIAMOND collection kept every frame of the current episode in memory
+- `synora train --inproc` re-ran training without arguments on `TypeError`
+  and in a subprocess on any other error
+- `synora eval` / `synora play` imported modules that are not in the wheel;
+  they now live in `synora.inference`, and the metrics package moved from the
+  top-level `evals` to `synora.evals`
+- `register_env_backend` backends were never used by `make_env`; a `dmc`
+  backend was added
+- Every `torch.load` in scripts and demos now uses `weights_only=True`
+- IRIS play in `scripts/benchmark_infer.py` reset the policy LSTM every step
+- MP4 video logging wrapped uint8 frames around; GIFs are written with Pillow
+  instead of the undeclared moviepy
+- `MUJOCO_GL=egl` is only defaulted on Linux (macOS has no EGL)
+- A broken W&B install no longer breaks importing JEPA training
 - The multi-block mask sampler raised no error when `min_keep` exceeded the
   patches a block can hold; it now fails with an explanatory message instead of
   looping forever

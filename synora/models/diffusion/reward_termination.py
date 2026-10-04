@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 from typing import Tuple, Optional, cast
+from synora.export import ExportableAgentMixin
 
 
 def _num_groups(channels: int, max_groups: int = 8) -> int:
@@ -63,7 +64,7 @@ class ResidualBlock(nn.Module):
         return h + self.skip(x)
 
 
-class RewardTerminationModel(nn.Module):
+class RewardTerminationModel(ExportableAgentMixin, nn.Module):
     """
     Reward and termination prediction model.
     CNN + LSTM architecture following DIAMOND paper specifications.

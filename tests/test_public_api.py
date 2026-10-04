@@ -164,7 +164,7 @@ def test_export_model_torchscript_writes_file(tmp_path):
     import pytest
 
     torch = pytest.importorskip("torch")
-    import synora.export  # noqa: F401 - installs torch.nn.Module.export
+    from synora import export_model
 
     class TinyAgent(torch.nn.Module):
         def __init__(self):
@@ -174,15 +174,12 @@ def test_export_model_torchscript_writes_file(tmp_path):
         def forward(self, x):
             return self.linear(x)
 
-    agent = TinyAgent()
-    # TinyAgent is defined outside synora, so it reaches .export() through the
-    # deprecated global nn.Module install.
-    with pytest.warns(DeprecationWarning, match="export_model"):
-        path = agent.export(
-            tmp_path / "tiny.pt",
-            format="torchscript",
-            example_inputs=torch.zeros(1, 2),
-        )
+    path = export_model(
+        TinyAgent(),
+        tmp_path / "tiny.pt",
+        format="torchscript",
+        example_inputs=torch.zeros(1, 2),
+    )
 
     assert path.exists()
     loaded = torch.jit.load(str(path))

@@ -3,7 +3,12 @@
 The stepper threads the policy's LSTM state from frame to frame and resets it at
 episode boundaries. Calling ``agent.act(frame)`` without ``hidden`` would make
 the recurrent policy memoryless.
+
+Usage:
+    python examples/play_iris.py --checkpoint checkpoints/iris/best_Breakout-v5.pt
 """
+
+import argparse
 
 import cv2
 import numpy as np
@@ -22,21 +27,25 @@ def preprocess_frame(frame, size=64):
 
 
 def main():
+    parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    parser.add_argument("--checkpoint", required=True, help="IRISAgent checkpoint")
+    parser.add_argument("--game", default="ALE/Breakout-v5")
+    parser.add_argument("--episodes", type=int, default=100)
+    args = parser.parse_args()
+
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"Using device: {device}")
 
     config = IRISConfig()
-    env = make_atari_env(
-        "ALE/Breakout-v5", obs_type="rgb", frameskip=4, render_mode="human"
-    )
+    env = make_atari_env(args.game, obs_type="rgb", frameskip=4, render_mode="human")
     action_size = env.action_space.n
 
     agent = IRISAgent(config=config, action_size=action_size, device=device)
-    agent.load("checkpoints/iris/best_Breakout-v5.pt")
+    agent.load(args.checkpoint)
     stepper = IRISStepper(agent, temperature=0.5)
     print("Model loaded!")
 
-    num_episodes = 100
+    num_episodes = args.episodes
     total_reward = 0
 
     with torch.inference_mode():

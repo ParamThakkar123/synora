@@ -600,11 +600,6 @@ Utilities
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: synora.utils.jit_utils
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 .. automodule:: synora.utils.memory_utils
    :members:
    :undoc-members:

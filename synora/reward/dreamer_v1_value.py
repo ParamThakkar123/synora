@@ -1,9 +1,10 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from synora.export import ExportableAgentMixin
 
 
-class ValueModel(nn.Module):
+class ValueModel(ExportableAgentMixin, nn.Module):
     """Estimate scalar value from Dreamer latent belief and state vectors.
 
     This MLP is trained on imagined returns and used for actor/value updates.

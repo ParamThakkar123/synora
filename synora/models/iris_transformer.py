@@ -4,6 +4,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torch.utils.checkpoint import checkpoint
 from typing import List, Optional, Tuple
+from synora.export import ExportableAgentMixin
 
 
 class KVCache:
@@ -168,7 +169,7 @@ class GPTBlock(nn.Module):
         return x
 
 
-class IRISTransformer(nn.Module):
+class IRISTransformer(ExportableAgentMixin, nn.Module):
     """GPT-like autoregressive Transformer for world modeling.
 
     Models the dynamics of the environment by predicting, autoregressively over
@@ -719,7 +720,7 @@ class IRISTransformer(nn.Module):
         return sampled_tokens, log_probs
 
 
-class IRISWorldModel(nn.Module):
+class IRISWorldModel(ExportableAgentMixin, nn.Module):
     """Complete IRIS World Model combining autoencoder and transformer.
 
     This is the core component that learns environment dynamics entirely

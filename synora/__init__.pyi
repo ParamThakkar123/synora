@@ -118,7 +118,6 @@ from synora.models.diffusion.actor_critic import ActorCriticNetwork as ActorCrit
 from synora.models.diffusion.reward_termination import RewardTerminationModel as RewardTerminationModel
 from synora.models.dreamer import Dreamer as Dreamer
 from synora.models.dreamer import DreamerAgent as DreamerAgent
-from synora.models.dreamer import DreamerAgent as DreamerV3
 from synora.models.dreamer import preprocess_obs as preprocess_obs
 from synora.models.dreamer_rssm import RSSM as DreamerRSSM
 from synora.models.dreamer_rssm import RSSM as RSSM
@@ -219,7 +218,6 @@ __all__ = [
     "DreamerStepper",
     "DreamerV1",
     "DreamerV2",
-    "DreamerV3",
     "DreamerValueModel",
     "DynamicsModel",
     "DynamicsModelConfig",

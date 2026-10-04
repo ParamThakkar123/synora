@@ -57,8 +57,8 @@ or need access to implementation-specific constructors.
 These names stay in the 1.x public surface, with the following documented
 limits:
 
-- `create_model("dreamer-v3")` / `DreamerV3` construct `DreamerAgent`. There is
-  no separate DreamerV3 implementation in 1.0.
+- There is no DreamerV3 implementation in 1.0, and no `dreamer-v3` registry
+  name: the Dreamer family is `dreamer-v1` and `dreamer-v2`.
 - `agent.train()` with a step budget is the Dreamer-family path. Other
   registered models train through their dedicated trainers or CLI commands.
 - Genie `VideoDataset` loads `.npy` / `.pt` clips, or video files when the

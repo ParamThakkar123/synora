@@ -1,3 +1,4 @@
+import re
 import tomllib
 from pathlib import Path
 
@@ -6,7 +7,7 @@ def _dependency_names(dependencies):
     names = []
     for dependency in dependencies:
         if isinstance(dependency, str):
-            names.append(dependency.split(">=", maxsplit=1)[0])
+            names.append(re.split(r"[<>=!~; ]", dependency, maxsplit=1)[0])
         else:
             names.append(dependency["name"])
     return names

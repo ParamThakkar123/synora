@@ -8,9 +8,10 @@ from synora.vision.iris_encoder import (
     IRISEncoder,
     SelfAttentionBlock,
 )
+from synora.export import ExportableAgentMixin
 
 
-class IRISDecoder(nn.Module):
+class IRISDecoder(ExportableAgentMixin, nn.Module):
     """CNN Decoder for IRIS discrete autoencoder.
 
     Decodes discrete tokens back into image observations.

@@ -48,15 +48,21 @@ def setup_logging(
         raise ValueError(f"Unknown logging level: {level}")
 
     logger.setLevel(resolved_level)
-    logger.propagate = False
+    # Keep propagating: an application's own logging configuration (and
+    # pytest's caplog) listens on the root logger, and turning propagation off
+    # here hid every ``synora.*`` record from it as soon as an agent was
+    # constructed. A console handler is only attached when the root logger has
+    # none; otherwise each message would print twice.
+    logger.propagate = True
 
     for handler in logger.handlers[:]:
         logger.removeHandler(handler)
 
     formatter = logging.Formatter(fmt)
-    console_handler = logging.StreamHandler()
-    console_handler.setFormatter(formatter)
-    logger.addHandler(console_handler)
+    if not logging.getLogger().handlers:
+        console_handler = logging.StreamHandler()
+        console_handler.setFormatter(formatter)
+        logger.addHandler(console_handler)
 
     if log_file:
         directory = os.path.dirname(log_file)

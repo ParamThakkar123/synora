@@ -31,6 +31,7 @@ from typing import Any, Dict, Optional, Protocol, runtime_checkable
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from synora.export import ExportableAgentMixin
 
 State = Dict[str, torch.Tensor]
 
@@ -168,7 +169,7 @@ class DreamerStepper:
         return DreamerStepModule(self.dreamer)
 
 
-class DreamerStepModule(nn.Module):
+class DreamerStepModule(ExportableAgentMixin, nn.Module):
     """One Dreamer observe+act step as a pure function of tensors.
 
     ``forward(deter, stoch, prev_action, obs, prior_noise, posterior_noise)``

@@ -11,6 +11,9 @@
   <p><strong>Modular PyTorch library for world models — many algorithms, one consistent API.</strong></p>
 </div>
 
+> **Formerly TorchWM.** The project was renamed to Synora for 1.0 and is
+> published on PyPI as `synora`: `pip install synora`, then `import synora`.
+
 **Synora brings the major world-model families together under a single PyTorch API.** Train Dreamer, PlaNet, JEPA, IRIS, DIAMOND, DiT, and Genie agents through `create_config` / `create_model` / `make_env`, or drop down to their encoders, decoders, and latent-dynamics backbones to compose your own architecture. Environment adapters (Gym/Gymnasium, DeepMind Control, MuJoCo, Brax, Atari, Unity ML-Agents) and ONNX / TorchScript / TensorRT export come built in.
 
 ## Quick Start
@@ -76,7 +79,7 @@ comparing them is a loop rather than a rewrite:
 ```python
 import synora
 
-for algo in ["dreamer-v1", "dreamer-v2", "dreamer-v3"]:
+for algo in ["dreamer-v1", "dreamer-v2"]:
     agent = synora.create_model(
         algo, env="Pendulum-v1", env_backend="gym", total_steps=20_000
     )
@@ -165,7 +168,6 @@ or `synora.create_config(...)`. Run `synora.list_models()` for the live list.
 | `dreamer` | **Dreamer** | Model-based RL with latent dynamics (alias for `dreamer-v1`) | Imagination, actor-critic |
 | `dreamer-v1` | **DreamerV1** | Latent imagination with Gaussian heads | Normal heads, standard KL |
 | `dreamer-v2` | **DreamerV2** | Discrete latents for pixel control | Symlog two-hot heads, balanced KL |
-| `dreamer-v3` | **DreamerV3 (name)** | Same `DreamerAgent` as `dreamer` | Registry name for V3-style configs; not a separate paper-complete V3 |
 | `planet` | **PlaNet** | Latent planning from pixels, no explicit policy | RSSM, CEM planner |
 | `modular-rssm` | **ModularRSSM** | Composable recurrent state-space model | Swappable priors/posteriors, custom heads |
 | `iris` | **IRIS** | Sample-efficient RL with Transformers | Discrete VAEs, world models |

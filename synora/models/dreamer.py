@@ -509,6 +509,7 @@ class Dreamer:
         self.actor_scaler = torch.amp.GradScaler("cuda", enabled=self.use_amp)
         self.value_scaler = torch.amp.GradScaler("cuda", enabled=self.use_amp)
 
+        self.world_model_modules: list[nn.Module]
         if self.args.use_disc_model:
             self.world_model_modules = [
                 self.rssm,
@@ -524,8 +525,8 @@ class Dreamer:
                 self.obs_decoder,
                 self.reward_model,
             ]
-        self.value_modules = [self.value_model]
-        self.actor_modules = [self.actor]
+        self.value_modules: list[nn.Module] = [self.value_model]
+        self.actor_modules: list[nn.Module] = [self.actor]
 
         if restore:
             self.restore_checkpoint(self.restore_path)
@@ -648,7 +649,7 @@ class Dreamer:
     def summary(self) -> dict[str, Any]:
         """Return a compact parameter-count summary for the Dreamer modules."""
 
-        modules = {
+        modules: dict[str, nn.Module] = {
             "rssm": self.rssm,
             "actor": self.actor,
             "reward_model": self.reward_model,

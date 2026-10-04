@@ -5,9 +5,10 @@ from typing import Tuple, Union
 
 from synora.vision.vq_layer import VectorQuantizer, VectorQuantizerEMA
 from synora.blocks.st_transformer import STTransformer
+from synora.export import ExportableAgentMixin
 
 
-class VideoTokenizer(nn.Module):
+class VideoTokenizer(ExportableAgentMixin, nn.Module):
     """Video Tokenizer using VQ-VAE with Spatiotemporal Transformer.
 
     This is a core component of Genie (Google DeepMind, 2024), used to compress

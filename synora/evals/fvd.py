@@ -16,6 +16,8 @@ from torchvision.models.video import r3d_18, R3D_18_Weights
 from typing import Optional
 import numpy as np
 
+from synora.evals.fid import _frechet_distance
+
 
 class VideoFeatureExtractor(nn.Module):
     """R3D-18 truncated at the avgpool layer for 512-dim video features."""
@@ -99,19 +101,6 @@ def _compute_statistics(features: torch.Tensor) -> tuple[np.ndarray, np.ndarray]
     mu = np.mean(arr, axis=0)
     sigma = np.cov(arr, rowvar=False)
     return mu, sigma
-
-
-def _frechet_distance(
-    mu1: np.ndarray, sigma1: np.ndarray, mu2: np.ndarray, sigma2: np.ndarray
-) -> float:
-    """Compute the Fréchet distance between two Gaussians."""
-    from scipy import linalg
-
-    diff = mu1 - mu2
-    covmean = linalg.sqrtm(sigma1 @ sigma2)
-    if isinstance(covmean, np.ndarray) and np.iscomplexobj(covmean):
-        covmean = covmean.real
-    return float(diff @ diff + np.trace(sigma1 + sigma2 - 2.0 * covmean))
 
 
 @lru_cache(maxsize=None)

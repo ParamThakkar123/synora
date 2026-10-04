@@ -35,7 +35,6 @@ generated from source, see {doc}`api_reference`.
 | `Dreamer` | `synora.models.dreamer` | Base Dreamer world model (RSSM-based, V1-style). |
 | `DreamerV1` | `synora.models.dreamer_v1` | DreamerV1 (alias for base Dreamer). |
 | `DreamerV2` | `synora.models.dreamer_v2` | DreamerV2 (symlog two-hot heads, balanced KL). |
-| `DreamerV3` | `synora.models.dreamer` | Alias of `DreamerAgent` (no separate V3 implementation in 1.0). |
 | `DreamerAgent` | `synora.models.dreamer` | High-level Dreamer agent with train/evaluate helpers. |
 | `Planet` | `synora.models.planet` | PlaNet: Deep Planning Network. |
 | `JEPAAgent` | `synora.models.jepa_agent` | I-JEPA agent for self-supervised visual representation learning. |

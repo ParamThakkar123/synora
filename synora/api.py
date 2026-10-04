@@ -54,13 +54,6 @@ MODEL_SPECS: dict[str, ModelSpec] = {
         description="DreamerV2 world model (symlog two-hot heads, balanced KL).",
         aliases=("dreamerv2",),
     ),
-    "dreamer-v3": ModelSpec(
-        name="dreamer-v3",
-        import_path="synora.models.dreamer:DreamerAgent",
-        config_path="synora.configs.dreamer_config:DreamerConfig",
-        description="DreamerV3-named agent: same DreamerAgent implementation as `dreamer` (not a paper-complete V3).",
-        aliases=("dreamerv3",),
-    ),
     "planet": ModelSpec(
         name="planet",
         import_path="synora.models.planet:Planet",
