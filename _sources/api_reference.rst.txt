@@ -10,60 +10,60 @@ Public package surface
 
 These modules expose the most common imports and lazy constructors.
 
-Use ``torchwm`` for common workflows::
+Use ``synora`` for common workflows::
 
-   import torchwm
-   agent = torchwm.create_model("dreamer", env="walker-walk")
+   import synora
+   agent = synora.create_model("dreamer", env="walker-walk")
 
-**Primary modules:** ``torchwm``, ``torchwm.models``, ``torchwm.configs``, ``torchwm.catalog``, and ``torchwm.envs``.
+**Primary modules:** ``synora``, ``synora.models``, ``synora.configs``, ``synora.catalog``, and ``synora.envs``.
 
-.. automodule:: torchwm
+.. automodule:: synora
    :no-index:
 
-.. automodule:: torchwm.api
+.. automodule:: synora.api
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: torchwm.export
+.. automodule:: synora.export
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: torchwm.inference.runtime
+.. automodule:: synora.inference.runtime
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: torchwm.inference.precision
+.. automodule:: synora.inference.precision
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: torchwm.inference.steppers
+.. automodule:: synora.inference.steppers
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: torchwm.inference.benchmark
+.. automodule:: synora.inference.benchmark
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: torchwm.inference.quantize
+.. automodule:: synora.inference.quantize
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: torchwm.inference.bundle
+.. automodule:: synora.inference.bundle
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: torchwm.models
+.. automodule:: synora.models
    :no-index:
 
-.. automodule:: torchwm.catalog
+.. automodule:: synora.catalog
    :members:
    :undoc-members:
    :show-inheritance:
@@ -76,72 +76,72 @@ Core model families
 
 **Key classes:** ``Dreamer``, ``DreamerAgent``, ``RSSM``, ``RecurrentStateSpaceModel``, ``Planet``, ``ModularRSSM``, ``JEPAAgent``, ``VisionTransformer``, ``IRISAgent``, ``IRISTransformer``, ``IRISWorldModel``, ``Genie``, ``LatentActionModel``, and ``DynamicsModel``.
 
-.. automodule:: torchwm.models.dreamer
+.. automodule:: synora.models.dreamer
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: torchwm.models.dreamer_rssm
+.. automodule:: synora.models.dreamer_rssm
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: torchwm.models.rssm
+.. automodule:: synora.models.rssm
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: torchwm.models.planet
+.. automodule:: synora.models.planet
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: torchwm.models.mdrnn
+.. automodule:: synora.models.mdrnn
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: torchwm.models.controller
+.. automodule:: synora.models.controller
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: torchwm.models.modular_rssm
+.. automodule:: synora.models.modular_rssm
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: torchwm.models.jepa_agent
+.. automodule:: synora.models.jepa_agent
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: torchwm.models.vit
+.. automodule:: synora.models.vit
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: torchwm.models.iris_agent
+.. automodule:: synora.models.iris_agent
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: torchwm.models.iris_transformer
+.. automodule:: synora.models.iris_transformer
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: torchwm.models.genie
+.. automodule:: synora.models.genie
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: torchwm.models.latent_action_model
+.. automodule:: synora.models.latent_action_model
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: torchwm.models.dynamics_model
+.. automodule:: synora.models.dynamics_model
    :members:
    :undoc-members:
    :show-inheritance:
@@ -151,34 +151,34 @@ Diffusion and DIAMOND components
 
 **Key classes:** ``DiamondAgent``, ``DDPM``, ``DiT``, ``DiffusionUNet``, ``EDMPreconditioner``, ``EulerSampler``, ``RewardTerminationModel``, and ``ActorCriticNetwork``.
 
-DIAMOND exposes ``DiamondAgent`` from ``torchwm.training.train_diamond``; there is no separate ``DIAMONDAgent`` class name in the package.
+DIAMOND exposes ``DiamondAgent`` from ``synora.training.train_diamond``; there is no separate ``DIAMONDAgent`` class name in the package.
 
-.. automodule:: torchwm.models.diffusion
+.. automodule:: synora.models.diffusion
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: torchwm.models.diffusion.DDPM
+.. automodule:: synora.models.diffusion.DDPM
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: torchwm.models.diffusion.DiT
+.. automodule:: synora.models.diffusion.DiT
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: torchwm.models.diffusion.diamond_diffusion
+.. automodule:: synora.models.diffusion.diamond_diffusion
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: torchwm.models.diffusion.reward_termination
+.. automodule:: synora.models.diffusion.reward_termination
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: torchwm.models.diffusion.actor_critic
+.. automodule:: synora.models.diffusion.actor_critic
    :members:
    :undoc-members:
    :show-inheritance:
@@ -188,62 +188,62 @@ Vision, tokenization, and layers
 
 **Key classes:** ``ConvEncoder``, ``ConvDecoder``, ``DenseDecoder``, ``ActionDecoder``, ``CNNEncoder``, ``CNNDecoder``, ``IRISEncoder``, ``IRISDecoder``, ``DiscreteAutoencoder``, ``VectorQuantizer``, ``VectorQuantizerEMA``, ``VideoTokenizer``, ``MultiHeadSelfAttention``, and ``STTransformer``.
 
-.. automodule:: torchwm.vision.VAE.ConvVAE
+.. automodule:: synora.vision.VAE.ConvVAE
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: torchwm.vision.dreamer_encoder
+.. automodule:: synora.vision.dreamer_encoder
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: torchwm.vision.dreamer_decoder
+.. automodule:: synora.vision.dreamer_decoder
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: torchwm.vision.planet_encoder
+.. automodule:: synora.vision.planet_encoder
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: torchwm.vision.planet_decoder
+.. automodule:: synora.vision.planet_decoder
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: torchwm.vision.iris_encoder
+.. automodule:: synora.vision.iris_encoder
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: torchwm.vision.iris_decoder
+.. automodule:: synora.vision.iris_decoder
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: torchwm.vision.vq_layer
+.. automodule:: synora.vision.vq_layer
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: torchwm.vision.video_tokenizer
+.. automodule:: synora.vision.video_tokenizer
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: torchwm.blocks
+.. automodule:: synora.blocks
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: torchwm.blocks.mhsa
+.. automodule:: synora.blocks.mhsa
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: torchwm.blocks.st_transformer
+.. automodule:: synora.blocks.st_transformer
    :members:
    :undoc-members:
    :show-inheritance:
@@ -251,40 +251,40 @@ Vision, tokenization, and layers
 Configuration objects
 ---------------------
 
-.. automodule:: torchwm.configs
+.. automodule:: synora.configs
    :no-index:
 
-.. automodule:: torchwm.configs.wm_config
+.. automodule:: synora.configs.wm_config
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: torchwm.configs.dreamer_config
+.. automodule:: synora.configs.dreamer_config
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: torchwm.configs.jepa_config
+.. automodule:: synora.configs.jepa_config
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: torchwm.configs.iris_config
+.. automodule:: synora.configs.iris_config
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: torchwm.configs.genie_config
+.. automodule:: synora.configs.genie_config
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: torchwm.configs.dit_config
+.. automodule:: synora.configs.dit_config
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: torchwm.configs.diamond_config
+.. automodule:: synora.configs.diamond_config
    :members:
    :undoc-members:
    :show-inheritance:
@@ -294,62 +294,62 @@ Training entry points
 
 **Key classes and functions:** ``DiamondAgent``, ``train_diamond``, ``train_dreamer``, ``GenieTrainer``, ``IRISTrainer``, and related training entry points.
 
-.. automodule:: torchwm.training
+.. automodule:: synora.training
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: torchwm.training.train_world_model
+.. automodule:: synora.training.train_world_model
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: torchwm.training.train_convvae
+.. automodule:: synora.training.train_convvae
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: torchwm.training.train_mdn_rnn
+.. automodule:: synora.training.train_mdn_rnn
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: torchwm.training.train_controller
+.. automodule:: synora.training.train_controller
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: torchwm.training.train_jepa
+.. automodule:: synora.training.train_jepa
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: torchwm.training.train_iris
+.. automodule:: synora.training.train_iris
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: torchwm.training.train_genie
+.. automodule:: synora.training.train_genie
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: torchwm.training.train_planet
+.. automodule:: synora.training.train_planet
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: torchwm.training.train_rssm
+.. automodule:: synora.training.train_rssm
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: torchwm.training.train_diamond
+.. automodule:: synora.training.train_diamond
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: torchwm.training.rl_harness
+.. automodule:: synora.training.rl_harness
    :members:
    :undoc-members:
    :show-inheritance:
@@ -357,32 +357,32 @@ Training entry points
 Memory and controllers
 ----------------------
 
-.. automodule:: torchwm.memory.dreamer_memory
+.. automodule:: synora.memory.dreamer_memory
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: torchwm.memory.planet_memory
+.. automodule:: synora.memory.planet_memory
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: torchwm.memory.iris_memory
+.. automodule:: synora.memory.iris_memory
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: torchwm.controller.rssm_policy
+.. automodule:: synora.controller.rssm_policy
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: torchwm.controller.iris_policy
+.. automodule:: synora.controller.iris_policy
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: torchwm.controller.rollout_generator
+.. automodule:: synora.controller.rollout_generator
    :members:
    :undoc-members:
    :show-inheritance:
@@ -399,60 +399,60 @@ DIAMOND-style Atari support is intentionally not listed as an environment
 adapter because it is Atari preprocessing rather than a separate environment
 family.
 
-.. automodule:: torchwm.envs
+.. automodule:: synora.envs
    :no-index:
 
-.. automodule:: torchwm.envs.dmc
+.. automodule:: synora.envs.dmc
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: torchwm.envs.dmlab
+.. automodule:: synora.envs.dmlab
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: torchwm.envs.gym_env
+.. automodule:: synora.envs.gym_env
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: torchwm.envs.ale_atari_env
+.. automodule:: synora.envs.ale_atari_env
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: torchwm.envs.ale_atari_vector_env
+.. automodule:: synora.envs.ale_atari_vector_env
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: torchwm.envs.procgen_env
+.. automodule:: synora.envs.procgen_env
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: torchwm.envs.mujoco_env
+.. automodule:: synora.envs.mujoco_env
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: torchwm.envs.robotics_env
+.. automodule:: synora.envs.robotics_env
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: torchwm.envs.unity_env
+.. automodule:: synora.envs.unity_env
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: torchwm.envs.vector_env
+.. automodule:: synora.envs.vector_env
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: torchwm.envs.wrappers
+.. automodule:: synora.envs.wrappers
    :members:
    :undoc-members:
    :show-inheritance:
@@ -463,7 +463,7 @@ Atari preprocessing helpers
 These helpers wrap Atari environments for specific training recipes. They are
 not separate environment families.
 
-.. automodule:: torchwm.envs.diamond_atari
+.. automodule:: synora.envs.diamond_atari
    :members:
    :undoc-members:
    :show-inheritance:
@@ -471,42 +471,42 @@ not separate environment families.
 Datasets and transforms
 ~~~~~~~~~~~~~~~~~~~~~~~
 
-.. automodule:: torchwm.datasets.wm_dataset
+.. automodule:: synora.datasets.wm_dataset
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: torchwm.datasets.video_datasets
+.. automodule:: synora.datasets.video_datasets
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: torchwm.datasets.tinyworlds
+.. automodule:: synora.datasets.tinyworlds
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: torchwm.datasets.diamond_dataset
+.. automodule:: synora.datasets.diamond_dataset
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: torchwm.datasets.cifar10
+.. automodule:: synora.datasets.cifar10
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: torchwm.datasets.imagenet1k
+.. automodule:: synora.datasets.imagenet1k
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: torchwm.datasets.nuplan
+.. automodule:: synora.datasets.nuplan
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: torchwm.transforms.image
+.. automodule:: synora.transforms.image
    :members:
    :undoc-members:
    :show-inheritance:
@@ -514,27 +514,27 @@ Datasets and transforms
 Masking and JEPA helpers
 ------------------------
 
-.. automodule:: torchwm.masks
+.. automodule:: synora.masks
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: torchwm.masks.default
+.. automodule:: synora.masks.default
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: torchwm.masks.multiblock
+.. automodule:: synora.masks.multiblock
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: torchwm.masks.random
+.. automodule:: synora.masks.random
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: torchwm.helpers.jepa_helper
+.. automodule:: synora.helpers.jepa_helper
    :members:
    :undoc-members:
    :show-inheritance:
@@ -542,27 +542,27 @@ Masking and JEPA helpers
 Benchmarks and reports
 ----------------------
 
-.. automodule:: torchwm.benchmarks
+.. automodule:: synora.benchmarks
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: torchwm.benchmarks.runner
+.. automodule:: synora.benchmarks.runner
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: torchwm.benchmarks.adapters
+.. automodule:: synora.benchmarks.adapters
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: torchwm.benchmarks.metrics
+.. automodule:: synora.benchmarks.metrics
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: torchwm.benchmarks.reporting
+.. automodule:: synora.benchmarks.reporting
    :members:
    :undoc-members:
    :show-inheritance:
@@ -570,52 +570,47 @@ Benchmarks and reports
 Utilities
 ---------
 
-.. automodule:: torchwm.losses.convae_loss
+.. automodule:: synora.losses.convae_loss
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: torchwm.losses.gmm_loss
+.. automodule:: synora.losses.gmm_loss
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: torchwm.utils.train_utils
+.. automodule:: synora.utils.train_utils
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: torchwm.utils.dreamer_utils
+.. automodule:: synora.utils.dreamer_utils
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: torchwm.utils.jepa_utils
+.. automodule:: synora.utils.jepa_utils
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: torchwm.utils.data_utils
+.. automodule:: synora.utils.data_utils
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: torchwm.utils.jit_utils
+.. automodule:: synora.utils.memory_utils
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: torchwm.utils.memory_utils
+.. automodule:: synora.utils.logging_utils
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: torchwm.utils.logging_utils
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-.. automodule:: torchwm.utils.utils
+.. automodule:: synora.utils.utils
    :members:
    :undoc-members:
    :show-inheritance:

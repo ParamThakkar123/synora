@@ -1,30 +1,30 @@
 <!DOCTYPE html>
 
 
-<html lang="en" data-content_root="./" >
+<html lang="en" data-content_root="./" data-theme="dark">
 
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta property="og:title" content="Installation" />
 <meta property="og:type" content="website" />
-<meta property="og:url" content="https://paramthakkar123.github.io/torchwm/installation.html" />
-<meta property="og:site_name" content="TorchWM Documentation" />
-<meta property="og:description" content="TorchWM supports multiple installation methods depending on your use case. From PyPI: For stable releases: Available Extras:,, Extra, Description,,, gym, Additional Gym environment dependencies (hu..." />
+<meta property="og:url" content="https://paramthakkar123.github.io/synora/installation.html" />
+<meta property="og:site_name" content="Synora Documentation" />
+<meta property="og:description" content="Synora supports multiple installation methods depending on your use case. From PyPI: For stable releases: Available Extras:,, Extra, Description,,, gym, Additional Gym environment dependencies (hug..." />
 <meta property="og:image:width" content="1146" />
 <meta property="og:image:height" content="600" />
-<meta property="og:image" content="https://paramthakkar123.github.io/torchwm/_images/social_previews/summary_installation_03f3079a.png" />
-<meta property="og:image:alt" content="TorchWM supports multiple installation methods depending on your use case. From PyPI: For stable releases: Available Extras:,, Extra, Description,,, gym, Additional Gym environment dependencies (hu..." />
-<meta name="description" content="TorchWM supports multiple installation methods depending on your use case. From PyPI: For stable releases: Available Extras:,, Extra, Description,,, gym, Additional Gym environment dependencies (hu..." />
+<meta property="og:image" content="https://paramthakkar123.github.io/synora/_images/social_previews/summary_installation_df75cc75.png" />
+<meta property="og:image:alt" content="Synora supports multiple installation methods depending on your use case. From PyPI: For stable releases: Available Extras:,, Extra, Description,,, gym, Additional Gym environment dependencies (hug..." />
+<meta name="description" content="Synora supports multiple installation methods depending on your use case. From PyPI: For stable releases: Available Extras:,, Extra, Description,,, gym, Additional Gym environment dependencies (hug..." />
 <meta name="twitter:card" content="summary_large_image" />
 
-    <title>Installation &#8212; TorchWM 1.0.0 documentation</title>
+    <title>Installation &#8212; Synora 1.0.0 documentation</title>
   
   
   
   <script data-cfasync="false">
-    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
-    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "dark";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "dark";
   </script>
   <!--
     this give us a css class that will be invisible only if js is disabled
@@ -42,7 +42,7 @@
 
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
     <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
-    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=549e9d87" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=20cffb5b" />
   
   <!-- So that users can add custom icons -->
   <script defer src="_static/scripts/fontawesome.js?digest=64cc4de3f052d77215f0"></script>
@@ -58,9 +58,9 @@
     <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'installation';</script>
     <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
-    <script src="_static/fix_navbar.js?v=92322e29"></script>
-    <link rel="canonical" href="https://paramthakkar123.github.io/torchwm/installation.html" />
-    <link rel="icon" href="_static/torchwm-favicon.svg"/>
+    <script src="_static/fix_navbar.js?v=7a566309"></script>
+    <link rel="canonical" href="https://paramthakkar123.github.io/synora/installation.html" />
+    <link rel="icon" href="_static/synora-favicon.svg"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Public API Quick Reference" href="public_api.html" />
@@ -75,7 +75,7 @@
     <script src="searchindex.js"></script>
   
   </head>
-  <body data-default-mode="">
+  <body data-default-mode="dark">
   
   
   <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
@@ -136,14 +136,10 @@
   
     
     
-      
     
-    
-    <img src="_static/torchwm-logo-light.svg" class="logo__image only-light" alt="TorchWM"/>
-    <img src="_static/torchwm-logo-dark.svg" class="logo__image only-dark pst-js-only" alt="TorchWM"/>
+    <img src="_static/synora-logo-dark.svg" class="logo__image only-dark" alt="Synora"/>
+    <img src="_static/synora-logo-light.svg" class="logo__image only-light pst-js-only" alt="Synora"/>
   
-  
-    <p class="title logo__title">TorchWM</p>
   
 </a></div>
     
@@ -172,6 +168,21 @@
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
 </form></div>
       
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
         <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
         <li class="nav-item">
@@ -183,7 +194,7 @@
           
           
           
-          <a href="https://github.com/paramthakkar123/torchwm" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+          <a href="https://github.com/paramthakkar123/synora" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
 </ul></div>
       
@@ -237,6 +248,21 @@
   <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
 </form></div>
         
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button type="button" class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button type="button" class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
           <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
         <li class="nav-item">
@@ -248,7 +274,7 @@
           
           
           
-          <a href="https://github.com/paramthakkar123/torchwm" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+          <a href="https://github.com/paramthakkar123/synora" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
 </ul></div>
         
@@ -283,11 +309,11 @@
 <li class="toctree-l1"><a class="reference internal" href="environments_guide.html">Environments Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="environments/index.html">Environment Backends</a></li>
 <li class="toctree-l1"><a class="reference internal" href="datasets/nuplan.html">NuPlan Dataset</a></li>
-<li class="toctree-l1"><a class="reference internal" href="cli.html">TorchWM CLI</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cli.html">Synora CLI</a></li>
 <li class="toctree-l1"><a class="reference internal" href="package_overview.html">Package Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="controllers_guide.html">Controllers and Policies</a></li>
 <li class="toctree-l1"><a class="reference internal" href="world_models_guide.html">World Models Study Guide</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorials/world_model_env_rl_libraries.html">Tutorial: Plug TorchWM world models into RL libraries</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials/world_model_env_rl_libraries.html">Tutorial: Plug Synora world models into RL libraries</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modular_rssm_guide.html">Modular RSSM</a></li>
 <li class="toctree-l1"><a class="reference internal" href="vision_guide.html">Vision Components</a></li>
 <li class="toctree-l1"><a class="reference internal" href="datasets_guide.html">Datasets</a></li>
@@ -376,23 +402,23 @@
                   
   <section id="installation">
 <h1>Installation<a class="headerlink" href="#installation" title="Link to this heading">#</a></h1>
-<p>TorchWM supports multiple installation methods depending on your use case.</p>
+<p>Synora supports multiple installation methods depending on your use case.</p>
 <section id="from-pypi">
 <h2>From PyPI<a class="headerlink" href="#from-pypi" title="Link to this heading">#</a></h2>
 <p>For stable releases:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Core dependencies (torch, torchvision, torchaudio, gym, gymnasium, etc.)</span>
-pip<span class="w"> </span>install<span class="w"> </span>torchwm
+pip<span class="w"> </span>install<span class="w"> </span>synora
 
 <span class="c1"># With specific extras</span>
-pip<span class="w"> </span>install<span class="w"> </span>torchwm<span class="o">[</span>gym<span class="o">]</span><span class="w">       </span><span class="c1"># Additional gym environments (huggingface-hub, pygame, autorom)</span>
-pip<span class="w"> </span>install<span class="w"> </span>torchwm<span class="o">[</span>ml-agents<span class="o">]</span><span class="w"> </span><span class="c1"># Unity ML-Agents support</span>
-pip<span class="w"> </span>install<span class="w"> </span>torchwm<span class="o">[</span>ml<span class="o">]</span><span class="w">        </span><span class="c1"># TensorBoard, Weights &amp; Biases, logging tools</span>
-pip<span class="w"> </span>install<span class="w"> </span>torchwm<span class="o">[</span>viz<span class="o">]</span><span class="w">       </span><span class="c1"># FastAPI, Uvicorn, documentation tools</span>
-pip<span class="w"> </span>install<span class="w"> </span>torchwm<span class="o">[</span>docs<span class="o">]</span><span class="w">      </span><span class="c1"># Sphinx and documentation tools</span>
-pip<span class="w"> </span>install<span class="w"> </span>torchwm<span class="o">[</span>dev<span class="o">]</span><span class="w">       </span><span class="c1"># Testing and development tools (pytest, mypy, pre-commit)</span>
+pip<span class="w"> </span>install<span class="w"> </span>synora<span class="o">[</span>gym<span class="o">]</span><span class="w">       </span><span class="c1"># Additional gym environments (huggingface-hub, pygame, autorom)</span>
+pip<span class="w"> </span>install<span class="w"> </span>synora<span class="o">[</span>ml-agents<span class="o">]</span><span class="w"> </span><span class="c1"># Unity ML-Agents support</span>
+pip<span class="w"> </span>install<span class="w"> </span>synora<span class="o">[</span>ml<span class="o">]</span><span class="w">        </span><span class="c1"># TensorBoard, Weights &amp; Biases, logging tools</span>
+pip<span class="w"> </span>install<span class="w"> </span>synora<span class="o">[</span>viz<span class="o">]</span><span class="w">       </span><span class="c1"># FastAPI, Uvicorn, documentation tools</span>
+pip<span class="w"> </span>install<span class="w"> </span>synora<span class="o">[</span>docs<span class="o">]</span><span class="w">      </span><span class="c1"># Sphinx and documentation tools</span>
+pip<span class="w"> </span>install<span class="w"> </span>synora<span class="o">[</span>dev<span class="o">]</span><span class="w">       </span><span class="c1"># Testing and development tools (pytest, mypy, pre-commit)</span>
 
 <span class="c1"># Install multiple extras</span>
-pip<span class="w"> </span>install<span class="w"> </span>torchwm<span class="o">[</span>gym,ml-agents,dev<span class="o">]</span>
+pip<span class="w"> </span>install<span class="w"> </span>synora<span class="o">[</span>gym,ml-agents,dev<span class="o">]</span>
 </pre></div>
 </div>
 <section id="available-extras">
@@ -434,8 +460,8 @@ pip<span class="w"> </span>install<span class="w"> </span>torchwm<span class="o"
 <section id="from-source">
 <h2>From Source<a class="headerlink" href="#from-source" title="Link to this heading">#</a></h2>
 <p>For the latest development version:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/ParamThakkar123/torchwm.git
-<span class="nb">cd</span><span class="w"> </span>torchwm
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/ParamThakkar123/synora.git
+<span class="nb">cd</span><span class="w"> </span>synora
 
 <span class="c1"># Core dependencies</span>
 pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.
@@ -447,7 +473,7 @@ pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </s
 </section>
 <section id="pytorch-build-selection">
 <h2>PyTorch Build Selection<a class="headerlink" href="#pytorch-build-selection" title="Link to this heading">#</a></h2>
-<p>TorchWM does not pin a single PyTorch wheel index. Install the PyTorch build that matches your platform (CPU, macOS, CUDA, ROCm, etc.) using the index recommended by the <a class="reference external" href="https://pytorch.org/get-started/locally/">PyTorch installation selector</a>.</p>
+<p>Synora does not pin a single PyTorch wheel index. Install the PyTorch build that matches your platform (CPU, macOS, CUDA, ROCm, etc.) using the index recommended by the <a class="reference external" href="https://pytorch.org/get-started/locally/">PyTorch installation selector</a>.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Example: CUDA 12.1 wheels. Replace the index for CPU, ROCm, or other CUDA versions.</span>
 uv<span class="w"> </span>add<span class="w"> </span>torch<span class="w"> </span>torchvision<span class="w"> </span>torchaudio<span class="w"> </span>--index<span class="w"> </span>https://download.pytorch.org/whl/cu121
 
@@ -458,41 +484,41 @@ pip<span class="w"> </span>install<span class="w"> </span>torch<span class="w"> 
 </section>
 <section id="docker">
 <h2>Docker<a class="headerlink" href="#docker" title="Link to this heading">#</a></h2>
-<p>Build the default CPU image and run the TorchWM CLI:</p>
+<p>Build the default CPU image and run the Synora CLI:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Build</span>
-docker<span class="w"> </span>build<span class="w"> </span>-t<span class="w"> </span>torchwm<span class="w"> </span>.
+docker<span class="w"> </span>build<span class="w"> </span>-t<span class="w"> </span>synora<span class="w"> </span>.
 
 <span class="c1"># Show the CLI help</span>
-docker<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </span>torchwm
+docker<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </span>synora
 
 <span class="c1"># Run a specific command</span>
-docker<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </span>torchwm<span class="w"> </span>models<span class="w"> </span>list
+docker<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </span>synora<span class="w"> </span>models<span class="w"> </span>list
 </pre></div>
 </div>
-<p>The Dockerfile installs PyTorch explicitly before installing TorchWM so the wheel
+<p>The Dockerfile installs PyTorch explicitly before installing Synora so the wheel
 source is controlled by the <code class="docutils literal notranslate"><span class="pre">PYTORCH_INDEX_URL</span></code> build argument. The default uses
 CPU wheels. To build against a CUDA wheel index, pass the matching PyTorch index
 and run the container with the NVIDIA runtime:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>build<span class="w"> </span><span class="se">\</span>
 <span class="w">  </span>--build-arg<span class="w"> </span><span class="nv">PYTORCH_INDEX_URL</span><span class="o">=</span>https://download.pytorch.org/whl/cu121<span class="w"> </span><span class="se">\</span>
-<span class="w">  </span>-t<span class="w"> </span>torchwm:cu121<span class="w"> </span>.
+<span class="w">  </span>-t<span class="w"> </span>synora:cu121<span class="w"> </span>.
 
-docker<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </span>--gpus<span class="w"> </span>all<span class="w"> </span>torchwm:cu121<span class="w"> </span>models<span class="w"> </span>list
+docker<span class="w"> </span>run<span class="w"> </span>--rm<span class="w"> </span>--gpus<span class="w"> </span>all<span class="w"> </span>synora:cu121<span class="w"> </span>models<span class="w"> </span>list
 </pre></div>
 </div>
 <p>Additional optional dependency groups can be installed at build time with
-<code class="docutils literal notranslate"><span class="pre">TORCHWM_EXTRAS</span></code>, for example <code class="docutils literal notranslate"><span class="pre">--build-arg</span> <span class="pre">TORCHWM_EXTRAS=viz,ml</span></code>. Runtime data is
-stored under <code class="docutils literal notranslate"><span class="pre">/data/torchwm</span></code>, which you can persist with a bind mount or volume.</p>
+<code class="docutils literal notranslate"><span class="pre">SYNORA_EXTRAS</span></code>, for example <code class="docutils literal notranslate"><span class="pre">--build-arg</span> <span class="pre">SYNORA_EXTRAS=viz,ml</span></code>. Runtime data is
+stored under <code class="docutils literal notranslate"><span class="pre">/data/synora</span></code>, which you can persist with a bind mount or volume.</p>
 </section>
 <section id="verification">
 <h2>Verification<a class="headerlink" href="#verification" title="Link to this heading">#</a></h2>
 <p>Verify your installation:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">torchwm</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">synora</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"PyTorch: </span><span class="si">{</span><span class="n">torch</span><span class="o">.</span><span class="n">__version__</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"CUDA available: </span><span class="si">{</span><span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span><span class="p">()</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="s2">"TorchWM imported successfully!"</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Synora imported successfully!"</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>

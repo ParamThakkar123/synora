@@ -2,7 +2,7 @@
 
 This guide covers running trained world models fast, measuring what each
 optimization costs, and shipping them as self-contained artifacts. Everything
-here lives in `torchwm.inference` and `torchwm.export`, and every optimization
+here lives in `synora.inference` and `synora.export`, and every optimization
 is **opt-in**: with default settings, results are identical to calling the
 model directly.
 
@@ -46,7 +46,7 @@ tools in this guide follow from them:
 | Portable artifact | `export_model(module, path, format="exported_program")` |
 | Python-free / C++ | `format="aoti"` (AOTInductor) |
 | Ship everything together | `save_bundle(dir, module, example_inputs=...)` |
-| Inspect / time a bundle | `torchwm deploy inspect DIR`, `torchwm deploy bench DIR` |
+| Inspect / time a bundle | `synora deploy inspect DIR`, `synora deploy bench DIR` |
 
 ## In-process optimization
 
@@ -55,12 +55,12 @@ precision policy and optionally `torch.compile`:
 
 ```python
 import torch
-from torchwm.inference import optimize_for_inference
+from synora.inference import optimize_for_inference
 
 policy = optimize_for_inference(
     agent.dreamer.actor,
-    precision="auto",      # bf16 on Ampere+ GPUs, fp16 on older GPUs, fp32 on CPU
-    compile=True,          # torch.compile, mode="reduce-overhead" (CUDA graphs)
+    precision="auto",  # bf16 on Ampere+ GPUs, fp16 on older GPUs, fp32 on CPU
+    compile=True,  # torch.compile, mode="reduce-overhead" (CUDA graphs)
 )
 action = policy(features, deter=True)
 ```
@@ -76,7 +76,7 @@ action = policy(features, deter=True)
 | `clone_outputs` | auto | CUDA-graph replays reuse output buffers. The wrapper clones outputs when compiling with CUDA graphs, so a value kept across steps is not overwritten. |
 
 The wrapped module keeps its identity and `state_dict` keys. The lower-level
-`torchwm.maybe_compile(fn_or_module, enabled=True)` does the same for a single
+`synora.maybe_compile(fn_or_module, enabled=True)` does the same for a single
 function or module. It swaps the module's `forward` rather than returning an
 `OptimizedModule`, so checkpoints keep loading into uncompiled models.
 
@@ -88,7 +88,7 @@ batch sizes fixed in a serving loop, and warm up before measuring.
 
 ### Precision
 
-`torchwm.inference.inference_context(device, precision)` is the single
+`synora.inference.inference_context(device, precision)` is the single
 precision policy used by every tool in this guide. It enters
 `torch.inference_mode()` plus autocast. At fp32 it enters no autocast region at
 all, so it is bit-identical to plain `inference_mode`.
@@ -107,20 +107,22 @@ shape, with state as an explicit `dict[str, Tensor]` whose batch is on dim 0:
 
 ```python
 import torch
-from torchwm.inference import make_stepper
+from synora.inference import make_stepper
 
-stepper = make_stepper(agent)             # DreamerStepper or IRISStepper
+stepper = make_stepper(agent)  # DreamerStepper or IRISStepper
 state = stepper.init_state(batch_size=8)  # 8 environments, one batched step
 prev_action = None
 
 with torch.inference_mode():
     while running:
         state = stepper.observe(state, obs, prev_action)  # filter the real frame
-        prev_action = stepper.act(state)                  # explore=False by default
+        prev_action = stepper.act(state)  # explore=False by default
         obs = envs.step(prev_action)
 
-        if stepper.supports_imagination:                  # plan or dream
-            step = stepper.imagine(state, prev_action)    # .state, .reward, .continue_prob
+        if stepper.supports_imagination:  # plan or dream
+            step = stepper.imagine(
+                state, prev_action
+            )  # .state, .reward, .continue_prob
 ```
 
 | Stepper | `observe` input | `imagine` | Notes |
@@ -161,7 +163,9 @@ observe+act step as a pure `nn.Module`.
 
 ```python
 module = stepper.step_module()
-deter, stoch, action = module(deter, stoch, prev_action, obs, prior_noise, posterior_noise)
+deter, stoch, action = module(
+    deter, stoch, prev_action, obs, prior_noise, posterior_noise
+)
 inputs = module.example_inputs(batch_size=1)  # zero tensors of the right shapes
 ```
 
@@ -173,7 +177,7 @@ mean.
 ## Measuring speed
 
 ```python
-from torchwm.inference import benchmark_step
+from synora.inference import benchmark_step
 
 report = benchmark_step(module, *inputs, warmup=20, iterations=200, batch_size=1)
 print(report.summary())
@@ -190,16 +194,19 @@ its own state.
 ## Measuring fidelity: rollout drift
 
 ```python
-from torchwm.inference import rollout_drift
+from synora.inference import rollout_drift
+
 
 def step(fn):
     def run(state, obs, prior_noise, post_noise):
         deter, stoch, action = state
         return fn(deter, stoch, action, obs, prior_noise, post_noise)
+
     return run
 
+
 report = rollout_drift(step(eager_module), step(candidate), init_state, per_step_inputs)
-print(report.summary())            # drift over 50 steps: final max|err| 3.1e-06, ...
+print(report.summary())  # drift over 50 steps: final max|err| 3.1e-06, ...
 assert report.within(atol=1e-3)
 ```
 
@@ -219,11 +226,11 @@ These change numerics, so measure them with rollout drift.
 ### Weight-only int8 quantization
 
 ```python
-from torchwm.inference import quantize_weights
-from torchwm.inference.quantize import weight_memory_bytes
+from synora.inference import quantize_weights
+from synora.inference.quantize import weight_memory_bytes
 
 before = weight_memory_bytes(module)
-quantized = quantize_weights(module)   # names of the replaced layers
+quantized = quantize_weights(module)  # names of the replaced layers
 print(before / weight_memory_bytes(module))
 ```
 
@@ -272,18 +279,20 @@ lower-level API (`DynamicsModel.init_cache` / `forward_cached`, and
 forwards for evaluating a candidate frame repeatedly. It is off by default.
 
 IRIS already decodes with a preallocated KV cache (`IRISTransformer.init_cache`,
-`generate_frame_cached`), and every attention block in TorchWM uses
+`generate_frame_cached`), and every attention block in Synora uses
 `scaled_dot_product_attention`, so FlashAttention and memory-efficient kernels
 are selected automatically on supported GPUs.
 
 ## Exporting
 
 ```python
-from torchwm import export_model, load_exported, verify_export
+from synora import export_model, load_exported, verify_export
 
-path = export_model(module, "step.pt2", format="exported_program", example_inputs=inputs)
-verify_export(module, path, inputs)        # raises if outputs differ; returns max |err|
-runner = load_exported(path)               # callable, no model source needed
+path = export_model(
+    module, "step.pt2", format="exported_program", example_inputs=inputs
+)
+verify_export(module, path, inputs)  # raises if outputs differ; returns max |err|
+runner = load_exported(path)  # callable, no model source needed
 ```
 
 | Format | Output | Use it for |
@@ -302,11 +311,8 @@ See the {doc}`export_guide` for target resolution on agents
 (`agent.export(..., target="obs_encoder")`).
 
 :::{note}
-TorchWM installs an `export()` method on `torch.nn.Module` so TorchWM models
-can call `model.export(...)`. Calling it on classes defined outside TorchWM is
-deprecated. Use `torchwm.export_model(module, ...)` instead. Set
-`TORCHWM_NO_GLOBAL_EXPORT=1` to stop TorchWM from modifying `torch.nn.Module`
-at all.
+Synora's public models have an `export()` method. For any other module, use
+`synora.export_model(module, ...)`.
 :::
 
 ## Deployment bundles
@@ -316,7 +322,7 @@ the input shapes and dtypes, and ideally a compiled artifact. A bundle is a
 directory holding all of that:
 
 ```python
-from torchwm.inference import save_bundle, load_bundle
+from synora.inference import save_bundle, load_bundle
 
 save_bundle(
     "dreamer_walker_bundle",
@@ -328,8 +334,8 @@ save_bundle(
 )
 
 bundle = load_bundle("dreamer_walker_bundle")
-step = bundle.load_artifact("exported_program")   # deployment path
-bundle.load_weights(eager_module)                 # or restore eager weights
+step = bundle.load_artifact("exported_program")  # deployment path
+bundle.load_weights(eager_module)  # or restore eager weights
 ```
 
 ```text
@@ -347,8 +353,8 @@ maximum error is recorded under `verification` in the manifest.
 From the command line:
 
 ```bash
-torchwm deploy inspect dreamer_walker_bundle
-torchwm deploy bench dreamer_walker_bundle --device cuda --iterations 500 --json
+synora deploy inspect dreamer_walker_bundle
+synora deploy bench dreamer_walker_bundle --device cuda --iterations 500 --json
 ```
 
 `deploy bench` builds zero inputs from the recorded input spec and times the
@@ -374,12 +380,12 @@ quality with the {doc}`evaluation_guide` metrics (PSNR, LPIPS, FVD).
 
 **Serving without the training code.** Export a step module to
 `exported_program`, or to `aoti` for C++. Ship it with `save_bundle` and verify
-it with `torchwm deploy bench` on the target machine.
+it with `synora deploy bench` on the target machine.
 
 ## Platform notes
 
 - **Windows**: `torch.compile` on CUDA needs Triton, which is not installed by
-  default. TorchWM warns and falls back to eager execution. AOTInductor needs
+  default. Synora warns and falls back to eager execution. AOTInductor needs
   MSVC. For production builds, use Linux.
 - **Optional packages**: `onnx`/`onnxscript` (ONNX export), `onnxruntime` (running
   ONNX artifacts), `torch-tensorrt`, `torchao` and `safetensors`. None are

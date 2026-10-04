@@ -1,6 +1,6 @@
 # Exporting Models for Deployment
 
-TorchWM provides a unified export system that converts trained models and agents
+Synora provides a unified export system that converts trained models and agents
 into deployable formats — `torch.export` programs, AOTInductor packages, ONNX,
 TensorRT and (legacy) TorchScript — without requiring each model to implement
 its own export logic. For making inference fast, choosing what to export for
@@ -17,7 +17,7 @@ The export system is built around three levels of API:
 
 | Level | Function / Method | When to use |
 |---|---|---|
-| **Module method** | `module.export(path, format, ...)` | Any `torch.nn.Module` — works automatically after importing `torchwm.export` |
+| **Module method** | `module.export(path, format, ...)` | Every `nn.Module` class exported from the top-level `synora` namespace (`Genie`, `VisionTransformer`, `RSSM`, ...) |
 | **Agent method** | `agent.export(path, format, ...)` | High-level agents (`DreamerAgent`, `JEPAAgent`, `IRISAgent`) that inherit `ExportableAgentMixin` |
 | **Standalone** | `export_any(obj, path, ...)` / `export_model(module, path, ...)` | When you need explicit control over which submodule is exported or want to bypass automatic target resolution |
 
@@ -38,11 +38,11 @@ symbolic.
 ### Loading and verifying artifacts
 
 ```python
-from torchwm import export_model, load_exported, verify_export
+from synora import export_model, load_exported, verify_export
 
 path = export_model(module, "step.pt2", format="exported_program", example_inputs=x)
-max_err = verify_export(module, path, x)   # raises AssertionError on mismatch
-runner = load_exported(path)               # format inferred from the suffix
+max_err = verify_export(module, path, x)  # raises AssertionError on mismatch
+runner = load_exported(path)  # format inferred from the suffix
 runner = load_exported("step_aoti.pt2", format="aoti")
 ```
 
@@ -53,21 +53,15 @@ through ONNX Runtime when it is installed.
 
 ### Exporting any `nn.Module`
 
-Importing `torchwm.export` installs the `.export()` method on every
-`torch.nn.Module` instance once.
-
-:::{note}
-Calling `.export()` on a module class defined **outside** TorchWM relies on
-this global install and is deprecated (it emits a `DeprecationWarning`). Use
-`torchwm.export_model(module, path, ...)` for your own modules. Set the
-environment variable `TORCHWM_NO_GLOBAL_EXPORT=1` to stop TorchWM from
-modifying `torch.nn.Module`; TorchWM agents keep `.export()` through
-`ExportableAgentMixin` either way.
-:::
+`synora.export_model(module, path, ...)` exports any `torch.nn.Module`,
+including your own. Synora does not add methods to `torch.nn.Module`; its
+public model classes get `.export()` from `ExportableAgentMixin`, which you can
+also inherit in your own classes (see [Custom agents](#custom-agents)).
 
 ```python
 import torch
-from torchwm import export_model
+from synora import export_model
+
 
 class MyModel(torch.nn.Module):
     def __init__(self):
@@ -77,17 +71,20 @@ class MyModel(torch.nn.Module):
     def forward(self, x):
         return self.linear(x)
 
+
 model = MyModel()
 model.eval()
 
 # torch.export program (recommended)
-export_model(model, "model.pt2", format="exported_program", example_inputs=torch.zeros(1, 64))
+export_model(
+    model, "model.pt2", format="exported_program", example_inputs=torch.zeros(1, 64)
+)
 
 # ONNX (requires example_inputs)
 export_model(model, "model.onnx", format="onnx", example_inputs=torch.zeros(1, 64))
 ```
 
-TorchWM's own models (for example `torchwm.create_model("genie-small")`) can
+Synora's own models (for example `synora.create_model("genie-small")`) can
 call the same thing as a method: `genie.export("genie.pt2", format="exported_program", example_inputs=video)`.
 
 ### Exporting a trained agent
@@ -95,9 +92,9 @@ call the same thing as a method: `genie.export("genie.pt2", format="exported_pro
 High-level agents support the same `.export()` method directly:
 
 ```python
-import torchwm
+import synora
 
-agent = torchwm.create_model("dreamer", env="walker-walk", total_steps=1000)
+agent = synora.create_model("dreamer", env="walker-walk", total_steps=1000)
 # ... train the agent ...
 
 # Export the policy to ONNX
@@ -162,7 +159,7 @@ agent.export(
     input_names=["latent"],
     output_names=["action"],
     dynamic_axes={"latent": {0: "batch"}, "action": {0: "batch"}},
-    opset_version=17,        # default
+    opset_version=17,  # default
 )
 ```
 
@@ -205,11 +202,12 @@ agent.export(
 
 ## Custom agents
 
-If you build a custom agent that is not an `nn.Module`, inherit
-`ExportableAgentMixin` to get the `.export()` method:
+Inherit `ExportableAgentMixin` to give a custom agent (or your own
+`nn.Module`) the `.export()` method:
 
 ```python
-from torchwm import ExportableAgentMixin
+from synora import ExportableAgentMixin
+
 
 class MyAgent(ExportableAgentMixin):
     def __init__(self):
@@ -234,14 +232,14 @@ agent.export(
 ```
 
 Or add inference support by implementing a matching pattern in
-`_infer_example_inputs` in `torchwm/export.py`.
+`_infer_example_inputs` in `synora/export.py`.
 
 ## Low-level API
 
 For scripting or batch export, use the standalone functions directly:
 
 ```python
-from torchwm import export_any, export_model
+from synora import export_any, export_model
 
 # export_any resolves the target module from any object
 export_any(agent, "policy.onnx", format="onnx")
