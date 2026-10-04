@@ -2,7 +2,7 @@ import pytest
 import torch
 from unittest.mock import Mock
 
-from torchwm.training.rl_harness import ActorCritic, PPOTrainer
+from synora.training.rl_harness import ActorCritic, PPOTrainer
 
 
 class TestActorCritic:

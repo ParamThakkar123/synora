@@ -32,13 +32,13 @@ the factory, or can be provided manually.
 Use the factory for the most common combinations:
 
 ```python
-from torchwm.models.modular_rssm import create_modular_rssm
+from synora.models.modular_rssm import create_modular_rssm
 
 rssm = create_modular_rssm(
-    encoder_type="conv",      # "conv" | "mlp" | "vit"
-    decoder_type="conv",      # "conv" | "mlp"
-    backbone_type="gru",      # "gru" | "lstm" | "transformer"
-    obs_shape=(3, 64, 64),    # (C, H, W) for images, (D,) for state vectors
+    encoder_type="conv",  # "conv" | "mlp" | "vit"
+    decoder_type="conv",  # "conv" | "mlp"
+    backbone_type="gru",  # "gru" | "lstm" | "transformer"
+    obs_shape=(3, 64, 64),  # (C, H, W) for images, (D,) for state vectors
     action_size=6,
     stoch_size=32,
     deter_size=200,
@@ -55,7 +55,7 @@ for direct construction.
 ### Encoders
 
 ```python
-from torchwm.models.modular_rssm import ConvEncoder, MLPEncoder, ViTEncoder
+from synora.models.modular_rssm import ConvEncoder, MLPEncoder, ViTEncoder
 
 # Convolutional encoder — Dreamer-style, for image observations
 enc = ConvEncoder(input_shape=(3, 64, 64), embed_size=1024, depth=32)
@@ -76,19 +76,27 @@ enc = ViTEncoder(input_shape=(3, 64, 64), embed_size=512, patch_size=8, depth=6)
 ### Backbones
 
 ```python
-from torchwm.models.modular_rssm import GRUBackbone, LSTMBackbone, TransformerBackbone
+from synora.models.modular_rssm import GRUBackbone, LSTMBackbone, TransformerBackbone
 
 # GRU — standard RSSM recurrent dynamics
-bb = GRUBackbone(action_size=6, stoch_size=32, deter_size=200,
-                 hidden_size=200, embed_size=1024)
+bb = GRUBackbone(
+    action_size=6, stoch_size=32, deter_size=200, hidden_size=200, embed_size=1024
+)
 
 # LSTM — longer memory than GRU, at higher compute cost
-bb = LSTMBackbone(action_size=6, stoch_size=32, deter_size=200,
-                  hidden_size=200, embed_size=1024)
+bb = LSTMBackbone(
+    action_size=6, stoch_size=32, deter_size=200, hidden_size=200, embed_size=1024
+)
 
 # Transformer — global dependencies, no recurrent state
-bb = TransformerBackbone(action_size=6, stoch_size=32, deter_size=200,
-                         embed_size=256, num_heads=4, num_layers=2)
+bb = TransformerBackbone(
+    action_size=6,
+    stoch_size=32,
+    deter_size=200,
+    embed_size=256,
+    num_heads=4,
+    num_layers=2,
+)
 ```
 
 | Backbone | State keys | Use when |
@@ -100,15 +108,13 @@ bb = TransformerBackbone(action_size=6, stoch_size=32, deter_size=200,
 ### Decoders
 
 ```python
-from torchwm.models.modular_rssm import ConvDecoder, MLPDecoder
+from synora.models.modular_rssm import ConvDecoder, MLPDecoder
 
 # Convolutional decoder — reconstructs images from latent features
-dec = ConvDecoder(stoch_size=32, deter_size=200,
-                  output_shape=(3, 64, 64), depth=32)
+dec = ConvDecoder(stoch_size=32, deter_size=200, output_shape=(3, 64, 64), depth=32)
 
 # MLP decoder — reconstructs low-dimensional observations
-dec = MLPDecoder(stoch_size=32, deter_size=200,
-                 output_dim=10, hidden_sizes=[256, 256])
+dec = MLPDecoder(stoch_size=32, deter_size=200, output_dim=10, hidden_sizes=[256, 256])
 ```
 
 Both decoders return a `torch.distributions` object (the convolutional decoder
@@ -120,8 +126,12 @@ When you need fine-grained control over component configuration, construct
 each piece and pass them to `ModularRSSM` directly:
 
 ```python
-from torchwm.models.modular_rssm import (
-    ModularRSSM, ConvEncoder, ConvDecoder, GRUBackbone, MLPDecoder,
+from synora.models.modular_rssm import (
+    ModularRSSM,
+    ConvEncoder,
+    ConvDecoder,
+    GRUBackbone,
+    MLPDecoder,
 )
 
 encoder = ConvEncoder((3, 64, 64), embed_size=1024)
@@ -160,9 +170,9 @@ next_state = rssm.imagine_step(state, action)
 ```python
 # Observe a full trajectory — returns stacked states
 priors, posteriors = rssm.observe_rollout(
-    obs=observations,        # (T, B, C, H, W)
-    actions=actions,         # (T, B, action_size)
-    nonterms=nonterms,       # (T, B)  or (T, B, 1)
+    obs=observations,  # (T, B, C, H, W)
+    actions=actions,  # (T, B, action_size)
+    nonterms=nonterms,  # (T, B)  or (T, B, 1)
     prev_state=state,
     horizon=T,
 )
@@ -171,7 +181,7 @@ priors, posteriors = rssm.observe_rollout(
 
 # Imagine a rollout using an actor policy
 imagined = rssm.imagine_rollout(
-    actor=policy_network,    # callable: features → action
+    actor=policy_network,  # callable: features → action
     prev_state=state,
     horizon=15,
 )
@@ -222,7 +232,8 @@ Subclass `EncoderBase`, `DecoderBase`, or `BackboneBase` and implement the
 required interface:
 
 ```python
-from torchwm.models.modular_rssm import EncoderBase
+from synora.models.modular_rssm import EncoderBase
+
 
 class MyEncoder(EncoderBase):
     def __init__(self, input_dim: int, embed_size: int):
@@ -236,6 +247,7 @@ class MyEncoder(EncoderBase):
 
     def forward(self, obs: torch.Tensor) -> torch.Tensor:
         return self.net(obs)
+
 
 rssm = ModularRSSM(MyEncoder(64, 256), decoder, backbone)
 ```
@@ -275,9 +287,9 @@ sequence dimensions and gradient flow in recurrent training.
 ## Available via the public API
 
 ```python
-import torchwm
+import synora
 
-rssm = torchwm.create_modular_rssm(
+rssm = synora.create_modular_rssm(
     encoder_type="vit",
     backbone_type="transformer",
     obs_shape=(3, 64, 64),
@@ -285,7 +297,7 @@ rssm = torchwm.create_modular_rssm(
 )
 
 # Or import directly
-from torchwm import ModularRSSM, create_modular_rssm
+from synora import ModularRSSM, create_modular_rssm
 ```
 
 ## See Also

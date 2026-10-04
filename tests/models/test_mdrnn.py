@@ -2,7 +2,7 @@
 
 import torch
 import pytest
-from torchwm.models.mdrnn import MDRNN, MDRNNCell, _MDRNNBase
+from synora.models.mdrnn import MDRNN, MDRNNCell, _MDRNNBase
 
 
 class TestMDRNN:

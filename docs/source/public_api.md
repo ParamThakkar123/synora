@@ -1,20 +1,20 @@
 # Public API Quick Reference
 
-TorchWM exposes `torchwm` as the friendly public namespace for both
+Synora exposes `synora` as the friendly public namespace for both
 application code and direct component imports. Use it for factory helpers,
 model classes, config classes, and environment constructors.
 
 ## Common Workflow
 
 ```python
-import torchwm
+import synora
 
 # Discover supported factories.
-models = torchwm.list_models()
-backends = torchwm.list_env_backends()
+models = synora.list_models()
+backends = synora.list_env_backends()
 
 # Configure and create a model in one step.
-agent = torchwm.create_model(
+agent = synora.create_model(
     "dreamer",
     env_backend="dmc",
     env="walker-walk",
@@ -22,8 +22,7 @@ agent = torchwm.create_model(
 )
 
 # Create standalone environments through a consistent backend selector.
-env = torchwm.make_env("CartPole-v1", backend="gym")
-
+env = synora.make_env("CartPole-v1", backend="gym")
 ```
 
 ## Factory Helpers
@@ -40,10 +39,10 @@ env = torchwm.make_env("CartPole-v1", backend="gym")
 ## Direct Imports Still Work
 
 The factory API is a convenience layer. Advanced and research workflows can keep
-using direct imports from `torchwm`:
+using direct imports from `synora`:
 
 ```python
-from torchwm import DreamerAgent, DreamerConfig, RSSM
+from synora import DreamerAgent, DreamerConfig, RSSM
 
 cfg = DreamerConfig()
 cfg.env = "walker-walk"
@@ -58,8 +57,8 @@ or need access to implementation-specific constructors.
 These names stay in the 1.x public surface, with the following documented
 limits:
 
-- `create_model("dreamer-v3")` / `DreamerV3` construct `DreamerAgent`. There is
-  no separate DreamerV3 implementation in 1.0.
+- There is no DreamerV3 implementation in 1.0, and no `dreamer-v3` registry
+  name: the Dreamer family is `dreamer-v1` and `dreamer-v2`.
 - `agent.train()` with a step budget is the Dreamer-family path. Other
   registered models train through their dedicated trainers or CLI commands.
 - Genie `VideoDataset` loads `.npy` / `.pt` clips, or video files when the

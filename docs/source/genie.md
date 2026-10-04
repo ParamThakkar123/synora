@@ -144,12 +144,12 @@ Each video should contain at least `num_frames` frames.
 | `warmup_steps` | 5000 | Learning rate warmup steps |
 | `max_steps` | 125000 | Total training steps |
 
-## Usage in TorchWM
+## Usage in Synora
 
 ### Quick start
 
 ```python
-from torchwm import GenieConfig, create_genie_small
+from synora import GenieConfig, create_genie_small
 
 cfg = GenieConfig()
 cfg.num_frames = 16
@@ -190,7 +190,7 @@ actions = model.infer_actions(frames)
 ### CLI
 
 ```bash
-torchwm train genie --config path/to/genie_config.yaml
+synora train genie --config path/to/genie_config.yaml
 ```
 
 See {doc}`configs_reference` for the full GenieConfig field reference with defaults.

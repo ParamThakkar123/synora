@@ -5,7 +5,7 @@ This demonstrates how to use the DreamerAgent class for end-to-end training
 of a world model-based reinforcement learning agent.
 
 DeepMind Control tasks use ``domain-task`` names and need ``pip install
-torchwm[dmc]``. For a quick run without simulator downloads, use a Gymnasium
+synora[dmc]``. For a quick run without simulator downloads, use a Gymnasium
 task instead::
 
     python examples/dreamer_example.py --env cartpole-balance
@@ -15,8 +15,8 @@ task instead::
 import argparse
 import logging
 
-from torchwm.configs.dreamer_config import DreamerConfig
-from torchwm.models.dreamer import DreamerAgent
+from synora.configs.dreamer_config import DreamerConfig
+from synora.models.dreamer import DreamerAgent
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -31,7 +31,9 @@ def main() -> None:
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--logdir", default=None)
     parser.add_argument(
-        "--device", choices=("auto", "gpu", "cpu"), default="auto",
+        "--device",
+        choices=("auto", "gpu", "cpu"),
+        default="auto",
         help="auto/gpu use CUDA or Apple MPS when available",
     )
     args = parser.parse_args()

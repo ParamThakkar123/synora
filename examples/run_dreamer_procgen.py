@@ -9,9 +9,9 @@ Usage examples:
 import logging
 from omegaconf import OmegaConf
 
-from torchwm.configs.dreamer_config import DreamerConfig
-from torchwm.envs.procgen_env import list_procgen_envs
-from torchwm.models.dreamer import DreamerAgent
+from synora.configs.dreamer_config import DreamerConfig
+from synora.envs.procgen_env import list_procgen_envs
+from synora.models.dreamer import DreamerAgent
 
 
 def make_config(cli_cfg) -> DreamerConfig:
@@ -47,7 +47,7 @@ def main():
         return
 
     logging.basicConfig(level=logging.INFO)
-    logging.getLogger("torchwm").setLevel(logging.INFO)
+    logging.getLogger("synora").setLevel(logging.INFO)
 
     cfg = make_config(cli_cfg)
     logging.info(

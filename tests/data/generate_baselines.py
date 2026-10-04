@@ -9,21 +9,22 @@ and writes them to regression_baselines.json.
 """
 
 import json
+import sys
+from collections.abc import Callable
 from pathlib import Path
 
 _HERE = Path(__file__).resolve().parent
 _BASELINE_FILE = _HERE / "regression_baselines.json"
 
-# Import the metric generators from the test module.
-import sys
-
+# Import the metric generators from the test module, which needs the repository
+# root on sys.path when this file runs as a script.
 sys.path.insert(0, str(_HERE.parent.parent))
-from tests.test_determinism_regressions import (
+from tests.test_determinism_regressions import (  # noqa: E402
     _dreamer_rssm_regression_metrics,
     _ppo_regression_metrics,
 )
 
-_GENERATORS: dict[str, callable] = {
+_GENERATORS: dict[str, Callable[[], dict]] = {
     "ppo": _ppo_regression_metrics,
     "dreamer_rssm": _dreamer_rssm_regression_metrics,
 }

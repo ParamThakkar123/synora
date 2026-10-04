@@ -18,7 +18,7 @@ if importlib.util.find_spec("gymnasium") is None:
 
 import gymnasium as gym
 
-from torchwm.envs.minecraft_env import (
+from synora.envs.minecraft_env import (
     MINECRAFT_ACTION_SET,
     MinecraftDiscreteEnv,
     _extract_pov,
@@ -99,9 +99,7 @@ class TestActionTranslation:
     def test_noop_presses_nothing(self):
         env = MinecraftDiscreteEnv(env=FakeMineRLEnv())
         native = env.translate_action(env.action_names.index("noop"))
-        assert all(
-            v == 0 for k, v in native.items() if k != "camera"
-        ), native
+        assert all(v == 0 for k, v in native.items() if k != "camera"), native
         assert np.allclose(native["camera"], 0.0)
 
     def test_movement_sets_only_its_own_key(self):
@@ -230,8 +228,8 @@ class TestIRISCompatibility:
     def test_frames_survive_iris_preprocessing(self):
         """A MineDojo CHW frame must reach the replay buffer as 64x64 uint8 CHW."""
         pytest.importorskip("cv2")
-        from torchwm.configs.iris_config import IRISConfig
-        from torchwm.training.train_iris import IRISTrainer
+        from synora.configs.iris_config import IRISConfig
+        from synora.training.train_iris import IRISTrainer
 
         env = MinecraftDiscreteEnv(env=FakeMineDojoEnv())
         obs, _ = env.reset()

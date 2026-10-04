@@ -1,12 +1,12 @@
-# TorchWM demo runbook
+# Synora demo runbook
 
 Scripts for producing demo material: train a model, then record video of it
 acting and dreaming, or visualise its representations. Everything here wraps
-the existing entrypoints — nothing in `torchwm/` or `scripts/` is modified.
+the existing entrypoints — nothing in `synora/` or `scripts/` is modified.
 
 ## 0. Environment
 
-TorchWM does not pin a PyTorch build. Install the CUDA wheel that matches your
+Synora does not pin a PyTorch build. Install the CUDA wheel that matches your
 driver before training, or every run silently falls back to CPU:
 
 ```bash
@@ -36,7 +36,7 @@ Optional extras the demo paths use:
 |---|---|
 | `omegaconf` | `train_iris`, `scripts/smoke_train.py` |
 | `tensorboard` | `--tensorboard` on Dreamer runs |
-| `dm_control` | `walker-walk` and other DMC tasks (`pip install torchwm[dmc]`) |
+| `dm_control` | `walker-walk` and other DMC tasks (`pip install synora[dmc]`) |
 | `ale-py` | Atari for DIAMOND/IRIS (already installed) |
 
 ## 1. Train
@@ -190,29 +190,29 @@ For a live, driven-by-hand demo, use the built-in CLI. `TAB` toggles
 REAL/DREAM, arrow keys or WASD take control from the policy, `Q` quits.
 
 ```bash
-torchwm play --model diamond -c checkpoints/diamond/checkpoint_0.pt \
+synora play --model diamond -c checkpoints/diamond/checkpoint_0.pt \
     --game Breakout-v5 --record demos/out/interactive.mp4
 
-torchwm play --model dreamer -c runs/<run>/ckpts/<step>_ckpt.pt --game walker-walk
+synora play --model dreamer -c runs/<run>/ckpts/<step>_ckpt.pt --game walker-walk
 ```
 
-`torchwm play --model dreamer` defaults to `walker-walk`, which requires
+`synora play --model dreamer` defaults to `walker-walk`, which requires
 `dm_control`. Pass a `--game` your checkpoint was trained on.
 
 ## 4. Quantitative results
 
 ```bash
 # FID / FVD / LPIPS for a DIAMOND world model, plus a real-vs-generated video
-torchwm eval --model diamond -c checkpoints/diamond/checkpoint_0.pt \
+synora eval --model diamond -c checkpoints/diamond/checkpoint_0.pt \
     --game Breakout-v5 --num-videos 64 --trajectory-length 20 \
     --record demos/out/eval.mp4 --output demos/out/eval.json
 
 # Episode-return benchmark, writes a report to results/bench
-torchwm benchmark --agent diamond --game ALE/Breakout-v5 \
+synora benchmark --agent diamond --game ALE/Breakout-v5 \
     --checkpoint checkpoints/diamond/checkpoint_0.pt --episodes 10 --seeds 3
 ```
 
-`torchwm benchmark --agent` requires `--checkpoint`; only trained models are
+`synora benchmark --agent` requires `--checkpoint`; only trained models are
 benchmarked. Use `--all-agents` with repeated `--checkpoint-map AGENT=PATH` to
 compare adapters on one environment.
 
@@ -221,16 +221,16 @@ compare adapters on one environment.
 All of these were found by actually running the demo paths, and are now fixed in
 the repo.
 
-1. **`torchwm play --model diamond` failed with a self-contradictory
+1. **`synora play --model diamond` failed with a self-contradictory
    `TypeError: config must be a DiamondConfig ...; got DiamondConfig`.**
-   `torchwm/__init__.py` *appended* `_SubmoduleAliasFinder` to `sys.meta_path`.
-   Aliasing `torchwm.configs` returns the same module object as
-   `torchwm.configs`, whose `__path__` points into `torchwm/`, so the
+   `synora/__init__.py` *appended* `_SubmoduleAliasFinder` to `sys.meta_path`.
+   Aliasing `synora.configs` returns the same module object as
+   `synora.configs`, whose `__path__` points into `synora/`, so the
    default `FileFinder` won for the submodule and executed `diamond_config.py` a
-   second time under the name `torchwm.configs.diamond_config` — two distinct
+   second time under the name `synora.configs.diamond_config` — two distinct
    classes from one file. Fixed by inserting the finder at the *front* of
    `sys.meta_path` and having it decline names backed by a real file under
-   `torchwm/` (so `torchwm.cli` still loads normally).
+   `synora/` (so `synora.cli` still loads normally).
 2. **`make_diamond_atari_env` rejected bare game ids.** It forwarded `game`
    straight to `gym.make`, so the `Breakout-v5` stored in every DIAMOND
    checkpoint raised `NameNotFound`. It now accepts either form.
@@ -244,15 +244,15 @@ the repo.
    `update_config_object(..., strict=True)` had already rejected them as unknown
    `IRISConfig` fields. They are now split out before the config is composed.
    `device` also defaults to CUDA-if-available instead of a hardcoded `"cuda"`.
-6. **`torchwm train iris` was a silent no-op.** `train_iris.py` was the only
+6. **`synora train iris` was a silent no-op.** `train_iris.py` was the only
    trainer missing an `if __name__ == "__main__"` guard, so the CLI's subprocess
    launch ran nothing and exited 0. Guard added.
 
 ## Remaining rough edges
 
-- **`torchwm play` requires a display.** Use `demos/record_diamond.py` or
+- **`synora play` requires a display.** Use `demos/record_diamond.py` or
   `demos/record_iris.py` on headless machines.
-- **Only DIAMOND has an `eval` entrypoint** (`EVAL_MODULES` in `torchwm/cli.py`
+- **Only DIAMOND has an `eval` entrypoint** (`EVAL_MODULES` in `synora/cli.py`
   maps `diamond` only), and `play` covers only `diamond` and `dreamer`.
   `demos/record_genie.py` adds a headless Genie demo path for pre-trained
   checkpoints, and `demos/record_jepa.py` visualises I-JEPA mask prediction.

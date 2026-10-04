@@ -7,8 +7,8 @@ import torch
 pytest.importorskip("gymnasium")
 from gymnasium import spaces
 
-from torchwm.envs.vector_env import SimWorker, TorchVectorizedEnv
-from torchwm.training.rl_harness import PPOTrainer
+from synora.envs.vector_env import SimWorker, TorchVectorizedEnv
+from synora.training.rl_harness import PPOTrainer
 
 
 import queue as _queue

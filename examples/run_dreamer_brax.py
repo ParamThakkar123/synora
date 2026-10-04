@@ -8,8 +8,8 @@ Usage examples:
 import logging
 from omegaconf import OmegaConf
 
-from torchwm.models.dreamer import DreamerAgent
-from torchwm.configs.dreamer_config import DreamerConfig
+from synora.models.dreamer import DreamerAgent
+from synora.configs.dreamer_config import DreamerConfig
 
 
 def make_config(cli_cfg) -> DreamerConfig:
@@ -36,7 +36,7 @@ def make_config(cli_cfg) -> DreamerConfig:
 def main():
     cli_cfg = OmegaConf.from_cli()
     logging.basicConfig(level=logging.INFO)
-    logging.getLogger("torchwm").setLevel(logging.INFO)
+    logging.getLogger("synora").setLevel(logging.INFO)
 
     cfg = make_config(cli_cfg)
     logging.info(f"Running DreamerV1 on brax env='{cfg.env}' (jit={cfg.brax_jit})")

@@ -1,7 +1,7 @@
 import pytest
 import torch
 
-from torchwm.observations.dreamer_v1_obs import (
+from synora.observations.dreamer_v1_obs import (
     SymbolicObservationModel,
     VisualObservationModel,
     ObservationModel,

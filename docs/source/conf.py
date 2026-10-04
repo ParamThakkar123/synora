@@ -1,4 +1,4 @@
-"""Sphinx configuration for TorchWM documentation."""
+"""Sphinx configuration for Synora documentation."""
 
 from __future__ import annotations
 
@@ -8,15 +8,15 @@ from datetime import datetime
 
 sys.path.insert(0, os.path.abspath("../.."))
 
-project = "TorchWM"
+project = "Synora"
 copyright = f"{datetime.now().year}, Param Thakkar"
 author = "Param Thakkar"
 
-# Auto-read version from the public torchwm package
+# Auto-read version from the public synora package
 
-import torchwm  # noqa: E402  (must follow the sys.path insertion above)
+import synora  # noqa: E402  (must follow the sys.path insertion above)
 
-release = torchwm.__version__
+release = synora.__version__
 
 extensions = [
     "sphinx.ext.autodoc",
@@ -124,24 +124,28 @@ autodoc_mock_imports = [
 ]
 
 html_theme = "pydata_sphinx_theme"
-html_favicon = "_static/torchwm-favicon.svg"
+html_favicon = "_static/synora-favicon.svg"
 html_theme_options = {
-    "github_url": "https://github.com/paramthakkar123/torchwm",
+    "github_url": "https://github.com/paramthakkar123/synora",
     "navigation_depth": 3,
     "show_nav_level": 2,
     "logo": {
-        "image_light": "torchwm-logo-light.svg",
-        "image_dark": "torchwm-logo-dark.svg",
-        "text": "TorchWM",
-        "alt_text": "TorchWM",
+        "image_light": "synora-logo-light.svg",
+        "image_dark": "synora-logo-dark.svg",
+        # The logo image is the wordmark, so no separate text label.
+        "alt_text": "Synora",
     },
-    # Keep the top navbar intentionally minimal: project title/logo,
-    # documentation search, and the GitHub redirect link only.
+    # Keep the top navbar intentionally minimal: logo, documentation search,
+    # the light/dark switch (the docs open in dark mode), and the GitHub link.
     "navbar_start": ["navbar-logo"],
     "navbar_center": [],
-    "navbar_end": ["search-field", "navbar-icon-links"],
+    "navbar_end": ["search-field", "theme-switcher", "navbar-icon-links"],
     "navbar_persistent": [],
 }
+
+# Open in dark mode. Readers can still switch with the theme toggle, and their
+# choice is remembered by the browser.
+html_context = {"default_mode": "dark"}
 
 # Include client-side assets. MathJax itself is loaded by sphinx.ext.mathjax;
 # adding custom MathJax bootstrap files here can race with Sphinx's runtime and
@@ -162,11 +166,11 @@ html_css_files = [
 # Canonical docs URL. Overridden in CI for PR previews.
 html_baseurl = os.getenv(
     "SPHINX_HTML_BASEURL",
-    "https://paramthakkar123.github.io/torchwm/",
+    "https://paramthakkar123.github.io/synora/",
 )
 
 # Open Graph metadata for social sharing cards/link previews.
 ogp_site_url = html_baseurl
-ogp_site_name = "TorchWM Documentation"
+ogp_site_name = "Synora Documentation"
 ogp_description_length = 200
 ogp_enable_meta_description = True

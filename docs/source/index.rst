@@ -1,16 +1,16 @@
-TorchWM Documentation
+Synora Documentation
 ======================
 
-TorchWM is a modular PyTorch library for world models, latent-dynamics planning,
+Synora is a modular PyTorch library for world models, latent-dynamics planning,
 and representation learning. Train Dreamer, JEPA, IRIS, DiT, Genie, and DIAMOND
 agents with a unified API.
 
 .. code-block:: python
 
-   import torchwm
+   import synora
 
-   # Runs on ``pip install torchwm[gym]``.
-   agent = torchwm.create_model(
+   # Runs on ``pip install synora[gym]``.
+   agent = synora.create_model(
        "dreamer", env="Pendulum-v1", env_backend="gym", total_steps=5_000
    )
    agent.train()

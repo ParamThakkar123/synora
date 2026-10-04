@@ -10,8 +10,8 @@ from omegaconf import OmegaConf
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
-from torchwm.benchmarks.runner import MultiAgentBenchmarkRunner
-from torchwm.benchmarks import adapters
+from synora.benchmarks.runner import MultiAgentBenchmarkRunner
+from synora.benchmarks import adapters
 
 
 def main():

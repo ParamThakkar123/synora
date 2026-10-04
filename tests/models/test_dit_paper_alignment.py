@@ -16,13 +16,13 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from torchwm.configs.dit_config import (
+from synora.configs.dit_config import (
     DIT_PRESETS,
     DiTConfig,
     dit_preset_config,
     list_dit_presets,
 )
-from torchwm.models.diffusion.DiT import (
+from synora.models.diffusion.DiT import (
     DiT,
     FinalLayer,
     PatchEmbed,

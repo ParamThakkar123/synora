@@ -3,13 +3,13 @@ ARG PYTHON_VERSION=3.11
 FROM python:${PYTHON_VERSION}-slim
 
 ARG PYTORCH_INDEX_URL=https://download.pytorch.org/whl/cpu
-ARG TORCHWM_EXTRAS=
+ARG SYNORA_EXTRAS=
 
 ENV DEBIAN_FRONTEND=noninteractive \
     PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
     PIP_NO_CACHE_DIR=1 \
-    TORCHWM_HOME=/data/torchwm
+    SYNORA_HOME=/data/synora
 
 WORKDIR /app
 
@@ -22,19 +22,19 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 COPY pyproject.toml setup.py README.md ./
-COPY torchwm ./torchwm
+COPY synora ./synora
 
 RUN python -m pip install --upgrade pip setuptools wheel && \
     python -m pip install --index-url "${PYTORCH_INDEX_URL}" torch torchvision torchaudio && \
-    if [ -n "${TORCHWM_EXTRAS}" ]; then \
-        python -m pip install --editable ".[${TORCHWM_EXTRAS}]"; \
+    if [ -n "${SYNORA_EXTRAS}" ]; then \
+        python -m pip install --editable ".[${SYNORA_EXTRAS}]"; \
     else \
         python -m pip install --editable .; \
     fi && \
-    torchwm version && \
-    mkdir -p "${TORCHWM_HOME}"
+    synora version && \
+    mkdir -p "${SYNORA_HOME}"
 
-VOLUME ["/data/torchwm"]
+VOLUME ["/data/synora"]
 
-ENTRYPOINT ["torchwm"]
+ENTRYPOINT ["synora"]
 CMD ["--help"]

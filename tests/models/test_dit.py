@@ -1,7 +1,7 @@
 import torch
 
-from torchwm.configs.dit_config import DiTConfig
-from torchwm.models.diffusion.DiT import DiT, PatchEmbed, PatchUnEmbed, create_dit
+from synora.configs.dit_config import DiTConfig
+from synora.models.diffusion.DiT import DiT, PatchEmbed, PatchUnEmbed, create_dit
 
 
 def test_create_dit_builds_small_model_from_config_and_runs_forward():
@@ -22,7 +22,13 @@ def test_create_dit_builds_small_model_from_config_and_runs_forward():
 
 def test_epsilon_only_model_matches_input_shape():
     config = DiTConfig(
-        IMG_SIZE=8, PATCH=4, CHANNELS=3, WIDTH=16, DEPTH=1, HEADS=4, DROP=0.0,
+        IMG_SIZE=8,
+        PATCH=4,
+        CHANNELS=3,
+        WIDTH=16,
+        DEPTH=1,
+        HEADS=4,
+        DROP=0.0,
         LEARN_SIGMA=False,
     )
     model = create_dit(config)

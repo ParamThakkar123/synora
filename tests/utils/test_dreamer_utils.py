@@ -1,5 +1,5 @@
 import torch
-from torchwm.utils.dreamer_utils import (
+from synora.utils.dreamer_utils import (
     get_parameters,
     FreezeParameters,
 )

@@ -1,6 +1,6 @@
 # Evaluation Guide
 
-TorchWM provides a general-purpose evaluation package for measuring the quality of
+Synora provides a general-purpose evaluation package for measuring the quality of
 generative world models. It implements the three metrics used in the DIAMOND paper
 (Alonso et al., NeurIPS 2024, Appendix M):
 
@@ -19,7 +19,7 @@ not just DIAMOND.
 
 ```python
 import torch
-from torchwm.evals import FID, FVD, LPIPS
+from synora.evals import FID, FVD, LPIPS
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -47,16 +47,16 @@ print(f"FVD: {fvd(real_videos, gen_videos):.2f}")
 
 ```bash
 # Evaluate a DIAMOND world model
-torchwm eval --model diamond --checkpoint path/to/model.pt --game Breakout-v5
+synora eval --model diamond --checkpoint path/to/model.pt --game Breakout-v5
 
 # Specify which metrics to compute
-torchwm eval --model diamond --checkpoint model.pt --metrics fid,lpips
+synora eval --model diamond --checkpoint model.pt --metrics fid,lpips
 
 # Record real and generated videos
-torchwm eval --model diamond --checkpoint model.pt --record eval_video.mp4
+synora eval --model diamond --checkpoint model.pt --record eval_video.mp4
 
 # Full control
-torchwm eval --model diamond --checkpoint model.pt \
+synora eval --model diamond --checkpoint model.pt \
     --game Breakout-v5 \
     --num-videos 512 \
     --trajectory-length 20 \
@@ -66,7 +66,7 @@ torchwm eval --model diamond --checkpoint model.pt \
     --record eval_video.mp4
 
 # Linear-probe an I-JEPA checkpoint (frozen encoder; no FID/FVD involved)
-torchwm eval --model jepa --checkpoint results/jepa/jepa_run-latest.pth.tar \
+synora eval --model jepa --checkpoint results/jepa/jepa_run-latest.pth.tar \
     --root-path /data/imagenet \
     --model-name vit_base \
     --output probe.json
@@ -76,20 +76,20 @@ I-JEPA is scored differently from the generative world models: there is no
 rollout to compare against the environment, so `--model jepa` freezes the EMA
 target-encoder and trains a linear head on its average-pooled patch tokens,
 following Appendix A.2 of the paper. See {doc}`jepa` for the protocol and the
-Python API (`torchwm.jepa_linear_probe`).
+Python API (`synora.jepa_linear_probe`).
 
 ### Interactive Play
 
 ```bash
 # Watch the agent play in the real environment
-torchwm play --model diamond --checkpoint path/to/model.pt --game Breakout-v5
+synora play --model diamond --checkpoint path/to/model.pt --game Breakout-v5
 
 # Switch to dream mode (TAB) to watch the agent inside its imagination
 # Press arrow keys / WASD to override the agent's actions
-torchwm play --model diamond --checkpoint model.pt
+synora play --model diamond --checkpoint model.pt
 
 # Record gameplay video
-torchwm play --model diamond --checkpoint model.pt --record gameplay.mp4
+synora play --model diamond --checkpoint model.pt --record gameplay.mp4
 ```
 
 ---
@@ -124,7 +124,7 @@ where:
 ### Usage
 
 ```python
-from torchwm.evals import FID
+from synora.evals import FID
 
 fid = FID(device=device, batch_size=64)
 
@@ -174,7 +174,7 @@ that processes spatiotemporal volumes.
 ### Usage
 
 ```python
-from torchwm.evals import FVD
+from synora.evals import FVD
 
 fvd = FVD(device=device, batch_size=16, clip_length=16)
 
@@ -227,7 +227,7 @@ learned per-channel weights (uniform in our implementation).
 ### Usage
 
 ```python
-from torchwm.evals import LPIPS
+from synora.evals import LPIPS
 
 lpips = LPIPS(device=device, batch_size=64)
 
@@ -250,10 +250,10 @@ score = lpips(images_a, images_b)
 
 ## Python API Reference
 
-### ``torchwm.evals`` Package
+### ``synora.evals`` Package
 
 ```
-torchwm/evals/
+synora/evals/
   __init__.py     # Exports FID, FVD, LPIPS
   fid.py          # Fréchet Inception Distance
   fvd.py          # Fréchet Video Distance
@@ -286,7 +286,7 @@ torchwm/evals/
 
 ## Model-Specific Evaluation Scripts
 
-### DIAMOND (`torchwm/inference/eval_diamond.py`)
+### DIAMOND (`synora/inference/eval_diamond.py`)
 
 The DIAMOND eval script provides a full evaluation pipeline:
 
@@ -302,15 +302,15 @@ The DIAMOND eval script provides a full evaluation pipeline:
 
 To add evaluation for a new model:
 
-1. Create `torchwm/inference/eval_<model>.py` with a `run_eval()` function matching the
+1. Create `synora/inference/eval_<model>.py` with a `run_eval()` function matching the
    signature in {doc}`cli`.
-2. Register it in `EVAL_MODULES` in `torchwm/cli.py`:
+2. Register it in `EVAL_MODULES` in `synora/cli.py`:
 
 ```python
 EVAL_MODULES = {
-    "diamond": "torchwm.inference.eval_diamond",
-    "jepa": "torchwm.training.eval_jepa",
-    "my_model": "torchwm.inference.eval_my_model",
+    "diamond": "synora.inference.eval_diamond",
+    "jepa": "synora.training.eval_jepa",
+    "my_model": "synora.inference.eval_my_model",
 }
 ```
 
@@ -318,11 +318,11 @@ EVAL_MODULES = {
    `EVAL_MODEL_OPTIONS` so passing them to a different `--model` is an error
    rather than a silent no-op.
 
-The `torchwm eval` command will then accept `--model my_model`.
+The `synora eval` command will then accept `--model my_model`.
 
 ### Trajectory Collection Utilities
 
-The `torchwm.evals.diamond_utils` module provides helper functions for DIAMOND evaluation:
+The `synora.evals.diamond_utils` module provides helper functions for DIAMOND evaluation:
 
 - `generate_trajectories()` — autoregressively generates frames from a diffusion model
   conditioned on real trajectory data.
@@ -335,12 +335,12 @@ These are DIAMOND-specific but serve as a template for other model types.
 
 ## Video Recording
 
-Both `torchwm eval` and `torchwm play` support the `--record` flag to save videos.
+Both `synora eval` and `synora play` support the `--record` flag to save videos.
 
 ### Eval Recording
 
 ```bash
-torchwm eval --model diamond --checkpoint model.pt --record results.mp4
+synora eval --model diamond --checkpoint model.pt --record results.mp4
 ```
 
 This saves two files:
@@ -351,7 +351,7 @@ This saves two files:
 ### Play Recording
 
 ```bash
-torchwm play --model diamond --checkpoint model.pt --record gameplay.mp4 --record-fps 20
+synora play --model diamond --checkpoint model.pt --record gameplay.mp4 --record-fps 20
 ```
 
 Records the gameplay window in real-time. The recording includes the HUD overlay
@@ -375,8 +375,8 @@ Records the gameplay window in real-time. The recording includes the HUD overlay
 3. **Use the same random seed** when comparing different models to control for
    sampling noise:
    ```bash
-   torchwm eval --model diamond --checkpoint model_a.pt --seed 42
-   torchwm eval --model diamond --checkpoint model_b.pt --seed 42
+   synora eval --model diamond --checkpoint model_a.pt --seed 42
+   synora eval --model diamond --checkpoint model_b.pt --seed 42
    ```
 
 ### Choosing Metrics

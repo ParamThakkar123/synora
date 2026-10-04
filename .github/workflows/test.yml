@@ -147,9 +147,9 @@ jobs:
         pip install swig
         # ``dmc`` is included now: on cp313 that extra installs the pure-Python
         # ``labmaze-new`` and leaves dm-control out, so nothing builds with
-        # Bazel. ``python -m torchwm.install_dmc`` adds dm-control itself.
+        # Bazel. ``python -m synora.install_dmc`` adds dm-control itself.
         pip install -e '.[gym,dmc,viz,worldmodels,ml,ml-agents,mujoco,robotics,brax,bsuite,dev]'
-        python -m torchwm.install_dmc
+        python -m synora.install_dmc
 
     - name: Report memory before the run
       run: free -m
@@ -195,14 +195,14 @@ jobs:
       if: runner.os != 'Windows'
       shell: bash
       run: |
-        python -m venv "$RUNNER_TEMP/torchwm-wheel-smoke"
-        source "$RUNNER_TEMP/torchwm-wheel-smoke/bin/activate"
+        python -m venv "$RUNNER_TEMP/synora-wheel-smoke"
+        source "$RUNNER_TEMP/synora-wheel-smoke/bin/activate"
         python -m pip install --upgrade pip
         pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
 
-        wheels=(dist/torchwm-*.whl)
+        wheels=(dist/synora-*.whl)
         if [ "${#wheels[@]}" -ne 1 ]; then
-          echo "Expected exactly one torchwm wheel in dist/, found ${#wheels[@]}"
+          echo "Expected exactly one synora wheel in dist/, found ${#wheels[@]}"
           ls -la dist
           exit 1
         fi
@@ -210,22 +210,22 @@ jobs:
         pip install "${wheels[0]}"
 
         pushd "$RUNNER_TEMP" >/dev/null
-        python -c "import torchwm"
-        torchwm version
+        python -c "import synora"
+        synora version
         popd >/dev/null
 
     - name: Install sdist into a clean virtualenv and smoke test it (Unix)
       if: runner.os != 'Windows'
       shell: bash
       run: |
-        python -m venv "$RUNNER_TEMP/torchwm-sdist-smoke"
-        source "$RUNNER_TEMP/torchwm-sdist-smoke/bin/activate"
+        python -m venv "$RUNNER_TEMP/synora-sdist-smoke"
+        source "$RUNNER_TEMP/synora-sdist-smoke/bin/activate"
         python -m pip install --upgrade pip
         pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
 
-        sdists=(dist/torchwm-*.tar.gz)
+        sdists=(dist/synora-*.tar.gz)
         if [ "${#sdists[@]}" -ne 1 ]; then
-          echo "Expected exactly one torchwm sdist in dist/, found ${#sdists[@]}"
+          echo "Expected exactly one synora sdist in dist/, found ${#sdists[@]}"
           ls -la dist
           exit 1
         fi
@@ -233,52 +233,52 @@ jobs:
         pip install "${sdists[0]}"
 
         pushd "$RUNNER_TEMP" >/dev/null
-        python -c "import torchwm"
-        torchwm version
+        python -c "import synora"
+        synora version
         popd >/dev/null
 
     - name: Install wheel into a clean virtualenv and smoke test it (Windows)
       if: runner.os == 'Windows'
       shell: pwsh
       run: |
-        python -m venv "$env:RUNNER_TEMP\torchwm-wheel-smoke"
-        & "$env:RUNNER_TEMP\torchwm-wheel-smoke\Scripts\python.exe" -m pip install --upgrade pip
-        & "$env:RUNNER_TEMP\torchwm-wheel-smoke\Scripts\pip.exe" install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
+        python -m venv "$env:RUNNER_TEMP\synora-wheel-smoke"
+        & "$env:RUNNER_TEMP\synora-wheel-smoke\Scripts\python.exe" -m pip install --upgrade pip
+        & "$env:RUNNER_TEMP\synora-wheel-smoke\Scripts\pip.exe" install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
 
-        $wheels = Get-ChildItem dist\torchwm-*.whl
+        $wheels = Get-ChildItem dist\synora-*.whl
         if ($wheels.Count -ne 1) {
-          Write-Host "Expected exactly one torchwm wheel in dist/, found $($wheels.Count)"
+          Write-Host "Expected exactly one synora wheel in dist/, found $($wheels.Count)"
           Get-ChildItem dist
           exit 1
         }
 
-        & "$env:RUNNER_TEMP\torchwm-wheel-smoke\Scripts\pip.exe" install $wheels[0].FullName
+        & "$env:RUNNER_TEMP\synora-wheel-smoke\Scripts\pip.exe" install $wheels[0].FullName
 
         Push-Location $env:RUNNER_TEMP
-        & "$env:RUNNER_TEMP\torchwm-wheel-smoke\Scripts\python.exe" -c "import torchwm"
-        & "$env:RUNNER_TEMP\torchwm-wheel-smoke\Scripts\torchwm.exe" version
+        & "$env:RUNNER_TEMP\synora-wheel-smoke\Scripts\python.exe" -c "import synora"
+        & "$env:RUNNER_TEMP\synora-wheel-smoke\Scripts\synora.exe" version
         Pop-Location
 
     - name: Install sdist into a clean virtualenv and smoke test it (Windows)
       if: runner.os == 'Windows'
       shell: pwsh
       run: |
-        python -m venv "$env:RUNNER_TEMP\torchwm-sdist-smoke"
-        & "$env:RUNNER_TEMP\torchwm-sdist-smoke\Scripts\python.exe" -m pip install --upgrade pip
-        & "$env:RUNNER_TEMP\torchwm-sdist-smoke\Scripts\pip.exe" install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
+        python -m venv "$env:RUNNER_TEMP\synora-sdist-smoke"
+        & "$env:RUNNER_TEMP\synora-sdist-smoke\Scripts\python.exe" -m pip install --upgrade pip
+        & "$env:RUNNER_TEMP\synora-sdist-smoke\Scripts\pip.exe" install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
 
-        $sdists = Get-ChildItem dist\torchwm-*.tar.gz
+        $sdists = Get-ChildItem dist\synora-*.tar.gz
         if ($sdists.Count -ne 1) {
-          Write-Host "Expected exactly one torchwm sdist in dist/, found $($sdists.Count)"
+          Write-Host "Expected exactly one synora sdist in dist/, found $($sdists.Count)"
           Get-ChildItem dist
           exit 1
         }
 
-        & "$env:RUNNER_TEMP\torchwm-sdist-smoke\Scripts\pip.exe" install $sdists[0].FullName
+        & "$env:RUNNER_TEMP\synora-sdist-smoke\Scripts\pip.exe" install $sdists[0].FullName
 
         Push-Location $env:RUNNER_TEMP
-        & "$env:RUNNER_TEMP\torchwm-sdist-smoke\Scripts\python.exe" -c "import torchwm"
-        & "$env:RUNNER_TEMP\torchwm-sdist-smoke\Scripts\torchwm.exe" version
+        & "$env:RUNNER_TEMP\synora-sdist-smoke\Scripts\python.exe" -c "import synora"
+        & "$env:RUNNER_TEMP\synora-sdist-smoke\Scripts\synora.exe" version
         Pop-Location
 
   # mypy type checks were moved to a dedicated workflow: .github/workflows/mypy.yml

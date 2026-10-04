@@ -1,8 +1,8 @@
 # Datasets
 
-TorchWM provides dataset loaders for image, video, RL trajectory, and
+Synora provides dataset loaders for image, video, RL trajectory, and
 curated benchmark data. All major datasets are accessible through the
-top-level package or the `torchwm.datasets` module.
+top-level package or the `synora.datasets` module.
 
 ```{contents} Contents
 :depth: 3
@@ -29,7 +29,7 @@ top-level package or the `torchwm.datasets` module.
 ### CIFAR-10
 
 ```python
-from torchwm.datasets.cifar10 import make_cifar10
+from synora.datasets.cifar10 import make_cifar10
 
 dataset, loader, sampler = make_cifar10(
     transform=transform,
@@ -56,7 +56,7 @@ dataloader. Used for JEPA and DiT prototyping.
 ### ImageNet-1K
 
 ```python
-from torchwm.datasets.imagenet1k import make_imagenet1k
+from synora.datasets.imagenet1k import make_imagenet1k
 
 dataset, loader, sampler = make_imagenet1k(
     transform=transform,
@@ -64,7 +64,7 @@ dataset, loader, sampler = make_imagenet1k(
     root_path="/data/imagenet",
     image_folder="imagenet_full_size/061417/",
     training=True,
-    copy_data=False,      # set True for SLURM with network storage
+    copy_data=False,  # set True for SLURM with network storage
 )
 ```
 
@@ -77,14 +77,14 @@ The `ImageNet` class extends `torchvision.datasets.ImageFolder` with:
 
 ```python
 # Custom image folder (any directory structure)
-from torchwm.datasets.imagenet1k import make_imagefolder
+from synora.datasets.imagenet1k import make_imagefolder
 
 dataset, loader, sampler = make_imagefolder(
     transform=transform,
     batch_size=64,
     root_path="./my_dataset",
     image_folder="train",
-    val_split=0.1,         # hold out 10% for validation
+    val_split=0.1,  # hold out 10% for validation
 )
 ```
 
@@ -107,7 +107,7 @@ video = dataset[0]  # (16, 3, 64, 64) float
 ### `VideoFolderDataset` — raw video files
 
 ```python
-from torchwm.datasets.video_datasets import VideoFolderDataset
+from synora.datasets.video_datasets import VideoFolderDataset
 
 dataset = VideoFolderDataset(
     data_source="/data/videos",
@@ -124,7 +124,7 @@ Scans a directory for video files, loads them with OpenCV, samples
 ### `ImageFolderDataset` — per-frame sequences
 
 ```python
-from torchwm.datasets.video_datasets import ImageFolderDataset
+from synora.datasets.video_datasets import ImageFolderDataset
 
 dataset = ImageFolderDataset(
     data_source="/data/sequences",
@@ -145,7 +145,7 @@ stems first, then lexicographic). Shorter sequences pad with the last frame.
 ### `NumPyDataset` — pre-encoded numpy arrays
 
 ```python
-from torchwm.datasets.video_datasets import NumPyDataset
+from synora.datasets.video_datasets import NumPyDataset
 
 # .npy file with shape (N, T, H, W, C)
 dataset = NumPyDataset(
@@ -166,14 +166,14 @@ Supports both `.npy` and `.npz` files. For `.npz`, specify the array key.
 ### `HDF5Dataset` — HDF5 video stores
 
 ```python
-from torchwm.datasets.video_datasets import HDF5Dataset
+from synora.datasets.video_datasets import HDF5Dataset
 
 dataset = HDF5Dataset(
     data_source="/data/videos.h5",
     key="videos",
     num_frames=16,
     image_size=64,
-    memmap=False,          # set True for large files
+    memmap=False,  # set True for large files
 )
 ```
 
@@ -183,7 +183,7 @@ The `memmap=True` option reads on demand instead of loading into RAM.
 ### Factory function
 
 ```python
-from torchwm.datasets.video_datasets import create_video_dataloader
+from synora.datasets.video_datasets import create_video_dataloader
 
 dataset, loader = create_video_dataloader(
     dataset_type="video_folder",  # "video_folder" | "image_folder" | "numpy" | "rl"
@@ -199,7 +199,7 @@ dataset, loader = create_video_dataloader(
 ### `RLEnvironmentDataset` — episode recordings
 
 ```python
-from torchwm.datasets.video_datasets import RLEnvironmentDataset
+from synora.datasets.video_datasets import RLEnvironmentDataset
 
 dataset = RLEnvironmentDataset(
     data_source="/data/episodes",
@@ -217,7 +217,7 @@ directories of `.npz` files.
 ### `RolloutDataset` — World Models pipeline
 
 ```python
-from torchwm.datasets.wm_dataset import RolloutDataset
+from synora.datasets.wm_dataset import RolloutDataset
 
 dataset = RolloutDataset(
     root="data/carracing",
@@ -239,7 +239,7 @@ Curated game-video datasets from HuggingFace for training Genie-style
 world models.
 
 ```python
-from torchwm.datasets.tinyworlds import (
+from synora.datasets.tinyworlds import (
     TinyWorldsDataset,
     TinyWorldsDataLoader,
     create_tinyworlds_dataloader,
@@ -270,7 +270,8 @@ dataset, loader = create_tinyworlds_dataloader(
 )
 
 # List available datasets
-from torchwm.datasets.tinyworlds import TinyWorldsDataLoader
+from synora.datasets.tinyworlds import TinyWorldsDataLoader
+
 print(TinyWorldsDataLoader.list_available_datasets())
 
 # Get metadata without downloading
@@ -295,7 +296,7 @@ locally. Requires `h5py` and `huggingface_hub`.
 ## DIAMOND replay buffer
 
 ```python
-from torchwm.datasets.diamond_dataset import ReplayBuffer, SequenceDataset
+from synora.datasets.diamond_dataset import ReplayBuffer, SequenceDataset
 
 buffer = ReplayBuffer(capacity=100000, obs_shape=(64, 64, 3), action_dim=4)
 buffer.add(obs, action, reward, done, next_obs)

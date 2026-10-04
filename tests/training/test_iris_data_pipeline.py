@@ -9,9 +9,9 @@ import numpy as np
 import pytest
 import torch
 
-from torchwm.configs.iris_config import IRISConfig
-from torchwm.memory.iris_memory import IRISReplayBuffer
-from torchwm.models.iris_agent import IRISAgent
+from synora.configs.iris_config import IRISConfig
+from synora.memory.iris_memory import IRISReplayBuffer
+from synora.models.iris_agent import IRISAgent
 
 
 @pytest.fixture

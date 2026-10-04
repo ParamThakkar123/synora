@@ -33,10 +33,10 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 import numpy as np
 import torch
 
-from torchwm.configs.dit_config import DiTConfig
-from torchwm.models.diffusion.DDPM import DDPM
-from torchwm.models.diffusion.DiT import DiT
-from torchwm.utils.utils import StreamingVideoWriter
+from synora.configs.dit_config import DiTConfig
+from synora.models.diffusion.DDPM import DDPM
+from synora.models.diffusion.DiT import DiT
+from synora.utils.utils import StreamingVideoWriter
 
 
 def infer_architecture(state_dict: dict[str, Any]) -> dict[str, int]:
@@ -230,7 +230,9 @@ def main() -> int:
     grid = to_uint8_grid(samples, args.nrow)
     grid_path = out_dir / "dit_samples.png"
     _write_png(grid, grid_path, args.scale)
-    print(f"Wrote {grid_path}  ({args.samples} samples, {grid.shape[1]}x{grid.shape[0]})")
+    print(
+        f"Wrote {grid_path}  ({args.samples} samples, {grid.shape[1]}x{grid.shape[0]})"
+    )
 
     video_path = out_dir / "dit_denoising.mp4"
     writer = StreamingVideoWriter(str(video_path), fps=args.fps)

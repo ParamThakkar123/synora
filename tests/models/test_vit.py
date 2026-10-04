@@ -1,7 +1,7 @@
 import pytest
 import numpy as np
 import torch
-from torchwm.models.vit import (
+from synora.models.vit import (
     get_2d_sincos_pos_embed,
     get_2d_sincos_pos_embed_from_grid,
     get_1d_sincos_pos_embed,

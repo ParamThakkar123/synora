@@ -2,7 +2,7 @@
 
 import torch
 import pytest
-from torchwm.models.controller import Controller
+from synora.models.controller import Controller
 
 
 class TestController:

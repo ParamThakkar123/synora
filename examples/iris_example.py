@@ -5,7 +5,7 @@ IRIS (Micheli et al., ICLR 2023) learns a discrete autoencoder and an
 autoregressive Transformer world model, then trains its actor-critic entirely
 in imagination.
 
-Requires the Gym extra for Atari: ``pip install torchwm[gym]``.
+Requires the Gym extra for Atari: ``pip install synora[gym]``.
 
 Usage::
 
@@ -15,9 +15,9 @@ Usage::
 import argparse
 import logging
 
-from torchwm.configs.iris_config import IRISConfig
-from torchwm.training.train_iris import IRISTrainer
-from torchwm.utils.device import default_device_name
+from synora.configs.iris_config import IRISConfig
+from synora.training.train_iris import IRISTrainer
+from synora.utils.device import default_device_name
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -34,7 +34,9 @@ def main() -> None:
         help="Override the autoencoder, transformer and actor-critic batch sizes",
     )
     parser.add_argument("--seed", type=int, default=42)
-    parser.add_argument("--device", default=None, help="cuda, mps or cpu (default: best available)")
+    parser.add_argument(
+        "--device", default=None, help="cuda, mps or cpu (default: best available)"
+    )
     parser.add_argument("--save-dir", default="checkpoints/iris")
     args = parser.parse_args()
 
@@ -45,7 +47,9 @@ def main() -> None:
         config.actor_critic_batch_size = args.batch_size
 
     device = args.device or default_device_name()
-    logger.info("Training IRIS on %s for %d epochs (%s)", args.game, args.epochs, device)
+    logger.info(
+        "Training IRIS on %s for %d epochs (%s)", args.game, args.epochs, device
+    )
 
     trainer = IRISTrainer(game=args.game, device=device, seed=args.seed, config=config)
     trainer.train(total_epochs=args.epochs, save_dir=args.save_dir)

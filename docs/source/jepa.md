@@ -64,7 +64,7 @@ graph TD
 
 ### Vision Transformer (ViT)
 
-The backbone encoder in `torchwm.models.vit` is a Vision Transformer
+The backbone encoder in `synora.models.vit` is a Vision Transformer
 following the standard ViT architecture with JEPA-specific modifications.
 
 **Patch embedding:**
@@ -125,11 +125,11 @@ I-JEPA uses **multi-block masking**: random rectangular blocks are masked
 rather than individual patches.
 
 ```python
-config.num_enc_masks = 1              # 1 context block
-config.enc_mask_scale = (0.85, 1.0)   # Context covers 85-100% of the image
-config.num_pred_masks = 4             # 4 target blocks
+config.num_enc_masks = 1  # 1 context block
+config.enc_mask_scale = (0.85, 1.0)  # Context covers 85-100% of the image
+config.num_pred_masks = 4  # 4 target blocks
 config.pred_mask_scale = (0.15, 0.2)  # Each target is 15-20%
-config.aspect_ratio = (0.75, 1.5)     # Target block aspect ratio range
+config.aspect_ratio = (0.75, 1.5)  # Target block aspect ratio range
 ```
 
 The context block is sampled at unit aspect ratio, and every region overlapping
@@ -177,22 +177,22 @@ Appendix A: linear warmup from `start_lr` (1e-4) to `lr` (1e-3) over the first
 linearly from 0.04 to 0.4 across pretraining, and the EMA momentum from 0.996
 to 1.0.
 
-Those learning rates are quoted for the paper's batch size of 2048. TorchWM
+Those learning rates are quoted for the paper's batch size of 2048. Synora
 scales them linearly by `batch_size * world_size / lr_reference_batch_size`, so
 smaller batches get a proportionally smaller learning rate automatically. Set
 `lr_reference_batch_size = None` to use `lr` verbatim.
 
-## Usage in TorchWM
+## Usage in Synora
 
 ### Quick start
 
 ```python
-import torchwm
+import synora
 
-agent = torchwm.create_model(
+agent = synora.create_model(
     "jepa",
     dataset="imagenet",
-    batch_size=64,   # the paper uses 2048 across 16 GPUs; the LR follows it
+    batch_size=64,  # the paper uses 2048 across 16 GPUs; the LR follows it
     epochs=100,
 )
 agent.train()
@@ -201,7 +201,7 @@ agent.train()
 ### Using config directly
 
 ```python
-from torchwm import JEPAAgent, JEPAConfig
+from synora import JEPAAgent, JEPAConfig
 
 cfg = JEPAConfig()
 cfg.dataset = "imagenet1k"
@@ -217,7 +217,7 @@ agent.train()
 ### Data pipeline
 
 ```python
-cfg.dataset = "imagenet1k"     # ImageNet-1K (requires download)
+cfg.dataset = "imagenet1k"  # ImageNet-1K (requires download)
 cfg.root_path = "/data/imagenet"
 
 # Or use a generic image folder:
@@ -240,7 +240,7 @@ of the reference implementation. Turning them on departs from the paper.
 ### CLI
 
 ```bash
-torchwm train jepa --dataset imagenet1k --epochs 100 --batch_size 64
+synora train jepa --dataset imagenet1k --epochs 100 --batch_size 64
 ```
 
 See {doc}`configs_reference` for the full JEPAConfig field reference with defaults.
@@ -252,18 +252,18 @@ one the paper evaluates -- and average-pool its patch tokens:
 
 ```python
 import torch
-from torchwm.training.eval_jepa import load_jepa_encoder
+from synora.training.eval_jepa import load_jepa_encoder
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 encoder = load_jepa_encoder("results/jepa/jepa_run-latest.pth.tar", device)
 
 with torch.no_grad():
-    representations = encoder(images).mean(dim=1)   # [batch, embed_dim]
+    representations = encoder(images).mean(dim=1)  # [batch, embed_dim]
 ```
 
 ### Linear probing protocol
 
-`torchwm.training.eval_jepa` implements Appendix A.2: the encoder is
+`synora.training.eval_jepa` implements Appendix A.2: the encoder is
 frozen, features are the average-pooled patch tokens (I-JEPA has no `[cls]`
 token), and a linear head is trained on them with LARS for 50 epochs at batch
 16384, decaying the learning rate 10x every 15 epochs. It sweeps reference
@@ -272,18 +272,18 @@ average-pooled last layer against the concatenated last four layers, and a head
 with and without a preceding batch-norm, reporting the best.
 
 ```bash
-torchwm eval --model jepa \
+synora eval --model jepa \
     --checkpoint results/jepa/jepa_run-latest.pth.tar \
     --root-path /data/imagenet --model-name vit_base --output probe.json
 
 # equivalent, without the CLI wrapper
-python -m torchwm.training.eval_jepa \
+python -m synora.training.eval_jepa \
     --checkpoint results/jepa/jepa_run-latest.pth.tar \
     --root-path /data/imagenet --model-name vit_base
 ```
 
 ```python
-from torchwm.training.eval_jepa import jepa_linear_probe
+from synora.training.eval_jepa import jepa_linear_probe
 
 results = jepa_linear_probe(
     checkpoint="results/jepa/jepa_run-latest.pth.tar",

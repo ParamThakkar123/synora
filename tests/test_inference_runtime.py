@@ -11,7 +11,7 @@ import pytest
 torch = pytest.importorskip("torch")
 nn = torch.nn
 
-from torchwm.inference import (  # noqa: E402
+from synora.inference import (  # noqa: E402
     DreamerStepModule,
     DreamerStepper,
     IRISStepper,
@@ -25,8 +25,8 @@ from torchwm.inference import (  # noqa: E402
     rollout_drift,
     save_bundle,
 )
-from torchwm.inference.quantize import Int8WeightOnlyLinear, weight_memory_bytes  # noqa: E402
-from torchwm.utils.memory_utils import maybe_compile  # noqa: E402
+from synora.inference.quantize import Int8WeightOnlyLinear, weight_memory_bytes  # noqa: E402
+from synora.utils.memory_utils import maybe_compile  # noqa: E402
 
 
 # --------------------------------------------------------------------------
@@ -38,13 +38,13 @@ class _TinyDreamer:
     """The attributes DreamerStepper reads, built from the real components."""
 
     def __init__(self, action_size: int = 3) -> None:
-        from torchwm.models.dreamer_rssm import RSSM
-        from torchwm.vision.dreamer_decoder import (
+        from synora.models.dreamer_rssm import RSSM
+        from synora.vision.dreamer_decoder import (
             ActionDecoder,
             ConvDecoder,
             DenseDecoder,
         )
-        from torchwm.vision.dreamer_encoder import ConvEncoder
+        from synora.vision.dreamer_encoder import ConvEncoder
 
         stoch, deter, embed = 8, 16, 1024
         self.device = torch.device("cpu")
@@ -384,7 +384,7 @@ def test_quantize_rejects_unknown_backend():
 
 
 def test_exported_program_round_trip_and_rollout_drift(dreamer, tmp_path):
-    from torchwm.export import export_model, load_exported, verify_export
+    from synora.export import export_model, load_exported, verify_export
 
     module = DreamerStepModule(dreamer).eval()
     inputs = module.example_inputs(batch_size=1)
@@ -414,38 +414,50 @@ def test_exported_program_round_trip_and_rollout_drift(dreamer, tmp_path):
 
 
 def test_unknown_export_format_lists_new_formats(tmp_path):
-    from torchwm.export import export_model
+    from synora.export import export_model
 
     with pytest.raises(ValueError, match="exported_program"):
         export_model(nn.Linear(2, 2), tmp_path / "x", format="nope")
 
 
-def test_global_export_warns_for_foreign_modules(tmp_path):
-    import torchwm.export  # noqa: F401
+def test_importing_synora_does_not_patch_nn_module():
+    import synora  # noqa: F401
+    import synora.export  # noqa: F401
 
-    with pytest.warns(DeprecationWarning, match="export_model"):
-        nn.Linear(2, 1).export(
-            tmp_path / "lin.pt2",
-            format="exported_program",
-            example_inputs=torch.zeros(1, 2),
-        )
-
-
-def test_global_export_install_can_be_disabled(monkeypatch):
-    from torchwm.export import install_export_method
-
-    monkeypatch.delattr(nn.Module, "_torchwm_export_installed")
-    monkeypatch.delattr(nn.Module, "export")
-    monkeypatch.setenv("TORCHWM_NO_GLOBAL_EXPORT", "1")
-    install_export_method()
     assert not hasattr(nn.Module, "export")
 
 
-def test_jit_utils_are_deprecated():
-    from torchwm.utils.jit_utils import jit_compile_module
+def test_every_public_module_class_is_exportable():
+    """Public ``nn.Module`` classes carry ``.export()`` through the mixin."""
+    import inspect
 
-    with pytest.warns(DeprecationWarning):
-        jit_compile_module(nn.Linear(2, 2))
+    import synora
+    from synora.export import ExportableAgentMixin
+
+    missing = []
+    for name in synora.__all__:
+        try:
+            obj = getattr(synora, name)
+        except ImportError:  # optional backend not installed
+            continue
+        if (
+            inspect.isclass(obj)
+            and issubclass(obj, nn.Module)
+            and not issubclass(obj, ExportableAgentMixin)
+        ):
+            missing.append(name)
+    assert not missing, f"public nn.Module classes without .export(): {missing}"
+
+
+def test_public_module_export_method_round_trips(tmp_path):
+    from synora import RMSNorm, load_exported
+
+    norm = RMSNorm(4).eval()
+    x = torch.randn(2, 4)
+    path = norm.export(
+        tmp_path / "norm.pt2", format="exported_program", example_inputs=x
+    )
+    torch.testing.assert_close(load_exported(path)(x), norm(x))
 
 
 # --------------------------------------------------------------------------
@@ -498,7 +510,7 @@ def test_load_bundle_rejects_non_bundle(tmp_path):
 def test_cli_deploy_inspect_and_bench(tmp_path):
     from click.testing import CliRunner
 
-    from torchwm import cli
+    from synora import cli
 
     torch.manual_seed(0)
     save_bundle(

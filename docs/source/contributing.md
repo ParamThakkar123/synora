@@ -1,13 +1,13 @@
 # Contributing
 
-We welcome contributions to TorchWM! This guide covers how to get started.
+We welcome contributions to Synora! This guide covers how to get started.
 
 ## Development Setup
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/ParamThakkar123/torchwm.git
-   cd torchwm
+   git clone https://github.com/ParamThakkar123/synora.git
+   cd synora
    ```
 
 2. **Install in development mode**
@@ -63,7 +63,7 @@ pytest -m "not slow and not gpu and not integration"
 pytest tests/masks/test_masks.py
 
 # With coverage
-pytest --cov=torchwm --cov-report=html
+pytest --cov=synora --cov-report=html
 ```
 
 ## Documentation
@@ -80,15 +80,15 @@ Open `docs/build/html/index.html` in your browser.
 
 ### 1. New Models
 
-1. Create model class in `torchwm/models/`
-2. Add config class in `torchwm/configs/`
-3. Export both from `torchwm/__init__.py`
+1. Create model class in `synora/models/`
+2. Add config class in `synora/configs/`
+3. Export both from `synora/__init__.py`
 4. Update training scripts
 5. Add documentation and tests
 
 ### 2. New Environments
 
-1. Implement environment wrapper in `torchwm/envs/`
+1. Implement environment wrapper in `synora/envs/`
 2. Add to environment registry
 3. Update documentation
 

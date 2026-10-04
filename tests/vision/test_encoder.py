@@ -1,8 +1,8 @@
 import pytest
 import torch
 
-from torchwm.vision.dreamer_encoder import ConvEncoder
-from torchwm.vision.planet_encoder import CNNEncoder
+from synora.vision.dreamer_encoder import ConvEncoder
+from synora.vision.planet_encoder import CNNEncoder
 
 
 class TestConvEncoder:

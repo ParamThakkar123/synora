@@ -1,50 +1,50 @@
 config:
-  - torchwm/configs/**
+  - synora/configs/**
 
 # Add 'environment' to any changes to environment files
 environment:
-  - torchwm/envs/**
+  - synora/envs/**
 
 trainer:
-  - torchwm/training/**
+  - synora/training/**
 
 controller:
-  - torchwm/controller/**
+  - synora/controller/**
 
 helpers:
-  - torchwm/helpers/**
+  - synora/helpers/**
 
 tokenizers:
-  - torchwm/vision/video_tokenizer.py
-  - torchwm/vision/vq_layer.py
+  - synora/vision/video_tokenizer.py
+  - synora/vision/vq_layer.py
 
 tests:
   - tests/**
-  - torchwm/testing/**
+  - synora/testing/**
 
 models:
-  - torchwm/models/**
+  - synora/models/**
 
 memory:
-  - torchwm/memory/**
+  - synora/memory/**
 
 masks:
-  - torchwm/masks/**
+  - synora/masks/**
 
 reward_functions:
-  - torchwm/reward/**
+  - synora/reward/**
 
 observation_wrappers:
-  - torchwm/observations/**
+  - synora/observations/**
 
 utilities:
-  - torchwm/utils/**
+  - synora/utils/**
 
 vision:
-  - torchwm/vision/**
+  - synora/vision/**
 
 transforms:
-  - torchwm/transforms/**
+  - synora/transforms/**
 
 # Add 'CI/CD' to any changes to GitHub workflows and automation config
 CI/CD:

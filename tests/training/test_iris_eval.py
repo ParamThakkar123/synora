@@ -13,8 +13,8 @@ import numpy as np
 import pytest
 import torch
 
-from torchwm.configs.iris_config import IRISConfig
-from torchwm.training.train_iris import IRISTrainer
+from synora.configs.iris_config import IRISConfig
+from synora.training.train_iris import IRISTrainer
 
 
 class FakeEnv:

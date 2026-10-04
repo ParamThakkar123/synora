@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Launch a demo-oriented training run for a TorchWM algorithm.
+"""Launch a demo-oriented training run for a Synora algorithm.
 
 The stock defaults are tuned for full research runs: DreamerConfig ships
 ``checkpoint_interval=10000``, ``test_interval=10000`` and ``log_video_freq=-1``,
@@ -27,11 +27,11 @@ import subprocess
 import sys
 
 TRAINING_MODULES = {
-    "dreamer": "torchwm.training.train_dreamer",
-    "diamond": "torchwm.training.train_diamond",
-    "iris": "torchwm.training.train_iris",
+    "dreamer": "synora.training.train_dreamer",
+    "diamond": "synora.training.train_diamond",
+    "iris": "synora.training.train_iris",
     "genie": "scripts/train_genie_tinyworlds.py",
-    "ijepa": "torchwm.training.train_jepa",
+    "ijepa": "synora.training.train_jepa",
 }
 
 # Demo defaults per algorithm. `steps` means total env steps for Dreamer and
@@ -179,7 +179,7 @@ def build_command(args: argparse.Namespace, extra: list[str]) -> list[str]:
 
 def parse_args() -> tuple[argparse.Namespace, list[str]]:
     parser = argparse.ArgumentParser(
-        description="Run a TorchWM training job with demo-friendly artifact intervals",
+        description="Run a Synora training job with demo-friendly artifact intervals",
         epilog="Anything after `--` is forwarded verbatim as key=value overrides.",
     )
     parser.add_argument(

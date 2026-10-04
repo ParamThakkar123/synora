@@ -11,16 +11,16 @@ import pytest
 import torch
 import torch.nn as nn
 
-from torchwm.datasets.diamond_dataset import (
+from synora.datasets.diamond_dataset import (
     ReplayBuffer,
     SequenceDataset,
     to_model_domain,
 )
-from torchwm.models.diffusion.DDPM import DDPM
-from torchwm.models.diffusion.actor_critic import ActorCriticNetwork
-from torchwm.models.diffusion.diamond_diffusion import TimestepEmbedding
-from torchwm.models.diffusion.reward_termination import RewardTerminationModel
-from torchwm.envs.diamond_atari import DiamondAtariWrapper
+from synora.models.diffusion.DDPM import DDPM
+from synora.models.diffusion.actor_critic import ActorCriticNetwork
+from synora.models.diffusion.diamond_diffusion import TimestepEmbedding
+from synora.models.diffusion.reward_termination import RewardTerminationModel
+from synora.envs.diamond_atari import DiamondAtariWrapper
 
 
 class TestDiffusionTargetIsOneStepAhead:
@@ -63,7 +63,9 @@ class TestDiffusionTargetIsOneStepAhead:
         buffer = self._buffer()
         dataset = SequenceDataset(buffer, sequence_length=5, burn_in=4)
         last = dataset[len(dataset) - 1]
-        assert self._frame_id(last["next_obs"]) == self._frame_id(last["obs_seq"][-1]) + 1
+        assert (
+            self._frame_id(last["next_obs"]) == self._frame_id(last["obs_seq"][-1]) + 1
+        )
 
 
 class TestObservationDomain:
@@ -217,9 +219,7 @@ class TestDDPMSchedule:
         assert torch.allclose(ddpm.alphas, alphas)
         assert torch.allclose(ddpm.alphas_cumprod, torch.cumprod(alphas, dim=0))
         assert ddpm.alphas_cumprod_prev[0] == pytest.approx(1.0)
-        assert torch.allclose(
-            ddpm.alphas_cumprod_prev[1:], ddpm.alphas_cumprod[:-1]
-        )
+        assert torch.allclose(ddpm.alphas_cumprod_prev[1:], ddpm.alphas_cumprod[:-1])
 
     def test_q_sample_interpolates_signal_and_noise(self):
         ddpm = DDPM(timesteps=20, beta_start=1e-4, beta_end=0.02)
@@ -303,8 +303,8 @@ class TestImaginationOrdering:
 
     @staticmethod
     def _agent():
-        from torchwm.configs.diamond_config import DiamondConfig
-        from torchwm.training.train_diamond import DiamondAgent
+        from synora.configs.diamond_config import DiamondConfig
+        from synora.training.train_diamond import DiamondAgent
 
         gym = pytest.importorskip("gymnasium")
         del gym

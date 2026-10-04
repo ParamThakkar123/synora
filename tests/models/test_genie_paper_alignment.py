@@ -12,14 +12,14 @@ import pytest
 import torch
 import torch.nn as nn
 
-from torchwm.blocks.st_transformer import (
+from synora.blocks.st_transformer import (
     STSpatialAttention,
     STTemporalAttention,
     STTransformer,
     STTransformerBlock,
 )
-from torchwm.models.dynamics_model import DynamicsModel
-from torchwm.models.latent_action_model import LatentActionModel
+from synora.models.dynamics_model import DynamicsModel
+from synora.models.latent_action_model import LatentActionModel
 
 
 def _st(**overrides) -> STTransformer:
@@ -247,8 +247,7 @@ class TestDynamicsMasking:
         """Paper 2.1 found additive action embeddings beat concatenation."""
         model = _dynamics()
         assert model.action_embedding.embedding_dim == model.dim, (
-            "action embeddings must share the token width to be added, not "
-            "concatenated"
+            "action embeddings must share the token width to be added, not concatenated"
         )
 
     def test_output_covers_the_token_vocabulary(self):

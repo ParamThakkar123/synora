@@ -30,8 +30,8 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 import numpy as np
 import torch
 
-from torchwm.models.genie import Genie, create_genie_small
-from torchwm.utils.utils import StreamingVideoWriter
+from synora.models.genie import Genie, create_genie_small
+from synora.utils.utils import StreamingVideoWriter
 
 
 def tensor_to_uint8_img(t: torch.Tensor) -> np.ndarray:
@@ -179,7 +179,7 @@ def make_prompt(
 
     if not args.no_dataset_prompt:
         try:
-            from torchwm.datasets import create_tinyworlds_dataloader
+            from synora.datasets import create_tinyworlds_dataloader
 
             dataset, _ = create_tinyworlds_dataloader(
                 dataset_name=args.prompt_dataset,
@@ -195,9 +195,7 @@ def make_prompt(
             # (C, T, H, W) in [0, 1].
             clip = dataset[0]
             frame = clip[:, min(args.prompt_index, clip.shape[1] - 1)]
-            print(
-                f"Prompt: {args.prompt_dataset} clip 0 frame {args.prompt_index}"
-            )
+            print(f"Prompt: {args.prompt_dataset} clip 0 frame {args.prompt_index}")
             return frame.unsqueeze(0).to(device)
         except Exception as exc:  # dataset absent, or not downloaded
             print(f"Could not read a dataset prompt ({exc}); using noise instead.")
@@ -306,10 +304,7 @@ def main() -> int:
     writer.close()
     # args.fps frames of the last image are appended so the clip does not snap
     # back instantly on loop; count them.
-    print(
-        f"Wrote {video_path}  ({args.num_frames} generated "
-        f"+ {args.fps} hold frames)"
-    )
+    print(f"Wrote {video_path}  ({args.num_frames} generated + {args.fps} hold frames)")
 
     return 0
 

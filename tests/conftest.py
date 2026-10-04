@@ -1,4 +1,4 @@
-"""Shared pytest configuration for the TorchWM suite."""
+"""Shared pytest configuration for the Synora suite."""
 
 import gc
 import sys

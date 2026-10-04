@@ -5,10 +5,10 @@ import numpy as np
 
 gym = pytest.importorskip("gymnasium")
 
-from torchwm.envs.dmc import DeepMindControlEnv  # noqa: E402
-from torchwm.envs.gym_env import GymImageEnv  # noqa: E402
-from torchwm.envs.mujoco_env import MuJoCoImageEnv  # noqa: E402
-from torchwm.envs.wrappers import FrameStack, NormalizeActions, TimeLimit  # noqa: E402
+from synora.envs.dmc import DeepMindControlEnv  # noqa: E402
+from synora.envs.gym_env import GymImageEnv  # noqa: E402
+from synora.envs.mujoco_env import MuJoCoImageEnv  # noqa: E402
+from synora.envs.wrappers import FrameStack, NormalizeActions, TimeLimit  # noqa: E402
 
 
 class _ContractFiveTupleEnv:

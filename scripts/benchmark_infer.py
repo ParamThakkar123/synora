@@ -40,7 +40,7 @@ PLAY_MODELS = ("diamond", "dreamer", "iris", "genie")
 def _load_demo(name: str) -> Any:
     """Load a file under ``demos/`` -- that directory is not a Python package."""
     path = REPO_ROOT / "demos" / f"{name}.py"
-    spec = importlib.util.spec_from_file_location(f"torchwm_demo_{name}", path)
+    spec = importlib.util.spec_from_file_location(f"synora_demo_{name}", path)
     if spec is None or spec.loader is None:
         raise ImportError(f"Cannot load {path}")
     module = importlib.util.module_from_spec(spec)
@@ -142,7 +142,6 @@ def resolve_model(args: argparse.Namespace) -> str:
         "dreamerv1": "dreamer",
         "dreamer-v2": "dreamer",
         "dreamerv2": "dreamer",
-        "dreamer-v3": "dreamer",
         "ijepa": "jepa",
         "i-jepa": "jepa",
         "genie-small": "genie",
@@ -276,13 +275,21 @@ def _label_frame(frame: "Any", text: str, scale: int = 4) -> "Any":
     )
     cv2.rectangle(img, (0, 0), (img.shape[1], 22), (0, 0, 0), -1)
     cv2.putText(
-        img, text, (6, 16), cv2.FONT_HERSHEY_SIMPLEX, 0.45, (255, 255, 255), 1,
+        img,
+        text,
+        (6, 16),
+        cv2.FONT_HERSHEY_SIMPLEX,
+        0.45,
+        (255, 255, 255),
+        1,
         cv2.LINE_AA,
     )
     return img
 
 
-def record_dreamer_dream(args: argparse.Namespace, player: "Any", out_dir: Path) -> list:
+def record_dreamer_dream(
+    args: argparse.Namespace, player: "Any", out_dir: Path
+) -> list:
     """Open-loop imagination beside the real env, the Dreamer paper's figure.
 
     The model sees ``--dream-context`` real frames, then its observations are cut
@@ -294,8 +301,8 @@ def record_dreamer_dream(args: argparse.Namespace, player: "Any", out_dir: Path)
     import numpy as np
     import torch
 
-    from torchwm.inference.play_dreamer import _observation_frame
-    from torchwm.utils.utils import StreamingVideoWriter
+    from synora.inference.play_dreamer import _observation_frame
+    from synora.utils.utils import StreamingVideoWriter
 
     context = max(1, args.dream_context)
     obs = player.env.reset()
@@ -361,8 +368,8 @@ def record_dreamer(args: argparse.Namespace, model: str) -> int:
     import numpy as np
     import torch
 
-    from torchwm.inference.play_dreamer import DreamerPlayer, _observation_frame
-    from torchwm.utils.utils import StreamingVideoWriter
+    from synora.inference.play_dreamer import DreamerPlayer, _observation_frame
+    from synora.utils.utils import StreamingVideoWriter
 
     game = args.game or DEFAULT_GAMES["dreamer"]
     player = DreamerPlayer(
@@ -382,18 +389,12 @@ def record_dreamer(args: argparse.Namespace, model: str) -> int:
         # in a gallery instead of one being a 64px thumbnail.
         writer.write_frame(_label_frame(_observation_frame(obs), "REAL"))
         with torch.no_grad():
-            state, _ = player.rssm.observe_step(
-                state, prev_action, player.encode(obs)
-            )
-            action = player.actor(
-                player.features(state), deter=not args.stochastic
-            )
+            state, _ = player.rssm.observe_step(state, prev_action, player.encode(obs))
+            action = player.actor(player.features(state), deter=not args.stochastic)
         action_np = action[0].cpu().numpy()
         obs, reward, done, info = player.env.step(action_np)
         executed = (
-            info["action"]
-            if isinstance(info, dict) and "action" in info
-            else action_np
+            info["action"] if isinstance(info, dict) and "action" in info else action_np
         )
         prev_action = torch.tensor(
             np.asarray(executed, dtype=np.float32), device=player.device
@@ -417,7 +418,7 @@ def record_dreamer(args: argparse.Namespace, model: str) -> int:
 
 
 def play_diamond(args: argparse.Namespace, control: str) -> int:
-    from torchwm.inference.play_diamond import run_play
+    from synora.inference.play_diamond import run_play
 
     run_play(
         checkpoint=str(args.checkpoint),
@@ -433,7 +434,7 @@ def play_diamond(args: argparse.Namespace, control: str) -> int:
 
 
 def play_dreamer(args: argparse.Namespace, control: str) -> int:
-    from torchwm.inference.play_dreamer import run_play
+    from synora.inference.play_dreamer import run_play
 
     run_play(
         checkpoint=str(args.checkpoint),
@@ -459,11 +460,11 @@ def play_iris(args: argparse.Namespace, control: str) -> int:
     load_policy = iris_demo.load_policy
     preprocess = iris_demo.preprocess
     read_checkpoint = iris_demo.read_checkpoint
-    from torchwm.inference.play_base import get_action_from_key, init_video_recorder
-    from torchwm.inference.play_diamond import ACTION_NAMES
-    from torchwm.configs.iris_config import IRISConfig
-    from torchwm.envs.ale_atari_env import make_atari_env
-    from torchwm.models.iris_agent import IRISAgent
+    from synora.inference.play_base import get_action_from_key, init_video_recorder
+    from synora.inference.play_diamond import ACTION_NAMES
+    from synora.configs.iris_config import IRISConfig
+    from synora.envs.ale_atari_env import make_atari_env
+    from synora.models.iris_agent import IRISAgent
 
     game = args.game or DEFAULT_GAMES["iris"]
     device = torch.device(
@@ -581,7 +582,7 @@ def play_genie(args: argparse.Namespace, control: str) -> int:
     genie_demo = _load_demo("record_genie")
     build_model = genie_demo.build_model
     tensor_to_uint8_img = genie_demo.tensor_to_uint8_img
-    from torchwm.inference.play_base import init_video_recorder
+    from synora.inference.play_base import init_video_recorder
 
     class _Args:
         checkpoint = args.checkpoint
@@ -695,7 +696,9 @@ def main(argv: list[str] | None = None) -> int:
 
     if args.mode == "record":
         if model not in RECORDERS:
-            parser.error(f"{model} cannot be recorded. Choose: {', '.join(RECORD_MODELS)}")
+            parser.error(
+                f"{model} cannot be recorded. Choose: {', '.join(RECORD_MODELS)}"
+            )
         if model in {"diamond", "dreamer", "iris"} and not args.checkpoint:
             parser.error(f"{model} record needs --checkpoint / -c")
         print(f"recording {model} -> {args.out_dir}")
