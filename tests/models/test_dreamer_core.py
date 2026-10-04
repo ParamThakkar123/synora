@@ -8,8 +8,8 @@ import numpy as np
 import pytest
 import torch
 
-from torchwm.configs.dreamer_config import DreamerConfig
-from torchwm.models.dreamer import Dreamer
+from synora.configs.dreamer_config import DreamerConfig
+from synora.models.dreamer import Dreamer
 
 OBS_SHAPE = (3, 64, 64)
 ACTION_SIZE = 2

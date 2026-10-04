@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Swap the algorithm, keep the code: one API across every world model.
 
-TorchWM's differentiator is that Dreamer, PlaNet, IRIS, DIAMOND, JEPA, and
+Synora's differentiator is that Dreamer, PlaNet, IRIS, DIAMOND, JEPA, and
 Genie are all reachable through the same factory. This script trains several of
 them on the same cheap task and plots the result side by side::
 
@@ -31,7 +31,7 @@ import json
 from pathlib import Path
 from typing import Any
 
-import torchwm
+import synora
 
 # Algorithms with a `train(total_steps)` entry point, cheap enough to be
 # runnable by a reader on CPU.
@@ -60,7 +60,7 @@ def run_algorithm(algo: str, env: str, backend: str, steps: int, seed: int) -> d
 
     print(f"\n=== {algo} ===")
     # The same two calls for every algorithm - this is the pitch.
-    agent = torchwm.create_model(
+    agent = synora.create_model(
         algo, env=env, env_backend=backend, seed=seed, no_gpu=False
     )
 
@@ -130,8 +130,8 @@ def main() -> None:
     args = parser.parse_args()
 
     if args.list:
-        for name in torchwm.list_models():
-            print(f"{name:16} {torchwm.get_model_spec(name).description}")
+        for name in synora.list_models():
+            print(f"{name:16} {synora.get_model_spec(name).description}")
         return
 
     args.out_dir.mkdir(parents=True, exist_ok=True)

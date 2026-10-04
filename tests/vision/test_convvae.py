@@ -2,7 +2,7 @@
 
 import torch
 import pytest
-from torchwm.vision.VAE.ConvVAE import ConvVAEEncoder, ConvVAEDecoder, ConvVAE
+from synora.vision.VAE.ConvVAE import ConvVAEEncoder, ConvVAEDecoder, ConvVAE
 
 
 class TestConvVAEEncoder:

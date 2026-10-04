@@ -4,11 +4,11 @@ import inspect
 
 import pytest
 
-from torchwm import create_model
-from torchwm.blocks.st_transformer import STSpatialAttention, STTemporalAttention
-from torchwm.configs.genie_config import DynamicsModelConfig, GenieConfig
-from torchwm.models.dynamics_model import DynamicsModel, create_dynamics_model
-from torchwm.models.genie import (
+from synora import create_model
+from synora.blocks.st_transformer import STSpatialAttention, STTemporalAttention
+from synora.configs.genie_config import DynamicsModelConfig, GenieConfig
+from synora.models.dynamics_model import DynamicsModel, create_dynamics_model
+from synora.models.genie import (
     Genie,
     create_genie,
     create_genie_large,
@@ -44,7 +44,7 @@ def test_dynamics_config_heads_divide_width():
 def test_genie_large_heads_divide_width(monkeypatch):
     captured = {}
     monkeypatch.setattr(
-        "torchwm.models.genie.Genie.__init__",
+        "synora.models.genie.Genie.__init__",
         lambda self, **kwargs: captured.update(kwargs),
     )
     create_genie_large()
@@ -81,7 +81,7 @@ def test_config_mapping_covers_renamed_fields():
 def test_create_model_genie_uses_config_widths_and_depths(monkeypatch):
     captured = {}
     monkeypatch.setattr(
-        "torchwm.models.genie.Genie.__init__",
+        "synora.models.genie.Genie.__init__",
         lambda self, **kwargs: captured.update(kwargs),
     )
     create_model("genie", use_bfloat16=True)

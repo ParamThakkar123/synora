@@ -4,9 +4,9 @@ from unittest.mock import Mock, patch
 
 gym = pytest.importorskip("gymnasium")
 
-from torchwm.models.dreamer import DreamerAgent  # noqa: E402
-from torchwm.models.dreamer_rssm import RSSM  # noqa: E402
-from torchwm.configs.dreamer_config import DreamerConfig  # noqa: E402
+from synora.models.dreamer import DreamerAgent  # noqa: E402
+from synora.models.dreamer_rssm import RSSM  # noqa: E402
+from synora.configs.dreamer_config import DreamerConfig  # noqa: E402
 
 
 class TestDreamerAgent:
@@ -22,8 +22,8 @@ class TestDreamerAgent:
         config.buffer_size = 10
         return config
 
-    @patch("torchwm.models.dreamer.make_env")
-    @patch("torchwm.models.dreamer.Logger")
+    @patch("synora.models.dreamer.make_env")
+    @patch("synora.models.dreamer.Logger")
     def test_initialization(self, mock_logger, mock_make_env, config):
         mock_env = Mock()
         mock_obs_space = Mock()
@@ -43,8 +43,8 @@ class TestDreamerAgent:
         assert agent.test_env == mock_env
         assert agent.logger == mock_logger.return_value
 
-    @patch("torchwm.models.dreamer.make_env")
-    @patch("torchwm.models.dreamer.Logger")
+    @patch("synora.models.dreamer.make_env")
+    @patch("synora.models.dreamer.Logger")
     def test_evaluate(self, mock_logger, mock_make_env, config):
         # Runs the real Dreamer.evaluate(render=True) on a tiny fake env; it
         # used to be mocked out, which hid a KeyError on its first step.
@@ -63,8 +63,8 @@ class TestDreamerAgent:
         videos = mock_logger.return_value.log_videos.call_args[0][0]
         assert np.asarray(videos).shape[:2] == (2, 3)
 
-    @patch("torchwm.models.dreamer.make_env")
-    @patch("torchwm.models.dreamer.Logger")
+    @patch("synora.models.dreamer.make_env")
+    @patch("synora.models.dreamer.Logger")
     def test_initialization_with_invalid_arg(self, mock_logger, mock_make_env, config):
         mock_env = Mock()
         mock_obs_space = Mock()
@@ -155,7 +155,7 @@ class TestDreamerEnvConfig:
 
 
 class TestDreamerFrameStackIntegration:
-    @patch("torchwm.models.dreamer.Logger")
+    @patch("synora.models.dreamer.Logger")
     def test_collect_random_episodes_uses_stacked_frames_end_to_end(
         self, mock_logger, tmp_path
     ):
@@ -215,8 +215,8 @@ class TestDreamerConfigSerialization:
 
 
 class TestDreamerUXConstructors:
-    @patch("torchwm.models.dreamer.make_env")
-    @patch("torchwm.models.dreamer.Logger")
+    @patch("synora.models.dreamer.make_env")
+    @patch("synora.models.dreamer.Logger")
     def test_agent_from_config_yaml_and_summary(
         self, mock_logger, mock_make_env, tmp_path
     ):
@@ -237,8 +237,8 @@ class TestDreamerUXConstructors:
         assert "rssm" in summary["modules"]
         mock_logger.assert_called_once()
 
-    @patch("torchwm.models.dreamer.make_env")
-    @patch("torchwm.models.dreamer.Logger")
+    @patch("synora.models.dreamer.make_env")
+    @patch("synora.models.dreamer.Logger")
     def test_agent_save_and_from_pretrained_local_dir(
         self, mock_logger, mock_make_env, tmp_path
     ):
@@ -260,12 +260,12 @@ class TestDreamerUXConstructors:
             loaded.summary()["total_parameters"] == agent.summary()["total_parameters"]
         )
 
-    @patch("torchwm.models.dreamer.make_env")
-    @patch("torchwm.models.dreamer.Logger")
+    @patch("synora.models.dreamer.make_env")
+    @patch("synora.models.dreamer.Logger")
     def test_export_uses_dreamer_actor_default(
         self, mock_logger, mock_make_env, monkeypatch, tmp_path
     ):
-        import torchwm.export as export_utils
+        import synora.export as export_utils
 
         mock_env = Mock()
         mock_obs_space = Mock()

@@ -108,9 +108,9 @@ V(s_T) & \text{if } t = T
 ### Examples
 
 ```python
-import torchwm
+import synora
 
-agent = torchwm.create_model(
+agent = synora.create_model(
     "dreamer",
     env_backend="dmc",
     env="walker-walk",
@@ -122,7 +122,7 @@ agent.train()
 Explicit V1 config:
 
 ```python
-from torchwm import DreamerAgent, DreamerConfig
+from synora import DreamerAgent, DreamerConfig
 
 cfg = DreamerConfig()
 
@@ -146,7 +146,7 @@ agent.train()
 ```
 
 ```bash
-torchwm train dreamer --env dmc/walker-walk --algo Dreamerv1 --device cuda
+synora train dreamer --env dmc/walker-walk --algo Dreamerv1 --device cuda
 ```
 
 ---
@@ -238,9 +238,9 @@ V(s_T) & \text{if } t = T
 ### Examples
 
 ```python
-import torchwm
+import synora
 
-agent = torchwm.create_model(
+agent = synora.create_model(
     "dreamer",
     env_backend="atari",
     env="PongNoFrameskip-v4",
@@ -253,7 +253,7 @@ agent.train()
 Explicit V2 config:
 
 ```python
-from torchwm import DreamerAgent, DreamerConfig
+from synora import DreamerAgent, DreamerConfig
 
 cfg = DreamerConfig()
 
@@ -282,7 +282,7 @@ agent.train()
 ```
 
 ```bash
-torchwm train dreamer --env atari/PongNoFrameskip-v4 --algo Dreamerv2 --device cuda
+synora train dreamer --env atari/PongNoFrameskip-v4 --algo Dreamerv2 --device cuda
 ```
 
 ---
@@ -391,7 +391,7 @@ graph TD
 
 ### Recurrent State-Space Model (RSSM)
 
-The core of Dreamer is the RSSM, defined in `torchwm.models.dreamer_rssm.RSSM`.
+The core of Dreamer is the RSSM, defined in `synora.models.dreamer_rssm.RSSM`.
 It maintains a hybrid state with two components:
 
 **1. Deterministic state** `h_t` — a GRU hidden state that captures temporal
@@ -423,7 +423,7 @@ The model operates in two modes:
 Key insight: the prior learns to predict the posterior without seeing the
 observation. During imagination, the prior serves as the dynamics model.
 
-### CNN Encoder (`torchwm.vision.dreamer_encoder.ConvEncoder`)
+### CNN Encoder (`synora.vision.dreamer_encoder.ConvEncoder`)
 
 Four-layer CNN with increasing channels (32 → 64 → 128 → 256) and ReLU
 activations. Strided convolutions (stride 2) halve spatial resolution at
@@ -439,7 +439,7 @@ Input:  (3, 64, 64)
 Output: embed_size-d vector
 ```
 
-### CNN Decoder (`torchwm.vision.dreamer_decoder.ConvDecoder`)
+### CNN Decoder (`synora.vision.dreamer_decoder.ConvDecoder`)
 
 Mirrored transposed-CNN structure:
 
@@ -493,12 +493,12 @@ DreamerAgent follows a cyclic training loop:
 \end{aligned}
 ```
 
-## Usage in TorchWM
+## Usage in Synora
 
 ### Using config directly
 
 ```python
-from torchwm import DreamerAgent, DreamerConfig
+from synora import DreamerAgent, DreamerConfig
 
 cfg = DreamerConfig()
 cfg.env_backend = "dmc"
@@ -562,7 +562,7 @@ Dreamer configs are serializable, so experiments can be reproduced from the
 YAML saved with each run or checkpoint:
 
 ```python
-from torchwm import DreamerConfig, DreamerAgent
+from synora import DreamerConfig, DreamerAgent
 
 cfg = DreamerConfig()
 cfg.env = "walker-walk"
@@ -614,7 +614,7 @@ cfg.unity_file_name = "env.exe"
 ### CLI
 
 ```bash
-torchwm train dreamer --env dmc/walker-walk --device cuda
+synora train dreamer --env dmc/walker-walk --device cuda
 ```
 
 See {doc}`configs_reference` for the full DreamerConfig field reference with defaults.

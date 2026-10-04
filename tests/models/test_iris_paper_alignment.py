@@ -9,11 +9,11 @@ import pytest
 import torch
 import torch.nn as nn
 
-from torchwm.configs.iris_config import IRISConfig
-from torchwm.controller.iris_policy import CNNFeatureExtractor
-from torchwm.vision.iris_decoder import IRISDecoder
-from torchwm.vision.iris_encoder import IRISEncoder
-from torchwm.training.train_iris import (
+from synora.configs.iris_config import IRISConfig
+from synora.controller.iris_policy import CNNFeatureExtractor
+from synora.vision.iris_decoder import IRISDecoder
+from synora.vision.iris_encoder import IRISEncoder
+from synora.training.train_iris import (
     FREEWAY_COLLECT_TEMPERATURE,
     default_collect_temperature,
 )
@@ -187,7 +187,7 @@ class TestTransformerLossWeighting:
         config.transformer_timesteps = 4
         config.perceptual_weight = 0.0
 
-        from torchwm.models.iris_agent import IRISAgent
+        from synora.models.iris_agent import IRISAgent
 
         agent = IRISAgent(config, action_size=4, device=torch.device("cpu"))
         b, t = 2, config.transformer_timesteps
@@ -212,7 +212,7 @@ class TestRewardHandling:
 
     @staticmethod
     def _agent(**overrides):
-        from torchwm.models.iris_agent import IRISAgent
+        from synora.models.iris_agent import IRISAgent
 
         config = IRISConfig()
         config.vocab_size = 32
@@ -280,7 +280,7 @@ class TestPerceptualLossStructure:
 
     @pytest.fixture(scope="class")
     def loss(self):
-        from torchwm.vision.perceptual_loss import build_perceptual_loss
+        from synora.vision.perceptual_loss import build_perceptual_loss
 
         module = build_perceptual_loss(enabled=True, num_blocks=5)
         if module is None:

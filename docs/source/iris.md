@@ -175,15 +175,15 @@ for h in range(imagination_horizon):
 | **Discount (γ)** | 0.995 |
 | **λ for λ-return** | 0.95 |
 
-## Usage in TorchWM
+## Usage in Synora
 
 ### Quick start
 
 ```python
 import torch
-import torchwm
+import synora
 
-agent = torchwm.create_model(
+agent = synora.create_model(
     "iris",
     action_size=4,
     device=torch.device("cuda" if torch.cuda.is_available() else "cpu"),
@@ -193,7 +193,7 @@ agent = torchwm.create_model(
 ### Using config directly
 
 ```python
-from torchwm import IRISConfig
+from synora import IRISConfig
 
 config = IRISConfig()
 
@@ -214,13 +214,13 @@ config.env = "ALE/Pong-v5"
 ### CLI
 
 ```bash
-torchwm train iris --env ALE/Pong-v5 --device cuda
+synora train iris --env ALE/Pong-v5 --device cuda
 ```
 
 For custom research code:
 
 ```bash
-python -m torchwm.training.train_iris --game "ALE/Pong-v5"
+python -m synora.training.train_iris --game "ALE/Pong-v5"
 ```
 
 See {doc}`configs_reference` for the full IRISConfig field reference with defaults.
@@ -288,7 +288,7 @@ Every piece is exported from the top-level package, so the world model can be
 used without the Atari training loop:
 
 ```python
-from torchwm import (
+from synora import (
     IRISAgent, IRISConfig, IRISEncoder, IRISDecoder,
     IRISTransformer, IRISWorldModel, IRISReplayBuffer,
     LPIPSPerceptualLoss, build_perceptual_loss, compute_lambda_return,
@@ -318,8 +318,8 @@ CHW inputs are all handled.
 ### Minecraft (MineRL / MineDojo)
 
 ```python
-from torchwm.envs import make_minecraft_env
-from torchwm.training.train_iris import IRISTrainer
+from synora.envs import make_minecraft_env
+from synora.training.train_iris import IRISTrainer
 
 env = make_minecraft_env("MineRLTreechop-v0")          # or backend="minedojo"
 trainer = IRISTrainer(game="MineRLTreechop-v0", config=cfg, env=env)
@@ -340,15 +340,15 @@ craft/place/equip actions, and without them an agent cannot progress past what
 tool-free play allows. Actions the task does not support become no-ops rather
 than errors, so the same set works across Treechop and Navigate.
 
-`minerl` and `minedojo` are **not** installable as TorchWM extras. MineRL 1.x
+`minerl` and `minedojo` are **not** installable as Synora extras. MineRL 1.x
 publishes no release compatible with Python 3.11+, and MineDojo pins
 `gym==0.21.0`, whose sdist no longer builds under modern setuptools -- so
-`pip install torchwm[minerl]` could only ever fail. Install them yourself in a
-Python 3.10 environment alongside TorchWM:
+`pip install synora[minerl]` could only ever fail. Install them yourself in a
+Python 3.10 environment alongside Synora:
 
 ```bash
-# Python 3.10 environment, separate from the one TorchWM is developed in.
-pip install torchwm
+# Python 3.10 environment, separate from the one Synora is developed in.
+pip install synora
 pip install "setuptools<66" wheel        # gym 0.21's sdist needs the old backend
 pip install minerl                       # or: pip install minedojo
 ```

@@ -1,10 +1,10 @@
 import pytest
-from torchwm.configs.jepa_config import JEPAConfig
+from synora.configs.jepa_config import JEPAConfig
 
 
 @pytest.mark.integration
 def test_jepa_construct_no_crash(tmp_path):
-    from torchwm.models.jepa_agent import JEPAAgent
+    from synora.models.jepa_agent import JEPAAgent
 
     config = JEPAConfig()
     config.folder = str(tmp_path / "jepa_integration_test")

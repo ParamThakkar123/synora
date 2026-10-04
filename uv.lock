@@ -4869,7 +4869,7 @@ wheels = [
 ]
 
 [[package]]
-name = "torchwm"
+name = "synora"
 source = { editable = "." }
 dependencies = [
     { name = "click" },
@@ -5087,7 +5087,7 @@ requires-dist = [
     { name = "torch", specifier = ">=2.1.0" },
     { name = "torchaudio", marker = "extra == 'ml'", specifier = ">=0.13.0" },
     { name = "torchvision", specifier = ">=0.16.0" },
-    { name = "torchwm", extras = ["brax", "bsuite", "dev", "dmc", "docs", "gym", "ml", "ml-agents", "mujoco", "robotics", "viz", "worldmodels"], marker = "extra == 'all'" },
+    { name = "synora", extras = ["brax", "bsuite", "dev", "dmc", "docs", "gym", "ml", "ml-agents", "mujoco", "robotics", "viz", "worldmodels"], marker = "extra == 'all'" },
     { name = "tqdm", specifier = ">=4.67.1" },
     { name = "umap-learn", marker = "extra == 'viz'", specifier = ">=0.5.11" },
     { name = "wandb", marker = "extra == 'ml'", specifier = ">=0.16.0" },

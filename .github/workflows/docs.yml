@@ -9,8 +9,8 @@ on:
     types: [opened, reopened, synchronize]
     paths:
       - "docs/**"
-      - "torchwm/**"
-      - "torchwm/**"
+      - "synora/**"
+      - "synora/**"
       - ".github/workflows/docs.yml"
   workflow_dispatch:
 
@@ -57,7 +57,7 @@ jobs:
 
       - name: Build HTML docs
         env:
-          SPHINX_HTML_BASEURL: ${{ github.event_name == 'pull_request' && format('https://paramthakkar123.github.io/torchwm/pr-preview/pr-{0}/', github.event.number) || 'https://paramthakkar123.github.io/torchwm/' }}
+          SPHINX_HTML_BASEURL: ${{ github.event_name == 'pull_request' && format('https://paramthakkar123.github.io/synora/pr-preview/pr-{0}/', github.event.number) || 'https://paramthakkar123.github.io/synora/' }}
         run: sphinx-build -b html docs/source docs/build/html
 
   build:
@@ -91,7 +91,7 @@ jobs:
 
       - name: Build HTML docs
         env:
-          SPHINX_HTML_BASEURL: ${{ github.event_name == 'pull_request' && format('https://paramthakkar123.github.io/torchwm/pr-preview/pr-{0}/', github.event.number) || 'https://paramthakkar123.github.io/torchwm/' }}
+          SPHINX_HTML_BASEURL: ${{ github.event_name == 'pull_request' && format('https://paramthakkar123.github.io/synora/pr-preview/pr-{0}/', github.event.number) || 'https://paramthakkar123.github.io/synora/' }}
         run: sphinx-build -b html docs/source docs/build/html
 
       - name: Ensure Pages serves Sphinx assets

@@ -26,20 +26,20 @@ import time
 from pathlib import Path
 
 # Running this file directly puts demos/ on sys.path, not the repo root, so
-# `torchwm` would not resolve from a checkout that has not been installed.
+# `synora` would not resolve from a checkout that has not been installed.
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 import cv2
 import numpy as np
 import torch
 
-from torchwm.inference.play_diamond import (
+from synora.inference.play_diamond import (
     imagine_next_frame,
     make_agent,
     to_display_frame,
 )
-from torchwm.training.train_diamond import _normalize_frame
-from torchwm.utils.utils import StreamingVideoWriter
+from synora.training.train_diamond import _normalize_frame
+from synora.utils.utils import StreamingVideoWriter
 
 
 def upscale(frame: np.ndarray, scale: int) -> np.ndarray:

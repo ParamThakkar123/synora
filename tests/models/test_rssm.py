@@ -1,6 +1,6 @@
 import pytest
 import torch
-from torchwm.models.rssm import RecurrentStateSpaceModel
+from synora.models.rssm import RecurrentStateSpaceModel
 
 
 class TestRecurrentStateSpaceModel:

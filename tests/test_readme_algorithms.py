@@ -24,9 +24,9 @@ def _table_names() -> set[str]:
 
 
 def test_readme_table_lists_every_registered_model():
-    import torchwm
+    import synora
 
-    registered = set(torchwm.list_models())
+    registered = set(synora.list_models())
     listed = _table_names()
 
     assert not registered - listed, f"models missing from the README table: {sorted(registered - listed)}"

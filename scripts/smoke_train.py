@@ -1,8 +1,8 @@
 import torch
 from omegaconf import OmegaConf
 
-from torchwm.configs.diamond_config import DiamondConfig
-from torchwm.training.train_diamond import DiamondAgent
+from synora.configs.diamond_config import DiamondConfig
+from synora.training.train_diamond import DiamondAgent
 
 
 def main(game: str, device: str):

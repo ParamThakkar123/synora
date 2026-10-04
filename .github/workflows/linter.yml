@@ -47,7 +47,7 @@ jobs:
             echo "No Python files changed; skipping Ruff."
             exit 0
           fi
-          # PRs that rename a package (world_models -> torchwm) still list the
+          # PRs that rename a package (world_models -> synora) still list the
           # deleted paths in the diff. Ruff errors with E902 if we pass them.
           existing=$(printf '%s\n' "$files" | while IFS= read -r f; do
             [ -n "$f" ] && [ -f "$f" ] && printf '%s\n' "$f"

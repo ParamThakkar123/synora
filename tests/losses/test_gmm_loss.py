@@ -1,7 +1,7 @@
 """Tests for the GMM loss function used in MDRNN training."""
 
 import torch
-from torchwm.losses.gmm_loss import gmm_loss
+from synora.losses.gmm_loss import gmm_loss
 
 
 class TestGMMLoss:

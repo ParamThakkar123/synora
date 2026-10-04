@@ -1,6 +1,6 @@
-# Contributing to TorchWM
+# Contributing to Synora
 
-We welcome contributions to TorchWM! This document outlines the guidelines for contributing to the project.
+We welcome contributions to Synora! This document outlines the guidelines for contributing to the project.
 
 ## Ways to Contribute
 
@@ -12,8 +12,8 @@ We welcome contributions to TorchWM! This document outlines the guidelines for c
 
 1. Fork the repository and clone your fork:
    ```bash
-   git clone https://github.com/your-username/torchwm.git
-   cd torchwm
+   git clone https://github.com/your-username/synora.git
+   cd synora
    ```
 
 2. Install dependencies with development extras:
@@ -52,7 +52,7 @@ pre-commit install
 
 ### Running the full suite with every backend installed
 
-With `torchwm[all]` installed, a single `pytest` process ends up holding torch,
+With `synora[all]` installed, a single `pytest` process ends up holding torch,
 jax, brax, and the Unity SDK resident at the same time. On a machine with
 limited RAM the run dies partway through with allocation errors — or, worse,
 with no summary line at all, because the process was killed rather than a test

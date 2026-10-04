@@ -1,6 +1,6 @@
 # DiT: Diffusion Transformer and Diffusion Models
 
-This page covers the diffusion-based models in TorchWM: DDPM for image generation,
+This page covers the diffusion-based models in Synora: DDPM for image generation,
 DiT for scalable transformer-based diffusion, and DIAMOND for diffusion world models
 in reinforcement learning.
 
@@ -16,7 +16,7 @@ Based on papers:
 ## Overview
 
 Diffusion models learn to generate data by reversing a gradual noising process.
-In TorchWM, diffusion models serve two purposes:
+In Synora, diffusion models serve two purposes:
 
 1. **Image/video generation** (DDPM, DiT): High-quality unconditional or conditional sample generation.
 2. **World models for RL** (DIAMOND): Diffusion-based dynamics models that predict future observations.
@@ -140,7 +140,7 @@ adaLN, which is otherwise the same block.
 Table 1 configs, selected by name and patch size:
 
 ```python
-from torchwm import DiT, dit_preset_config
+from synora import DiT, dit_preset_config
 
 model = DiT.from_config(dit_preset_config("DiT-XL", patch_size=2))
 ```
@@ -219,7 +219,7 @@ No cross-attention — DiT is typically unconditional or class-conditional via A
 ### Training
 
 ```python
-from torchwm import DiTConfig, get_dit_config
+from synora import DiTConfig, get_dit_config
 
 cfg = get_dit_config(
     DATASET="CIFAR10",
@@ -309,12 +309,12 @@ for sigma in sigmas[:-1]:
 return denoised
 ```
 
-## Usage in TorchWM
+## Usage in Synora
 
 ### DiT quick start
 
 ```python
-from torchwm import DiTConfig, get_dit_config
+from synora import DiTConfig, get_dit_config
 
 cfg = get_dit_config(DATASET="CIFAR10", BATCH=128, EPOCHS=100, IMG_SIZE=32)
 ```
@@ -322,7 +322,7 @@ cfg = get_dit_config(DATASET="CIFAR10", BATCH=128, EPOCHS=100, IMG_SIZE=32)
 ### DIAMOND quick start
 
 ```python
-from torchwm import DiamondConfig
+from synora import DiamondConfig
 
 cfg = DiamondConfig(preset="small")  # small, medium, large
 cfg.game = "Breakout-v5"
@@ -332,14 +332,14 @@ cfg.obs_size = 64
 ### DIAMOND CLI
 
 ```bash
-torchwm train diamond --config torchwm/configs/experiments/diamond.yaml \
+synora train diamond --config synora/configs/experiments/diamond.yaml \
     preset=small seed=1
 ```
 
 Or directly:
 
 ```bash
-python -m torchwm.training.train_diamond --game Breakout-v5 --preset small
+python -m synora.training.train_diamond --game Breakout-v5 --preset small
 ```
 
 ### DIAMOND Training Loop

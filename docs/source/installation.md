@@ -1,6 +1,6 @@
 # Installation
 
-TorchWM supports multiple installation methods depending on your use case.
+Synora supports multiple installation methods depending on your use case.
 
 ## From PyPI
 
@@ -8,18 +8,18 @@ For stable releases:
 
 ```bash
 # Core dependencies (torch, torchvision, torchaudio, gym, gymnasium, etc.)
-pip install torchwm
+pip install synora
 
 # With specific extras
-pip install torchwm[gym]       # Additional gym environments (huggingface-hub, pygame, autorom)
-pip install torchwm[ml-agents] # Unity ML-Agents support
-pip install torchwm[ml]        # TensorBoard, Weights & Biases, logging tools
-pip install torchwm[viz]       # FastAPI, Uvicorn, documentation tools
-pip install torchwm[docs]      # Sphinx and documentation tools
-pip install torchwm[dev]       # Testing and development tools (pytest, mypy, pre-commit)
+pip install synora[gym]       # Additional gym environments (huggingface-hub, pygame, autorom)
+pip install synora[ml-agents] # Unity ML-Agents support
+pip install synora[ml]        # TensorBoard, Weights & Biases, logging tools
+pip install synora[viz]       # FastAPI, Uvicorn, documentation tools
+pip install synora[docs]      # Sphinx and documentation tools
+pip install synora[dev]       # Testing and development tools (pytest, mypy, pre-commit)
 
 # Install multiple extras
-pip install torchwm[gym,ml-agents,dev]
+pip install synora[gym,ml-agents,dev]
 ```
 
 ### Available Extras
@@ -42,8 +42,8 @@ The minimal installation includes only: torch, torchvision, click, einops, tqdm,
 For the latest development version:
 
 ```bash
-git clone https://github.com/ParamThakkar123/torchwm.git
-cd torchwm
+git clone https://github.com/ParamThakkar123/synora.git
+cd synora
 
 # Core dependencies
 pip install -e .
@@ -54,7 +54,7 @@ pip install -e ".[gym,ml-agents,ml,viz,dev,docs]"
 
 ## PyTorch Build Selection
 
-TorchWM does not pin a single PyTorch wheel index. Install the PyTorch build that matches your platform (CPU, macOS, CUDA, ROCm, etc.) using the index recommended by the [PyTorch installation selector](https://pytorch.org/get-started/locally/).
+Synora does not pin a single PyTorch wheel index. Install the PyTorch build that matches your platform (CPU, macOS, CUDA, ROCm, etc.) using the index recommended by the [PyTorch installation selector](https://pytorch.org/get-started/locally/).
 
 ```bash
 # Example: CUDA 12.1 wheels. Replace the index for CPU, ROCm, or other CUDA versions.
@@ -66,20 +66,20 @@ pip install torch torchvision torchaudio --index-url https://download.pytorch.or
 
 ## Docker
 
-Build the default CPU image and run the TorchWM CLI:
+Build the default CPU image and run the Synora CLI:
 
 ```bash
 # Build
-docker build -t torchwm .
+docker build -t synora .
 
 # Show the CLI help
-docker run --rm torchwm
+docker run --rm synora
 
 # Run a specific command
-docker run --rm torchwm models list
+docker run --rm synora models list
 ```
 
-The Dockerfile installs PyTorch explicitly before installing TorchWM so the wheel
+The Dockerfile installs PyTorch explicitly before installing Synora so the wheel
 source is controlled by the `PYTORCH_INDEX_URL` build argument. The default uses
 CPU wheels. To build against a CUDA wheel index, pass the matching PyTorch index
 and run the container with the NVIDIA runtime:
@@ -87,14 +87,14 @@ and run the container with the NVIDIA runtime:
 ```bash
 docker build \
   --build-arg PYTORCH_INDEX_URL=https://download.pytorch.org/whl/cu121 \
-  -t torchwm:cu121 .
+  -t synora:cu121 .
 
-docker run --rm --gpus all torchwm:cu121 models list
+docker run --rm --gpus all synora:cu121 models list
 ```
 
 Additional optional dependency groups can be installed at build time with
-`TORCHWM_EXTRAS`, for example `--build-arg TORCHWM_EXTRAS=viz,ml`. Runtime data is
-stored under `/data/torchwm`, which you can persist with a bind mount or volume.
+`SYNORA_EXTRAS`, for example `--build-arg SYNORA_EXTRAS=viz,ml`. Runtime data is
+stored under `/data/synora`, which you can persist with a bind mount or volume.
 
 ## Verification
 
@@ -102,9 +102,9 @@ Verify your installation:
 
 ```python
 import torch
-import torchwm
+import synora
 
 print(f"PyTorch: {torch.__version__}")
 print(f"CUDA available: {torch.cuda.is_available()}")
-print("TorchWM imported successfully!")
+print("Synora imported successfully!")
 ```

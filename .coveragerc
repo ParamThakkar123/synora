@@ -1,6 +1,6 @@
 [run]
 branch = True
-source = torchwm, tools
+source = synora, tools
 
 [report]
 show_missing = True

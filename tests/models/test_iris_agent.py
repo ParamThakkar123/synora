@@ -3,8 +3,8 @@ from unittest.mock import patch
 import pytest
 import torch
 
-from torchwm.models.iris_agent import IRISAgent, compute_lambda_return
-from torchwm.configs.iris_config import IRISConfig
+from synora.models.iris_agent import IRISAgent, compute_lambda_return
+from synora.configs.iris_config import IRISConfig
 
 
 class TestComputeLambdaReturn:
@@ -246,7 +246,7 @@ class TestIRISAgentCheckpointSecurity:
         }
 
         with patch(
-            "torchwm.models.iris_agent.torch.load", return_value=checkpoint
+            "synora.models.iris_agent.torch.load", return_value=checkpoint
         ) as mock_load:
             agent.load("checkpoint.pt")
 
@@ -275,7 +275,7 @@ class TestIRISAgentCheckpointSecurity:
         stale = {"encoder": agent.encoder.state_dict()}
 
         with patch(
-            "torchwm.models.iris_agent.torch.load", return_value=stale
+            "synora.models.iris_agent.torch.load", return_value=stale
         ):
             with pytest.raises(RuntimeError, match="checkpoint format v1"):
                 agent.load("old.pt")

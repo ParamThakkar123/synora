@@ -1,5 +1,5 @@
 import pytest
-from torchwm.models.genie import Genie
+from synora.models.genie import Genie
 
 
 @pytest.mark.integration

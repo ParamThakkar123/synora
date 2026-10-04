@@ -11,16 +11,16 @@ import pytest
 import torch
 import torch.nn as nn
 
-from torchwm.datasets.diamond_dataset import (
+from synora.datasets.diamond_dataset import (
     ReplayBuffer,
     SequenceDataset,
     to_model_domain,
 )
-from torchwm.models.diffusion.DDPM import DDPM
-from torchwm.models.diffusion.actor_critic import ActorCriticNetwork
-from torchwm.models.diffusion.diamond_diffusion import TimestepEmbedding
-from torchwm.models.diffusion.reward_termination import RewardTerminationModel
-from torchwm.envs.diamond_atari import DiamondAtariWrapper
+from synora.models.diffusion.DDPM import DDPM
+from synora.models.diffusion.actor_critic import ActorCriticNetwork
+from synora.models.diffusion.diamond_diffusion import TimestepEmbedding
+from synora.models.diffusion.reward_termination import RewardTerminationModel
+from synora.envs.diamond_atari import DiamondAtariWrapper
 
 
 class TestDiffusionTargetIsOneStepAhead:
@@ -303,8 +303,8 @@ class TestImaginationOrdering:
 
     @staticmethod
     def _agent():
-        from torchwm.configs.diamond_config import DiamondConfig
-        from torchwm.training.train_diamond import DiamondAgent
+        from synora.configs.diamond_config import DiamondConfig
+        from synora.training.train_diamond import DiamondAgent
 
         gym = pytest.importorskip("gymnasium")
         del gym

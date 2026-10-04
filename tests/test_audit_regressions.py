@@ -16,7 +16,7 @@ REPO = Path(__file__).resolve().parents[1]
 
 
 def test_dreamer_config_with_env_instance_serialises():
-    from torchwm.configs.dreamer_config import DreamerConfig
+    from synora.configs.dreamer_config import DreamerConfig
 
     config = DreamerConfig(env_instance=object())
     text = config.to_yaml()
@@ -26,7 +26,7 @@ def test_dreamer_config_with_env_instance_serialises():
 
 
 def test_replay_buffer_separates_truncation_from_termination():
-    from torchwm.memory.dreamer_memory import ReplayBuffer
+    from synora.memory.dreamer_memory import ReplayBuffer
 
     buffer = ReplayBuffer(8, (1, 2, 2), 1, seq_len=2, batch_size=1)
     obs = {"image": np.zeros((1, 2, 2), dtype=np.uint8)}
@@ -51,14 +51,14 @@ def test_replay_buffer_separates_truncation_from_termination():
     ],
 )
 def test_true_termination(done, info, expected):
-    from torchwm.models.dreamer import _true_termination
+    from synora.models.dreamer import _true_termination
 
     assert _true_termination(done, info) is expected
 
 
 def test_time_limit_wrapper_truncation_is_not_stored_as_terminal():
-    from torchwm.envs.wrappers import TimeLimit
-    from torchwm.models.dreamer import _true_termination
+    from synora.envs.wrappers import TimeLimit
+    from synora.models.dreamer import _true_termination
 
     class Endless:
         def reset(self):
@@ -81,7 +81,7 @@ def test_time_limit_wrapper_truncation_is_not_stored_as_terminal():
 def test_inproc_training_errors_propagate_without_rerun(monkeypatch):
     from click.testing import CliRunner
 
-    from torchwm import cli
+    from synora import cli
 
     calls = []
 
@@ -104,7 +104,7 @@ def test_inproc_training_errors_propagate_without_rerun(monkeypatch):
 
 
 def test_inproc_argv_less_main_reads_sys_argv():
-    from torchwm import cli
+    from synora import cli
 
     seen = []
     cli._call_training_main(lambda: seen.append(list(sys.argv)), "mod", ["--env", "x"])
@@ -112,14 +112,14 @@ def test_inproc_argv_less_main_reads_sys_argv():
 
 
 def test_eval_and_play_entry_points_live_in_the_package():
-    from torchwm import cli
+    from synora import cli
 
     for module in (*cli.EVAL_MODULES.values(), *cli.PLAY_MODULES.values()):
-        assert module.startswith("torchwm."), module
+        assert module.startswith("synora."), module
 
 
 def test_benchmark_cli_does_not_import_hydra_at_module_level():
-    tree = ast.parse((REPO / "torchwm/benchmarks/cli.py").read_text(encoding="utf-8"))
+    tree = ast.parse((REPO / "synora/benchmarks/cli.py").read_text(encoding="utf-8"))
     top_level = set()
     for node in tree.body:
         if isinstance(node, ast.Import):
@@ -134,8 +134,8 @@ def test_benchmark_cli_does_not_import_hydra_at_module_level():
 
 
 def test_registered_env_backend_is_used_by_make_env(monkeypatch):
-    import torchwm
-    from torchwm.registry import deregister_env_backend, register_env_backend
+    import synora
+    from synora.registry import deregister_env_backend, register_env_backend
 
     module = type(sys)("fake_env_backend")
     module.make = lambda env_id, **kwargs: ("made", env_id, kwargs)
@@ -143,9 +143,9 @@ def test_registered_env_backend_is_used_by_make_env(monkeypatch):
 
     register_env_backend("fake-backend", factory_path="fake_env_backend:make")
     try:
-        assert "fake-backend" in torchwm.list_env_backends()
-        assert torchwm.get_env_backend_spec("fake_backend").name == "fake-backend"
-        assert torchwm.make_env("x", backend="fake-backend", k=1) == (
+        assert "fake-backend" in synora.list_env_backends()
+        assert synora.get_env_backend_spec("fake_backend").name == "fake-backend"
+        assert synora.make_env("x", backend="fake-backend", k=1) == (
             "made",
             "x",
             {"k": 1},
@@ -155,16 +155,16 @@ def test_registered_env_backend_is_used_by_make_env(monkeypatch):
 
 
 def test_dmc_backend_is_available():
-    import torchwm
+    import synora
 
-    assert "dmc" in torchwm.list_env_backends()
-    assert torchwm.get_env_backend_spec("dm_control").factory_path.endswith(
+    assert "dmc" in synora.list_env_backends()
+    assert synora.get_env_backend_spec("dm_control").factory_path.endswith(
         "make_dmc_env"
     )
 
 
 def test_dmc_rejects_underscore_task_names_clearly():
-    from torchwm.envs.dmc import DeepMindControlEnv
+    from synora.envs.dmc import DeepMindControlEnv
 
     with pytest.raises(ValueError, match="cartpole-balance"):
         DeepMindControlEnv("cartpole_balance", seed=0)
@@ -174,7 +174,7 @@ def test_dmc_rejects_underscore_task_names_clearly():
 
 
 def test_resolve_device_falls_back_when_unavailable(monkeypatch):
-    from torchwm.utils import device as device_utils
+    from synora.utils import device as device_utils
 
     monkeypatch.setattr(torch.cuda, "is_available", lambda: False)
     monkeypatch.setattr(device_utils, "mps_is_available", lambda: True)
@@ -188,7 +188,7 @@ def test_resolve_device_falls_back_when_unavailable(monkeypatch):
 
 
 def test_cuda_fallback_is_logged_not_silent(monkeypatch, caplog):
-    from torchwm.utils import device as device_utils
+    from synora.utils import device as device_utils
 
     monkeypatch.setattr(torch.cuda, "is_available", lambda: False)
     monkeypatch.setattr(device_utils, "mps_is_available", lambda: False)
@@ -211,7 +211,7 @@ def test_cuda_fallback_is_logged_not_silent(monkeypatch, caplog):
 
 
 def test_mujoco_gl_egl_default_is_linux_only():
-    source = (REPO / "torchwm/models/dreamer.py").read_text(encoding="utf-8")
+    source = (REPO / "synora/models/dreamer.py").read_text(encoding="utf-8")
     assert 'sys.platform.startswith("linux") and os.environ.get("MUJOCO_GL")' in source
 
 
@@ -220,7 +220,7 @@ def test_mujoco_gl_egl_default_is_linux_only():
 
 def test_no_unsafe_torch_load():
     offenders = []
-    for folder in ("torchwm", "scripts", "demos", "tools", "examples"):
+    for folder in ("synora", "scripts", "demos", "tools", "examples"):
         for path in (REPO / folder).rglob("*.py"):
             text = path.read_text(encoding="utf-8")
             if re.search(r"weights_only\s*=\s*False", text):
@@ -231,9 +231,9 @@ def test_no_unsafe_torch_load():
 # -- Genie / packaging ---------------------------------------------------------
 
 
-def test_no_top_level_evals_package_outside_torchwm():
+def test_no_top_level_evals_package_outside_synora():
     assert not (REPO / "evals").exists()
-    from torchwm.evals import PSNR  # noqa: F401
+    from synora.evals import PSNR  # noqa: F401
 
 
 # -- Video logging -------------------------------------------------------------
@@ -242,7 +242,7 @@ def test_no_top_level_evals_package_outside_torchwm():
 def test_video_frames_are_not_wrapped_and_gif_needs_no_moviepy(tmp_path, monkeypatch):
     from PIL import Image
 
-    from torchwm.utils.dreamer_utils import _video_to_uint8, _write_gif
+    from synora.utils.dreamer_utils import _video_to_uint8, _write_gif
 
     uint8_video = np.full((3, 4, 4, 3), 200, dtype=np.uint8)
     assert _video_to_uint8(uint8_video).max() == 200
@@ -261,7 +261,7 @@ def test_video_frames_are_not_wrapped_and_gif_needs_no_moviepy(tmp_path, monkeyp
 
 
 def test_installer_matches_dm_control_to_the_installed_mujoco():
-    from torchwm.install_dmc import (
+    from synora.install_dmc import (
         NEWEST_DM_CONTROL,
         dm_control_requirement,
         install_steps,
@@ -277,12 +277,12 @@ def test_installer_matches_dm_control_to_the_installed_mujoco():
 
     # mujoco is only installed when it is missing, or on --upgrade-mujoco.
     steps = install_steps()
-    if __import__("torchwm.install_dmc", fromlist=["x"]).installed_mujoco_version():
+    if __import__("synora.install_dmc", fromlist=["x"]).installed_mujoco_version():
         assert not any(arg.startswith("mujoco") for step in steps for arg in step)
 
 
 def test_installer_rejects_a_mujoco_older_than_any_known_dm_control():
-    from torchwm.install_dmc import dm_control_requirement
+    from synora.install_dmc import dm_control_requirement
 
     with pytest.raises(SystemExit, match="older than"):
         dm_control_requirement((3, 1, 0))
@@ -302,7 +302,7 @@ def test_uv_constraints_keep_brax_and_dmc_compatible():
 
 def test_missing_nvml_does_not_kill_training(monkeypatch, caplog):
     """A logging metric must never raise: torch.cuda.utilization needs NVML."""
-    from torchwm.utils import logging_utils
+    from synora.utils import logging_utils
 
     def no_nvml(index):
         raise ModuleNotFoundError("nvidia-ml-py does not seem to be installed")
@@ -324,7 +324,7 @@ def test_missing_nvml_does_not_kill_training(monkeypatch, caplog):
 
 
 def test_gpu_utilization_is_reported_when_nvml_works(monkeypatch):
-    from torchwm.utils import logging_utils
+    from synora.utils import logging_utils
 
     monkeypatch.setattr(torch.cuda, "is_available", lambda: True)
     monkeypatch.setattr(torch.cuda, "current_device", lambda: 0)

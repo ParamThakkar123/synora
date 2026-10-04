@@ -1,7 +1,7 @@
 """Tests for World Models configuration classes."""
 
 import pytest
-from torchwm.configs.wm_config import (
+from synora.configs.wm_config import (
     WMVAEConfig,
     WMMDNRNNConfig,
     WMControllerConfig,

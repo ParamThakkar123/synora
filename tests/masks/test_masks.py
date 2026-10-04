@@ -1,6 +1,6 @@
 import torch
 
-from torchwm.masks import DefaultCollator, MultiblockMaskCollator, RandomMaskCollator
+from synora.masks import DefaultCollator, MultiblockMaskCollator, RandomMaskCollator
 
 
 def _assert_mask_collection(mask_collection, batch_size, num_masks):

@@ -1,13 +1,13 @@
 # Vectorized Environments
 
-TorchWM provides two vectorization paths: ALE's native Atari vector environment and TorchWM's multiprocessing vector wrapper for arbitrary Gym-like environment factories.
+Synora provides two vectorization paths: ALE's native Atari vector environment and Synora's multiprocessing vector wrapper for arbitrary Gym-like environment factories.
 
 ## Native ALE vectorization
 
 Use `make_atari_vector_env()` for high-throughput Atari simulation backed by `ale_py.vector_env.AtariVectorEnv`:
 
 ```python
-from torchwm import make_atari_vector_env
+from synora import make_atari_vector_env
 
 vec_env = make_atari_vector_env(
     game="pong",
@@ -27,9 +27,9 @@ This path is specific to Atari and returns ALE's vector environment object direc
 `TorchVectorizedEnv` runs multiple environment instances across worker processes. It is useful for rollout collection in RL harnesses and algorithms that expect batched observations, rewards, done flags, and info dictionaries.
 
 ```python
-from torchwm import make_env
+from synora import make_env
 
-# For arbitrary Gym-like factories, create each environment through torchwm.
+# For arbitrary Gym-like factories, create each environment through synora.
 # Pass this factory to your vectorization utility of choice.
 
 def env_factory():
@@ -44,7 +44,7 @@ The total number of environments is `num_workers * envs_per_worker`.
 
 ## Batched stepping
 
-Actions passed to TorchWM vector environments should have a leading batch dimension equal to `total_envs`. The wrapper distributes each action to the corresponding worker environment and returns batched results.
+Actions passed to Synora vector environments should have a leading batch dimension equal to `total_envs`. The wrapper distributes each action to the corresponding worker environment and returns batched results.
 
 ```python
 actions = vec_env.action_space.sample()  # example only; shape depends on environment

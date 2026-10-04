@@ -1,8 +1,8 @@
-from torchwm.configs.dit_config import DiTConfig
-from torchwm.configs.dreamer_config import DreamerConfig
-from torchwm.configs.genie_config import GenieConfig, GenieSmallConfig
-from torchwm.configs.iris_config import IRISConfig
-from torchwm.configs.jepa_config import JEPAConfig
+from synora.configs.dit_config import DiTConfig
+from synora.configs.dreamer_config import DreamerConfig
+from synora.configs.genie_config import GenieConfig, GenieSmallConfig
+from synora.configs.iris_config import IRISConfig
+from synora.configs.jepa_config import JEPAConfig
 
 
 CONFIG_CASES = [

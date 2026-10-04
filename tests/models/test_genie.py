@@ -1,9 +1,9 @@
 import pytest
 import numpy as np
 import torch
-from torchwm.models import create_genie_small
-from torchwm.vision import create_video_tokenizer
-from torchwm.models.latent_action_model import create_latent_action_model
+from synora.models import create_genie_small
+from synora.vision import create_video_tokenizer
+from synora.models.latent_action_model import create_latent_action_model
 
 
 class TestVideoTokenizer:
@@ -181,7 +181,7 @@ class TestGenie:
 
 class TestGenieTraining:
     def test_training_step(self):
-        from torchwm.training.train_genie import create_genie_trainer, GenieConfig
+        from synora.training.train_genie import create_genie_trainer, GenieConfig
 
         config = GenieConfig()
         config.max_steps = 1
@@ -204,7 +204,7 @@ class TestGenieTraining:
 
 
     def test_video_dataset_loads_npy_clips(self, tmp_path):
-        from torchwm.training.train_genie import VideoDataset
+        from synora.training.train_genie import VideoDataset
 
         clip = np.random.rand(10, 48, 48, 3).astype(np.float32)
         path = tmp_path / "clip.npy"
@@ -324,7 +324,7 @@ class TestGenieInferActions:
 
 class TestGenieVideoTokenizer:
     def test_decode_indices(self):
-        from torchwm.vision import create_video_tokenizer
+        from synora.vision import create_video_tokenizer
 
         tokenizer = create_video_tokenizer(
             num_frames=8,

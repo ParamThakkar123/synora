@@ -1,7 +1,7 @@
 import torch
 
-from torchwm.configs.dit_config import DiTConfig
-from torchwm.models.diffusion.DiT import DiT, PatchEmbed, PatchUnEmbed, create_dit
+from synora.configs.dit_config import DiTConfig
+from synora.models.diffusion.DiT import DiT, PatchEmbed, PatchUnEmbed, create_dit
 
 
 def test_create_dit_builds_small_model_from_config_and_runs_forward():

@@ -1,26 +1,26 @@
-TorchWM CLI
+Synora CLI
 ===========
 
 The project exposes a small command-line interface for common developer tasks:
 
-- Run the CLI with: `python -m torchwm.cli <command>`; after installing the
-  package an installed entrypoint is available as `torchwm <command>`. Tests
-  and plugin integrations may invoke the top-level Click app (`torchwm.cli.app`)
-  or the console-script callable (`torchwm.cli.run`).
+- Run the CLI with: `python -m synora.cli <command>`; after installing the
+  package an installed entrypoint is available as `synora <command>`. Tests
+  and plugin integrations may invoke the top-level Click app (`synora.cli.app`)
+  or the console-script callable (`synora.cli.run`).
 - The CLI uses Click directly and lazy imports to keep startup fast; some
   commands require optional dependencies (listed below).
 
 Commands
 --------
 
-- `version` - Print the installed `torchwm` package version (or "unknown" if
+- `version` - Print the installed `synora` package version (or "unknown" if
   the package cannot be imported).
 
 - `envs list` - List built-in environment backends and example environment ids.
-  This reads the environment catalog from `torchwm.catalog` if available.
+  This reads the environment catalog from `synora.catalog` if available.
 
 - `datasets list [PATH]` - List dataset entries under `PATH`. If `PATH` is not
-  provided the command uses `TORCHWM_HOME` or defaults to `~/.torchwm`.
+  provided the command uses `SYNORA_HOME` or defaults to `~/.synora`.
 
 - `datasets convert <src> [--dest-format video] [--out-dir DIR]` - Convert a
   simple dataset file into another format. The initial implementation supports
@@ -36,9 +36,9 @@ Commands
 
 - `train <model> [extra args...] [--inproc]` - Launch an existing training
   entrypoint. The CLI maps simple model names to modules in
-  `torchwm.training` (e.g. `diamond`, `iris`, `planet`, `jepa`, `rssm`,
+  `synora.training` (e.g. `diamond`, `iris`, `planet`, `jepa`, `rssm`,
   `genie`). By default `train` spawns a subprocess running
-  `python -m torchwm.training.<name>` and forwards any extra args. Use
+  `python -m synora.training.<name>` and forwards any extra args. Use
   `--inproc` to attempt running the training entrypoint in-process (calls the
   module's `main()` if available). DIAMOND, IRIS, and JEPA accept
   `--config PATH`, `--print-config`, and OmegaConf/Hydra-style dot-list
@@ -75,12 +75,12 @@ Commands
   - `--record-fps` — video framerate (default 20)
 
 - `models list` - Print the known training entrypoints and (when available)
-  exported model names from `torchwm.models`.
+  exported model names from `synora.models`.
 
 Environment / optional dependencies
 ----------------------------------
 
-- TORCHWM_HOME - Directory used by `datasets list` when no path is provided.
+- SYNORA_HOME - Directory used by `datasets list` when no path is provided.
 
 - The following commands require optional packages which may not be installed
   in all environments:
@@ -94,73 +94,73 @@ Notes and examples
 - Example: show version
 
 ```bash
-torchwm version
+synora version
 ```
 
 - Example: list environments
 
 ```bash
-torchwm envs list
+synora envs list
 ```
 
 - Example: list datasets in default location
 
 ```bash
-torchwm datasets list
+synora datasets list
 ```
 
 - Example: convert a local HDF5 dataset to MP4 files
 
 ```bash
-torchwm datasets convert data/my_dataset.h5 --out-dir /tmp/videos
+synora datasets convert data/my_dataset.h5 --out-dir /tmp/videos
 ```
 
 - Example: collect 1000 steps from Pong and save as `pong.npz`
 
 ```bash
-torchwm collect --env ALE/Pong-v5 --steps 1000 --out pong.npz
+synora collect --env ALE/Pong-v5 --steps 1000 --out pong.npz
 ```
 
 - Example: run IRIS training with a library YAML config and a dot-list override
 
 ```bash
-torchwm train iris --config torchwm/configs/experiments/iris.yaml total_epochs=100
+synora train iris --config synora/configs/experiments/iris.yaml total_epochs=100
 ```
 
 - Example: inspect a composed JEPA config without starting training
 
 ```bash
-torchwm train jepa --config torchwm/configs/experiments/jepa.yaml optimization.epochs=50 --print-config
+synora train jepa --config synora/configs/experiments/jepa.yaml optimization.epochs=50 --print-config
 ```
 
 - Example: launch a DIAMOND preset from the unified training CLI
 
 ```bash
-torchwm train diamond --config torchwm/configs/experiments/diamond.yaml preset=small seed=3
+synora train diamond --config synora/configs/experiments/diamond.yaml preset=small seed=3
 ```
 
 - Example: evaluate a DIAMOND checkpoint
 
 ```bash
-torchwm eval --model diamond --checkpoint checkpoints/diamond/checkpoint.pt --game Breakout-v5
+synora eval --model diamond --checkpoint checkpoints/diamond/checkpoint.pt --game Breakout-v5
 ```
 
 - Example: linear-probe an I-JEPA checkpoint
 
 ```bash
-torchwm eval --model jepa --checkpoint results/jepa/jepa_run-latest.pth.tar \
+synora eval --model jepa --checkpoint results/jepa/jepa_run-latest.pth.tar \
     --root-path /data/imagenet --model-name vit_base --output probe.json
 ```
 
 - Example: interactively play inside a DIAMOND world model
 
 ```bash
-torchwm play --model diamond --checkpoint checkpoints/diamond/checkpoint.pt --game Breakout-v5 --record gameplay.mp4
+synora play --model diamond --checkpoint checkpoints/diamond/checkpoint.pt --game Breakout-v5 --record gameplay.mp4
 ```
 
 Maintaining this page
 ---------------------
 
-If you add or rename CLI commands in `torchwm.cli`, update this page with the
+If you add or rename CLI commands in `synora.cli`, update this page with the
 new usage, examples, and any additional optional dependencies.
 

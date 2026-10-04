@@ -1,6 +1,6 @@
 # Plugin Registry
 
-TorchWM's plugin registry lets you register custom world models and environment
+Synora's plugin registry lets you register custom world models and environment
 backends so they are discoverable through the standard factory API alongside
 built-in models.
 
@@ -20,7 +20,7 @@ built-in models.
 Use `register_world_model` as a decorator on your model class:
 
 ```python
-from torchwm import register_world_model
+from synora import register_world_model
 
 @register_world_model(
     "my-agent",
@@ -37,15 +37,15 @@ class MyAgent:
 After registration:
 
 ```python
-import torchwm
+import synora
 
 # Standard factory API works:
-cfg = torchwm.create_config("my-agent", learning_rate=1e-4)
-agent = torchwm.create_model("my-agent", cfg)
+cfg = synora.create_config("my-agent", learning_rate=1e-4)
+agent = synora.create_model("my-agent", cfg)
 
 # Discovery:
-print(torchwm.list_models())       # includes "my-agent"
-spec = torchwm.get_model_spec("my-agent")
+print(synora.list_models())       # includes "my-agent"
+spec = synora.get_model_spec("my-agent")
 print(spec.description)            # "My custom world model agent"
 ```
 
@@ -63,7 +63,7 @@ class SimpleModel:
 directly to the factory:
 
 ```python
-model = torchwm.create_model("simple-model", hidden_size=128)
+model = synora.create_model("simple-model", hidden_size=128)
 ```
 
 ### Without a class (direct registration)
@@ -71,7 +71,7 @@ model = torchwm.create_model("simple-model", hidden_size=128)
 Passing a Python import-path string skips the decorator pattern entirely:
 
 ```python
-from torchwm import register_world_model
+from synora import register_world_model
 
 register_world_model(
     "my-agent",
@@ -100,10 +100,10 @@ class MyAgent:
 All of the following resolve to the same model:
 
 ```python
-torchwm.create_model("my-agent")
-torchwm.create_model("my_agent")
-torchwm.create_model("custom")
-torchwm.create_model("ma")
+synora.create_model("my-agent")
+synora.create_model("my_agent")
+synora.create_model("custom")
+synora.create_model("ma")
 ```
 
 ### Overriding an existing model
@@ -129,7 +129,7 @@ This shadows the built-in `dreamer` spec. All existing scripts calling
 The same registry pattern works for environment backends:
 
 ```python
-from torchwm import register_env_backend
+from synora import register_env_backend
 
 register_env_backend(
     "custom-env",
@@ -145,20 +145,20 @@ Registered backends appear in `list_env_backends()` and work with
 ## Discovering registered models
 
 ```python
-import torchwm
+import synora
 
 # All models (built-in + registered):
-all_models = torchwm.list_models()
+all_models = synora.list_models()
 
 # Only externally registered models:
-ext_models = torchwm.list_registered_models()
+ext_models = synora.list_registered_models()
 
 # Spec lookup:
-spec = torchwm.get_model_spec("my-agent")
+spec = synora.get_model_spec("my-agent")
 print(spec.name, spec.import_path, spec.config_path, spec.description)
 
 # Remove a registration:
-torchwm.deregister_world_model("my-agent")
+synora.deregister_world_model("my-agent")
 ```
 
 ## Deprecating a model
@@ -167,7 +167,7 @@ Use the `deprecated_class` decorator to mark an older model as deprecated and
 point users to its replacement:
 
 ```python
-from torchwm import deprecated_class
+from synora import deprecated_class
 
 @deprecated_class(version="0.6.0", alternative="MyNewAgent")
 @register_world_model("old-agent", import_path="my_package.models:OldAgent")
@@ -183,10 +183,10 @@ DeprecationWarning: 'OldAgent' is deprecated since v0.6.0 — Use MyNewAgent ins
 ```
 
 Lower-level `deprecated_function` and generic `deprecated` decorators are also
-available from `torchwm`:
+available from `synora`:
 
 ```python
-from torchwm import deprecated, deprecated_function
+from synora import deprecated, deprecated_function
 ```
 
 ## Complete example
@@ -194,8 +194,8 @@ from torchwm import deprecated, deprecated_function
 ```python
 """my_package/models.py"""
 
-import torchwm
-from torchwm import register_world_model, deprecated_class
+import synora
+from synora import register_world_model, deprecated_class
 
 
 class MyConfig:
@@ -222,9 +222,9 @@ class ResearchModel:
 Usage in any experiment script:
 
 ```python
-import torchwm
+import synora
 
-model = torchwm.create_model(
+model = synora.create_model(
     "research-model",
     learning_rate=3e-4,    # overrides the default in MyConfig
 )

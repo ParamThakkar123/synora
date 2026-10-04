@@ -1,5 +1,5 @@
 import pytest
-from torchwm.configs.iris_config import IRISConfig
+from synora.configs.iris_config import IRISConfig
 
 
 @pytest.mark.integration

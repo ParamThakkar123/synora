@@ -8,7 +8,7 @@ if importlib.util.find_spec("gymnasium") is None and importlib.util.find_spec("g
 
 import numpy as np
 
-from torchwm.envs.dmc import DeepMindControlEnv
+from synora.envs.dmc import DeepMindControlEnv
 
 
 class _FakePhysics:

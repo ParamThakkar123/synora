@@ -14,7 +14,7 @@ The wrapper is model-agnostic. You can either expose common model methods (`env_
 import gymnasium as gym
 import numpy as np
 
-from torchwm import WorldModelEnv
+from synora import WorldModelEnv
 
 
 def transition(model, state, action):
@@ -68,7 +68,7 @@ env = WorldModelEnv(
 The direct factory is `make_world_model_env`:
 
 ```python
-from torchwm import make_world_model_env
+from synora import make_world_model_env
 
 env = make_world_model_env(
     trained_model,
@@ -81,9 +81,9 @@ env = make_world_model_env(
 The top-level factory also includes a `world-model` backend:
 
 ```python
-import torchwm
+import synora
 
-env = torchwm.make_env(
+env = synora.make_env(
     trained_model,
     backend="world-model",
     observation_space=obs_space,

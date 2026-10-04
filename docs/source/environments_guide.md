@@ -14,7 +14,7 @@ Environment Backends <environments/index>
 ## Quick start
 
 ```python
-from torchwm import DreamerConfig
+from synora import DreamerConfig
 
 cfg = DreamerConfig()
 cfg.env_backend = "dmc"
@@ -27,7 +27,7 @@ cfg.time_limit = 1000
 For direct environment construction, use the top-level factories:
 
 ```python
-from torchwm import (
+from synora import (
     DeepMindControlEnv,
     make_atari_env,
     make_brax_env,

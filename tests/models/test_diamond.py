@@ -7,29 +7,29 @@ if importlib.util.find_spec("gymnasium") is None and importlib.util.find_spec("g
 
 import torch
 import numpy as np
-from torchwm.utils.gym_compat import gym
+from synora.utils.gym_compat import gym
 from unittest.mock import MagicMock, patch
 
-from torchwm.configs.diamond_config import (
+from synora.configs.diamond_config import (
     DiamondConfig,
     ATARI_100K_GAMES,
     HUMAN_SCORES,
     RANDOM_SCORES,
 )
-from torchwm.envs.diamond_atari import DiamondAtariWrapper, make_diamond_atari_env
-from torchwm.datasets.diamond_dataset import ReplayBuffer
-from torchwm.models.diffusion.diamond_diffusion import (
+from synora.envs.diamond_atari import DiamondAtariWrapper, make_diamond_atari_env
+from synora.datasets.diamond_dataset import ReplayBuffer
+from synora.models.diffusion.diamond_diffusion import (
     DiffusionUNet,
     EDMPreconditioner,
     EulerSampler,
     AdaptiveGroupNorm,
     TimestepEmbedding,
 )
-from torchwm.models.diffusion.reward_termination import (
+from synora.models.diffusion.reward_termination import (
     RewardTerminationModel,
     RewardTerminationLoss,
 )
-from torchwm.models.diffusion.actor_critic import (
+from synora.models.diffusion.actor_critic import (
     ActorCriticNetwork,
     RLLoss,
 )
@@ -142,10 +142,10 @@ class TestDiamondAtariWrapper:
 
     def test_make_diamond_atari_env(self):
         # `make_diamond_atari_env` imports `gym` locally via
-        # `from torchwm.utils.gym_compat import gym`, so patch `gym.make`
+        # `from synora.utils.gym_compat import gym`, so patch `gym.make`
         # where it is actually looked up rather than on the env module (which
         # has no module-level `gym` attribute).
-        with patch("torchwm.utils.gym_compat.gym.make") as mock_make:
+        with patch("synora.utils.gym_compat.gym.make") as mock_make:
             mock_make.return_value = MagicMock()
             mock_make.return_value.__class__ = gym.Env
             env = make_diamond_atari_env("Breakout-v5", seed=42)

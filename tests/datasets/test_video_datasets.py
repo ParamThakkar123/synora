@@ -5,7 +5,7 @@ from pathlib import Path
 
 pytest.importorskip("cv2")
 pytest.importorskip("h5py")
-from torchwm.datasets import (
+from synora.datasets import (
     VideoFolderDataset,
     ImageFolderDataset,
     NumPyDataset,

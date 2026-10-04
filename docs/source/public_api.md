@@ -1,20 +1,20 @@
 # Public API Quick Reference
 
-TorchWM exposes `torchwm` as the friendly public namespace for both
+Synora exposes `synora` as the friendly public namespace for both
 application code and direct component imports. Use it for factory helpers,
 model classes, config classes, and environment constructors.
 
 ## Common Workflow
 
 ```python
-import torchwm
+import synora
 
 # Discover supported factories.
-models = torchwm.list_models()
-backends = torchwm.list_env_backends()
+models = synora.list_models()
+backends = synora.list_env_backends()
 
 # Configure and create a model in one step.
-agent = torchwm.create_model(
+agent = synora.create_model(
     "dreamer",
     env_backend="dmc",
     env="walker-walk",
@@ -22,7 +22,7 @@ agent = torchwm.create_model(
 )
 
 # Create standalone environments through a consistent backend selector.
-env = torchwm.make_env("CartPole-v1", backend="gym")
+env = synora.make_env("CartPole-v1", backend="gym")
 
 ```
 
@@ -40,10 +40,10 @@ env = torchwm.make_env("CartPole-v1", backend="gym")
 ## Direct Imports Still Work
 
 The factory API is a convenience layer. Advanced and research workflows can keep
-using direct imports from `torchwm`:
+using direct imports from `synora`:
 
 ```python
-from torchwm import DreamerAgent, DreamerConfig, RSSM
+from synora import DreamerAgent, DreamerConfig, RSSM
 
 cfg = DreamerConfig()
 cfg.env = "walker-walk"

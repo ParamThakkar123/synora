@@ -1,13 +1,13 @@
 # Training Guide
 
-This guide covers how to train world models in TorchWM.
+This guide covers how to train world models in Synora.
 
 ```{contents} Contents
 ```
 
 ## Overview
 
-TorchWM supports training multiple world model algorithms with a unified interface.
+Synora supports training multiple world model algorithms with a unified interface.
 
 ## Basic Training Flow
 
@@ -16,12 +16,12 @@ TorchWM supports training multiple world model algorithms with a unified interfa
 3. Initialize the agent
 4. Call `train()` and monitor logs/checkpoints
 
-The simplest path is the top-level `torchwm` API:
+The simplest path is the top-level `synora` API:
 
 ```python
-import torchwm
+import synora
 
-agent = torchwm.create_model(
+agent = synora.create_model(
     "dreamer",
     env_backend="dmc",
     env="walker-walk",
@@ -37,9 +37,9 @@ For research code, the lower-level config and agent classes remain available.
 Preferred application API:
 
 ```python
-import torchwm
+import synora
 
-agent = torchwm.create_model(
+agent = synora.create_model(
     "dreamer",
     env_backend="dmc",
     env="walker-walk",
@@ -51,7 +51,7 @@ agent.train()
 Equivalent direct API:
 
 ```python
-from torchwm import DreamerAgent, DreamerConfig
+from synora import DreamerAgent, DreamerConfig
 
 cfg = DreamerConfig()
 cfg.env_backend = "dmc"
@@ -65,9 +65,9 @@ agent.train()
 ## JEPA Training
 
 ```python
-import torchwm
+import synora
 
-agent = torchwm.create_model(
+agent = synora.create_model(
     "jepa",
     dataset="imagenet",
     batch_size=64,
@@ -83,9 +83,9 @@ addition to its config, so pass those as constructor overrides:
 
 ```python
 import torch
-import torchwm
+import synora
 
-agent = torchwm.create_model(
+agent = synora.create_model(
     "iris",
     env="ALE/Pong-v5",
     total_epochs=100,
@@ -99,7 +99,7 @@ agent = torchwm.create_model(
 For advanced users, implement custom training:
 
 ```python
-from torchwm import DreamerAgent, ReplayBuffer
+from synora import DreamerAgent, ReplayBuffer
 
 agent = DreamerAgent(cfg)
 memory = ReplayBuffer(
@@ -152,13 +152,13 @@ All training is controlled via config objects:
 ### Starter YAML configs
 
 DIAMOND, IRIS, and JEPA include starter experiment YAML files in
-`torchwm/configs/experiments/`. Use them with the unified CLI and optional
+`synora/configs/experiments/`. Use them with the unified CLI and optional
 OmegaConf/Hydra-style dot-list overrides:
 
 ```bash
-torchwm train diamond --config torchwm/configs/experiments/diamond.yaml preset=small seed=1
-torchwm train iris --config torchwm/configs/experiments/iris.yaml total_epochs=100 env=ALE/Breakout-v5
-torchwm train jepa --config torchwm/configs/experiments/jepa.yaml optimization.epochs=50 data.batch_size=128
+synora train diamond --config synora/configs/experiments/diamond.yaml preset=small seed=1
+synora train iris --config synora/configs/experiments/iris.yaml total_epochs=100 env=ALE/Breakout-v5
+synora train jepa --config synora/configs/experiments/jepa.yaml optimization.epochs=50 data.batch_size=128
 ```
 
 Add `--print-config` to inspect the composed configuration without launching a run.
@@ -207,7 +207,7 @@ tensorboard --logdir runs
 ### Weights & Biases
 ```python
 cfg.enable_wandb = True
-cfg.wandb_project = "torchwm"
+cfg.wandb_project = "synora"
 cfg.wandb_entity = "your-entity"
 ```
 
@@ -227,7 +227,7 @@ For multi-GPU training:
 
 ```python
 cfg.num_gpus = 4
-# TorchWM handles distributed setup automatically
+# Synora handles distributed setup automatically
 ```
 
 ## Best Practices

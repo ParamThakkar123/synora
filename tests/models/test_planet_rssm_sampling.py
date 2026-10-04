@@ -2,7 +2,7 @@
 
 import torch
 
-from torchwm.models.rssm import RecurrentStateSpaceModel
+from synora.models.rssm import RecurrentStateSpaceModel
 
 
 def _rssm():

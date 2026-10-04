@@ -1,7 +1,7 @@
-"""Tooling helpers for TorchWM.
+"""Tooling helpers for Synora.
 
-All heavyweight or optional helpers are exposed lazily so ``python -m torchwm.cli``
-and the installed ``torchwm`` command do not import documentation/browser tooling
+All heavyweight or optional helpers are exposed lazily so ``python -m synora.cli``
+and the installed ``synora`` command do not import documentation/browser tooling
 or pre-import the CLI module during package initialization.
 """
 

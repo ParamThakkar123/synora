@@ -6,7 +6,7 @@ import pytest
 
 torch = pytest.importorskip("torch")
 
-from torchwm.utils.throughput import (  # noqa: E402
+from synora.utils.throughput import (  # noqa: E402
     ThroughputMeter,
     measure_steps,
     tensor_nbytes,

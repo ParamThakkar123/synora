@@ -5,7 +5,7 @@ IRIS (Micheli et al., ICLR 2023) learns a discrete autoencoder and an
 autoregressive Transformer world model, then trains its actor-critic entirely
 in imagination.
 
-Requires the Gym extra for Atari: ``pip install torchwm[gym]``.
+Requires the Gym extra for Atari: ``pip install synora[gym]``.
 
 Usage::
 
@@ -15,9 +15,9 @@ Usage::
 import argparse
 import logging
 
-from torchwm.configs.iris_config import IRISConfig
-from torchwm.training.train_iris import IRISTrainer
-from torchwm.utils.device import default_device_name
+from synora.configs.iris_config import IRISConfig
+from synora.training.train_iris import IRISTrainer
+from synora.utils.device import default_device_name
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)

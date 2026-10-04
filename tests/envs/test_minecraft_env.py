@@ -18,7 +18,7 @@ if importlib.util.find_spec("gymnasium") is None:
 
 import gymnasium as gym
 
-from torchwm.envs.minecraft_env import (
+from synora.envs.minecraft_env import (
     MINECRAFT_ACTION_SET,
     MinecraftDiscreteEnv,
     _extract_pov,
@@ -230,8 +230,8 @@ class TestIRISCompatibility:
     def test_frames_survive_iris_preprocessing(self):
         """A MineDojo CHW frame must reach the replay buffer as 64x64 uint8 CHW."""
         pytest.importorskip("cv2")
-        from torchwm.configs.iris_config import IRISConfig
-        from torchwm.training.train_iris import IRISTrainer
+        from synora.configs.iris_config import IRISConfig
+        from synora.training.train_iris import IRISTrainer
 
         env = MinecraftDiscreteEnv(env=FakeMineDojoEnv())
         obs, _ = env.reset()

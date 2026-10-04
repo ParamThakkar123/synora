@@ -84,7 +84,7 @@ posterior and prior are within 3 nats, no further gradient pressure is applied.
 PlaNet stores **complete episodes** rather than individual transitions:
 
 ```python
-from torchwm import Memory, Episode
+from synora import Memory, Episode
 
 memory = Memory(size=100)           # keep at most 100 episodes
 episode = Episode()
@@ -103,21 +103,21 @@ sequences, lengths = memory.sample(batch_size=32, tracelen=50)
 | **Eviction** | FIFO per-episode (deque-based) |
 | **Time-major** | Optional via `time_first=True` |
 
-## Usage in TorchWM
+## Usage in Synora
 
 ### Direct construction
 
 ```python
-import torchwm
+import synora
 
-agent = torchwm.create_model("planet", env="CartPole-v1")
+agent = synora.create_model("planet", env="CartPole-v1")
 agent.train(epochs=100, steps_per_epoch=150)
 ```
 
 PlaNet takes parameters directly in its constructor (no separate config class):
 
 ```python
-from torchwm import Planet
+from synora import Planet
 
 agent = Planet(
     env="CartPole-v1",
