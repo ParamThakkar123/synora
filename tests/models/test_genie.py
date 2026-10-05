@@ -249,7 +249,9 @@ class TestGenieTraining:
         config.max_steps = 10
 
         trainer, _ = create_genie_trainer(config, torch.device("cpu"))
-        batch = torch.rand(2, 3, config.num_frames, config.image_size, config.image_size)
+        batch = torch.rand(
+            2, 3, config.num_frames, config.image_size, config.image_size
+        )
         for _ in range(3):
             trainer.train_step(batch)
 

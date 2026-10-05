@@ -122,7 +122,9 @@ from synora.models.dreamer import preprocess_obs as preprocess_obs
 from synora.models.dreamer_rssm import RSSM as DreamerRSSM
 from synora.models.dreamer_rssm import RSSM as RSSM
 from synora.models.dreamer_v1 import DreamerV1 as DreamerV1
+from synora.models.dreamer_v1 import DreamerV1Agent as DreamerV1Agent
 from synora.models.dreamer_v2 import DreamerV2 as DreamerV2
+from synora.models.dreamer_v2 import DreamerV2Agent as DreamerV2Agent
 from synora.models.dynamics_model import DynamicsModel as DynamicsModel
 from synora.models.dynamics_model import create_dynamics_model as create_dynamics_model
 from synora.models.genie import Genie as Genie
@@ -217,7 +219,9 @@ __all__ = [
     "DreamerStepModule",
     "DreamerStepper",
     "DreamerV1",
+    "DreamerV1Agent",
     "DreamerV2",
+    "DreamerV2Agent",
     "DreamerValueModel",
     "DynamicsModel",
     "DynamicsModelConfig",

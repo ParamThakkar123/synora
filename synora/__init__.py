@@ -51,6 +51,8 @@ _LAZY_EXPORTS: dict[str, str] = {
     "DreamerV1": "synora.models",
     "DreamerV2": "synora.models",
     "DreamerAgent": "synora.models",
+    "DreamerV1Agent": "synora.models",
+    "DreamerV2Agent": "synora.models",
     "Planet": "synora.models",
     "JEPAAgent": "synora.models",
     "IRISAgent": "synora.models",

@@ -1,7 +1,7 @@
 import torch
 import torch.distributions as distributions
 
-from synora.models.dreamer import Dreamer
+from synora.models.dreamer import Dreamer, DreamerAgent
 from synora.utils.dreamer_utils import symlog as _symlog
 
 
@@ -50,8 +50,11 @@ class DreamerV2(Dreamer):
     def _compute_actor_loss(
         self, returns: torch.Tensor, discounts: torch.Tensor
     ) -> torch.Tensor:
+        # Dynamics backpropagation (DreamerV2 Sec. 2.4, rho = 0 for continuous
+        # actions): the actor is trained through the lambda-returns, so they must
+        # keep their graph. Detaching them left the actor with no gradient.
         weight = discounts.detach()
-        target = _symlog(returns.detach())
+        target = _symlog(returns)
         return -torch.mean(weight * target)
 
     def _compute_value_loss(
@@ -64,3 +67,10 @@ class DreamerV2(Dreamer):
         target = _symlog(value_targ)
         log_prob = value_dist.log_prob(target)
         return -torch.mean(discounts * log_prob)
+
+
+class DreamerV2Agent(DreamerAgent):
+    """High-level agent that trains :class:`DreamerV2` (``create_model("dreamer-v2")``)."""
+
+    core_cls = DreamerV2
+    algo_name = "Dreamerv2"

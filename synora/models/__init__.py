@@ -29,6 +29,8 @@ __all__ = [
     "DreamerV1",
     "DreamerV2",
     "DreamerAgent",
+    "DreamerV1Agent",
+    "DreamerV2Agent",
     "Planet",
     "JEPAAgent",
     "IRISAgent",
@@ -71,6 +73,14 @@ def __getattr__(name: str) -> Any:
         from .dreamer_v2 import DreamerV2
 
         return DreamerV2
+    if name == "DreamerV1Agent":
+        from .dreamer_v1 import DreamerV1Agent
+
+        return DreamerV1Agent
+    if name == "DreamerV2Agent":
+        from .dreamer_v2 import DreamerV2Agent
+
+        return DreamerV2Agent
     if name == "DreamerAgent":
         from .dreamer import DreamerAgent
 

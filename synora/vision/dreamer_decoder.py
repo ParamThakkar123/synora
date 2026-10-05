@@ -189,12 +189,18 @@ class _TwoHotDistribution:
         encoded = encoder.encode(target)
         return (torch.log_softmax(self.logits, dim=-1) * encoded).sum(-1)
 
+    @property
     def mean(self) -> torch.Tensor:
+        # A property, as on torch distributions: Dreamer reads `dist.mean` for
+        # every reward/value head, so a method here made DreamerV2's actor loss
+        # receive a bound method instead of a tensor.
         from synora.utils.dreamer_utils import symexp
 
         probs = torch.softmax(self.logits, dim=-1)
         centers = self._centers.to(probs.device)
-        expectation = (probs * centers).sum(-1, keepdim=True)
+        # Logits are (..., *output_shape, K); reducing K leaves the head's own
+        # output shape, the same as the Gaussian heads' `mean`.
+        expectation = (probs * centers).sum(-1)
         return symexp(expectation)
 
 

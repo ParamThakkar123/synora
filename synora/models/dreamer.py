@@ -1137,8 +1137,16 @@ class DreamerAgent(ExportableAgentMixin):
     instantiates `Dreamer`, and exposes simple `train()` / `evaluate()` methods.
     """
 
+    #: The world model + actor-critic this agent trains. Versioned agents
+    #: (``DreamerV1Agent``, ``DreamerV2Agent``) override it.
+    core_cls: type[Dreamer] = Dreamer
+    #: Run-folder name used when the config leaves ``algo`` at its default.
+    algo_name: str | None = None
+
     def __init__(self, config: Any = None, **kwargs: Any) -> None:
         self.args = _coerce_dreamer_config(config)
+        if self.algo_name and self.args.algo == DreamerConfig.algo:
+            self.args.algo = self.algo_name
 
         self.last_latents_ref = kwargs.get("last_latents_ref", None)
 
@@ -1220,7 +1228,7 @@ class DreamerAgent(ExportableAgentMixin):
 
         obs_shape = self.train_env.observation_space["image"].shape
         action_size = self.train_env.action_space.shape[0]
-        self.dreamer = Dreamer(
+        self.dreamer = self.core_cls(
             self.args, obs_shape, action_size, device, self.args.restore
         )
 

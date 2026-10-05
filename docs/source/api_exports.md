@@ -36,6 +36,8 @@ generated from source, see {doc}`api_reference`.
 | `DreamerV1` | `synora.models.dreamer_v1` | DreamerV1 (alias for base Dreamer). |
 | `DreamerV2` | `synora.models.dreamer_v2` | DreamerV2 (symlog two-hot heads, balanced KL). |
 | `DreamerAgent` | `synora.models.dreamer` | High-level Dreamer agent with train/evaluate helpers. |
+| `DreamerV1Agent` | `synora.models.dreamer_v1` | `DreamerAgent` that trains DreamerV1 (`create_model("dreamer-v1")`). |
+| `DreamerV2Agent` | `synora.models.dreamer_v2` | `DreamerAgent` that trains DreamerV2 (`create_model("dreamer-v2")`). |
 | `Planet` | `synora.models.planet` | PlaNet: Deep Planning Network. |
 | `JEPAAgent` | `synora.models.jepa_agent` | I-JEPA agent for self-supervised visual representation learning. |
 | `IRISAgent` | `synora.models.iris_agent` | IRIS agent for sample-efficient RL with Transformers. |

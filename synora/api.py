@@ -42,14 +42,14 @@ MODEL_SPECS: dict[str, ModelSpec] = {
     ),
     "dreamer-v1": ModelSpec(
         name="dreamer-v1",
-        import_path="synora.models.dreamer_v1:DreamerV1",
+        import_path="synora.models.dreamer_v1:DreamerV1Agent",
         config_path="synora.configs.dreamer_config:DreamerConfig",
         description="DreamerV1 world model (normal Gaussian heads, standard KL).",
         aliases=("dreamerv1",),
     ),
     "dreamer-v2": ModelSpec(
         name="dreamer-v2",
-        import_path="synora.models.dreamer_v2:DreamerV2",
+        import_path="synora.models.dreamer_v2:DreamerV2Agent",
         config_path="synora.configs.dreamer_config:DreamerConfig",
         description="DreamerV2 world model (symlog two-hot heads, balanced KL).",
         aliases=("dreamerv2",),
