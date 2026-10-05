@@ -660,8 +660,12 @@ class DiamondAgent:
         # `obs_window` holds the L frames the diffusion model conditions on,
         # ending at the current observation x_i. `prev_actions` holds the L-1
         # actions that precede it; a_i is appended at sampling time.
+        # `action_history[:, j]` is the action taken at `obs_history[:, j]`, so
+        # those are a_0..a_{L-2}. The recorded a_{L-1} is dropped: the policy
+        # picks the action at x_{L-1} itself. Slicing `[:, 1:]` instead paired
+        # every conditioning frame with the action one step after it.
         obs_window = obs_history
-        prev_actions = action_history[:, 1:]
+        prev_actions = action_history[:, :-1]
 
         current_obs = obs_history[:, -1]
 
