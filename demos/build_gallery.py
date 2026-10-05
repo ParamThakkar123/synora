@@ -63,7 +63,6 @@ README_GIFS = {
     "iris_dream",
     "genie_replay",
     "dit_denoising",
-    "modular_rssm_dream",
 }
 
 
