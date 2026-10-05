@@ -56,7 +56,7 @@ def _action_size(space: Any) -> int:
     """Number of action dimensions from a Gym/Gymnasium-style space.
 
     Avoids importing ``gym`` / ``gymnasium`` at module load so paper-alignment
-    tests can import collection helpers on a base ``pip install synora``.
+    tests can import collection helpers on a base ``pip install synora-world``.
     """
     n = getattr(space, "n", None)
     if n is not None:

@@ -4,9 +4,10 @@ Synora is organized into focused modules so you can use only the pieces you need
 
 ## Quick Import (Public API)
 
-For applications and examples, prefer the installed package name, `synora`. It
-mirrors the Synora implementation package and exposes the same lazy public
-API without importing optional training backends until you use them.
+For applications and examples, import the `synora` package (installed from
+PyPI as `synora-world`). It mirrors the Synora implementation package and
+exposes the same lazy public API without importing optional training backends
+until you use them.
 
 ```python
 import synora

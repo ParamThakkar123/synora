@@ -196,7 +196,7 @@ class Mp4Writer:
         if self.codec != "h264":
             warnings.warn(
                 f"{self.path} is encoded as MPEG-4 Part 2 (mp4v), which browsers "
-                "cannot play. Install imageio-ffmpeg (`pip install synora[viz]`) "
+                "cannot play. Install imageio-ffmpeg (`pip install synora-world[viz]`) "
                 "for H.264 output.",
                 stacklevel=2,
             )
@@ -1093,7 +1093,6 @@ class StreamingVideoWriter:
     def __init__(
         self, path: str, fps: int = 20, frame_shape: Any = None, format: str = "mp4"
     ) -> None:
-
         self.path = path
         self.fps = fps
         self.frame_shape = frame_shape

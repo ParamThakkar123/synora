@@ -43,9 +43,7 @@ def _require_procgen_env_class() -> type[Any]:
     except ValueError:
         package_spec = None
     if package_spec is None and _PROCGEN_PACKAGE not in sys.modules:
-        install_hint = (
-            "Install it with `pip install synora[procgen]` or `pip install procgen`."
-        )
+        install_hint = "Install it with `pip install synora-world[procgen]` or `pip install procgen`."
         if sys.version_info >= (3, 11):
             install_hint += (
                 " Upstream Procgen wheels currently support Python 3.10 and below."

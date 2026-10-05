@@ -5,7 +5,7 @@ IRIS (Micheli et al., ICLR 2023) learns a discrete autoencoder and an
 autoregressive Transformer world model, then trains its actor-critic entirely
 in imagination.
 
-Requires the Gym extra for Atari: ``pip install synora[gym]``.
+Requires the Gym extra for Atari: ``pip install synora-world[gym]``.
 
 Usage::
 

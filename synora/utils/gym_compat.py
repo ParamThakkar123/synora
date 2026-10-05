@@ -21,7 +21,7 @@ def import_gym() -> Any:
     except ModuleNotFoundError as exc:
         raise ModuleNotFoundError(
             "Neither 'gymnasium' nor legacy 'gym' is installed. "
-            "Install `synora[gym]` to enable gym-compatible environments."
+            "Install `synora-world[gym]` to enable gym-compatible environments."
         ) from exc
     return legacy_gym
 
@@ -31,7 +31,7 @@ class _LazyGym:
 
     Importing modules that merely *reference* gym (type annotations, space
     construction inside methods) must not require the optional dependency to be
-    installed. The real import -- and its helpful ``synora[gym]`` error -- is
+    installed. The real import -- and its helpful ``synora-world[gym]`` error -- is
     therefore deferred until an attribute such as ``gym.spaces`` or ``gym.make``
     is actually accessed at runtime.
     """

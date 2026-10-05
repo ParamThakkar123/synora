@@ -74,7 +74,7 @@ synora benchmark \
   --device cpu
 ```
 
-The BSuite backend is optional. Install it with `pip install synora[bsuite]` or
+The BSuite backend is optional. Install it with `pip install synora-world[bsuite]` or
 `pip install bsuite` before running BSuite tasks. Synora wraps BSuite's compact
 `dm_env` observations as synthetic RGB images so the existing pixel-based
 Dreamer benchmark path can evaluate trained world-model agents.

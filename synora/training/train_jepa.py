@@ -105,7 +105,7 @@ def _require_wandb() -> Any:
         if importlib.util.find_spec("wandb") is None:
             raise ImportError(
                 "Weights & Biases is required for JEPA sweeps. "
-                "Install it with `pip install synora[ml]`."
+                "Install it with `pip install synora-world[ml]`."
             )
         _wandb = importlib.import_module("wandb")
     return _wandb

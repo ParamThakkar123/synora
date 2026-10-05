@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Changed
+- The PyPI distribution is now `synora-world`: install with
+  `pip install synora-world` (extras as `synora-world[gym]` and so on). The
+  import package, `import synora`, and the `synora` / `synora-train` CLI
+  commands are unchanged.
+
 ## [1.0.0] — 2026-10-04
 
 First stable release, and the first under the name **Synora** (formerly
@@ -205,6 +211,11 @@ before 1.0 instead of being carried through it:
   manual Python 3.10 install
 
 ### Fixed
+- `pip install synora[gym]` crashed the README quick start on gymnasium 1.3:
+  the `gym` extra required `pygame` directly while `gymnasium[box2d]` 1.3
+  depends on `pygame-ce`, and the two install over each other, so rendering
+  any classic-control environment died with an access violation. The extra
+  no longer requires pygame itself; gymnasium brings the renderer it needs.
 - FID and FVD could stall for minutes: `scipy.linalg.sqrtm` ran a recursive
   Schur decomposition on the product of two 2048x2048 covariances, which is
   rank-deficient whenever there are fewer samples than feature dimensions.

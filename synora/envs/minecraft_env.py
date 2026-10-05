@@ -110,7 +110,7 @@ def _require_package(package: str, extra: str) -> Any:
     if spec is None and package not in sys.modules:
         raise ImportError(
             f"Minecraft support requires the optional '{package}' package. "
-            f"Install it with `pip install synora[{extra}]` or "
+            f"Install it with `pip install synora-world[{extra}]` or "
             f"`pip install {package}`. Note that it also needs a Java runtime "
             "(JDK 8 for MineRL) and launches a real Minecraft client, so it "
             "cannot run in a headless container without a virtual display."

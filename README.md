@@ -7,8 +7,8 @@
 
 <div align="center">
   <p>
-    <a href="https://pypi.org/project/synora/"><img alt="PyPI version" src="https://badge.fury.io/py/synora.svg"></a>
-    <a href="https://pypi.org/project/synora/"><img alt="PyPI downloads" src="https://img.shields.io/pypi/dm/synora.svg"></a>
+    <a href="https://pypi.org/project/synora-world/"><img alt="PyPI version" src="https://badge.fury.io/py/synora-world.svg"></a>
+    <a href="https://pypi.org/project/synora-world/"><img alt="PyPI downloads" src="https://img.shields.io/pypi/dm/synora-world.svg"></a>
     <a href="https://opensource.org/licenses/MIT"><img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-yellow.svg"></a>
     <a href="https://paramthakkar123.github.io/synora/"><img alt="Documentation" src="https://img.shields.io/badge/docs-link-blue.svg"></a>
     <a href="https://github.com/paramthakkar123/synora/actions/workflows/test.yml"><img alt="CI" src="https://github.com/paramthakkar123/synora/actions/workflows/test.yml/badge.svg"></a>
@@ -17,7 +17,7 @@
 </div>
 
 > **Formerly TorchWM.** The project was renamed to Synora for 1.0 and is
-> published on PyPI as `synora`: `pip install synora`, then `import synora`.
+> published on PyPI as `synora-world`: `pip install synora-world`, then `import synora`.
 
 **Synora brings the major world-model families together under a single PyTorch API.** Train Dreamer, PlaNet, JEPA, IRIS, DIAMOND, DiT, and Genie agents through `create_config` / `create_model` / `make_env`, or drop down to their encoders, decoders, and latent-dynamics backbones to compose your own architecture. Environment adapters (Gym/Gymnasium, DeepMind Control, MuJoCo, Brax, Atari, Unity ML-Agents) and ONNX / TorchScript / TensorRT export come built in.
 
@@ -26,20 +26,20 @@
 ```bash
 # Install the core package from PyPI.
 # This keeps environment integrations and experiment logging optional.
-pip install synora
+pip install synora-world
 
 # With extras
-pip install synora[gym]       # Gym/Gymnasium environments (runnable quick start)
-pip install synora[dmc]       # DeepMind Control Suite (walker-walk, cheetah-run, ...)
+pip install synora-world[gym]       # Gym/Gymnasium environments (runnable quick start)
+pip install synora-world[dmc]       # DeepMind Control Suite (walker-walk, cheetah-run, ...)
                                # On CPython 3.13 also run: python -m synora.install_dmc
-pip install synora[worldmodels] # Classic World Models (ConvVAE + CMA-ES controller)
-pip install synora[ml-agents] # Unity ML-Agents
-pip install synora[ml]        # TensorBoard, W&B logging
-pip install synora[viz]       # Latent-space visualization (plotly, UMAP)
-pip install synora[dev]       # Testing and linting
+pip install synora-world[worldmodels] # Classic World Models (ConvVAE + CMA-ES controller)
+pip install synora-world[ml-agents] # Unity ML-Agents
+pip install synora-world[ml]        # TensorBoard, W&B logging
+pip install synora-world[viz]       # Latent-space visualization (plotly, UMAP)
+pip install synora-world[dev]       # Testing and linting
 
 # Or add it to a uv-managed project.
-uv add synora
+uv add synora-world
 ```
 
 Synora depends on PyTorch but does not force a single PyTorch wheel index. If you need a specific PyTorch build, install or add the PyTorch packages with the index recommended for your platform by the [PyTorch installation selector](https://pytorch.org/get-started/locally/):
@@ -50,7 +50,7 @@ uv add torch torchvision torchaudio --index https://download.pytorch.org/whl/cu1
 ```
 
 Use the friendly top-level API for the common path. The example below runs on a
-base `pip install synora[gym]` — no simulator downloads required:
+base `pip install synora-world[gym]` — no simulator downloads required:
 
 ```python
 import synora
@@ -69,7 +69,7 @@ agent.train()
 ```
 
 To train on DeepMind Control tasks such as `walker-walk`, install the DMC extra
-(`pip install synora[dmc]`) and use the default backend:
+(`pip install synora-world[dmc]`) and use the default backend:
 
 ```python
 agent = synora.create_model("dreamer", env="walker-walk", total_steps=1_000_000)
@@ -194,7 +194,7 @@ or `synora.create_config(...)`. Run `synora.list_models()` for the live list.
 
 - [Issue Tracker](https://github.com/paramthakkar123/synora/issues)
 - [Discussions](https://github.com/paramthakkar123/synora/discussions)
-- [PyPI](https://pypi.org/project/synora/)
+- [PyPI](https://pypi.org/project/synora-world/)
 - [Contributing Guide](CONTRIBUTING.md)
 - [Code of Conduct](CODE_OF_CONDUCT.md)
 

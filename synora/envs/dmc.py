@@ -81,7 +81,7 @@ class DeepMindControlEnv:
             raise ModuleNotFoundError(
                 "The DeepMind Control backend requires the 'dm_control' package, "
                 "which is not installed. Install it with:\n\n"
-                "    pip install synora[dmc]          # Python <= 3.12\n"
+                "    pip install synora-world[dmc]          # Python <= 3.12\n"
                 "    python -m synora.install_dmc     # any version, incl. 3.13\n\n"
                 "On CPython 3.13 the extra alone is not enough: dm-control pins "
                 "`labmaze`, which has no 3.13 wheel and builds with Bazel. The "

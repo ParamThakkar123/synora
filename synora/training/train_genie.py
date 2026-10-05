@@ -168,7 +168,7 @@ class VideoDataset(Dataset):
         except ImportError as exc:
             raise ImportError(
                 f"Loading {path.name} needs OpenCV. Install it with "
-                "`pip install synora[viz]`, or pass .npy/.pt clips instead."
+                "`pip install synora-world[viz]`, or pass .npy/.pt clips instead."
             ) from exc
         cap = cv2.VideoCapture(str(path))
         if not cap.isOpened():

@@ -2,7 +2,7 @@
 
 The Gym/Gymnasium backend adapts standard Gym-like environments to Synora's image-first training interface. It accepts either an environment ID string or a pre-built environment instance and returns observations as `{"image": ...}`.
 
-Install: `pip install synora[gym]` for Gymnasium extras.
+Install: `pip install synora-world[gym]` for Gymnasium extras.
 
 ## Main APIs
 

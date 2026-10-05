@@ -23,7 +23,7 @@ A clear and concise description of what you expected to happen.
 - Python version: [e.g. 3.11, 3.13]
 - PyTorch version: [e.g. 2.1.0, 2.6.0]
 - Synora version: [e.g. 0.4.2]
-- Installed extras: [e.g. `pip install synora[gym,ml]`, or "base install"]
+- Installed extras: [e.g. `pip install synora-world[gym,ml]`, or "base install"]
 - Environment backend: [e.g. gym, dmc, mujoco, atari, procgen, brax, bsuite, ml-agents, world-model]
 - Model / algorithm: [e.g. dreamer-v2, iris, diamond, genie — output of `synora.list_models()` if unsure]
 

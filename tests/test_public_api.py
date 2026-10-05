@@ -9,7 +9,7 @@ from synora import api
 def _missing_optional_dependency(exc):
     """True when ``exc`` is an extra that simply is not installed here.
 
-    A base ``pip install synora`` has no gymnasium, ale_py, cv2 and so on, so
+    A base ``pip install synora-world`` has no gymnasium, ale_py, cv2 and so on, so
     the env-adapter exports legitimately fail to import. Those are not export
     map bugs. A ``ModuleNotFoundError`` naming a ``synora`` module *is* a bug -
     it means the map points somewhere that does not exist.
