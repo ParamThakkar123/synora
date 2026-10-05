@@ -244,7 +244,10 @@ class GenieTrainer:
                 return step / warmup_steps
             else:
                 progress = (step - warmup_steps) / (max_steps - warmup_steps)
-                return 0.5 * (1.0 + np.cos(np.pi * progress))
+                # A plain float: an np.float64 lands in the scheduler's
+                # `_last_lr`, and checkpoints holding it then refuse to load
+                # under `torch.load(weights_only=True)`.
+                return float(0.5 * (1.0 + np.cos(np.pi * progress)))
 
         return torch.optim.lr_scheduler.LambdaLR(self.optimizer, lr_lambda)
 
@@ -519,6 +522,11 @@ def create_genie_trainer(
         latent_action_depth=config.action_encoder_depth,
         action_pooling=config.action_pooling,
         window_attention_heads=config.window_attention_heads,
+        # Only synora.configs' Genie configs carry head counts; without passing
+        # them a `tokenizer_num_heads` override was recorded in config.yaml but
+        # the model was always built with 16 heads.
+        tokenizer_num_heads=getattr(config, "tokenizer_num_heads", 16),
+        action_num_heads=getattr(config, "action_num_heads", 16),
     )
 
     trainer = GenieTrainer(model, config, device)

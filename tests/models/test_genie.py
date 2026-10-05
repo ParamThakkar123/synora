@@ -202,6 +202,62 @@ class TestGenieTraining:
         assert "total_loss" in losses
         assert losses["total_loss"] > 0
 
+    @staticmethod
+    def _tiny_small_config():
+        from synora.configs.genie_config import GenieSmallConfig
+
+        config = GenieSmallConfig()
+        config.num_frames = 4
+        config.image_size = 16
+        config.tokenizer_vocab_size = 16
+        config.tokenizer_encoder_dim = 32
+        config.tokenizer_decoder_dim = 32
+        config.tokenizer_encoder_depth = 1
+        config.tokenizer_decoder_depth = 1
+        config.action_encoder_dim = 32
+        config.action_decoder_dim = 32
+        config.action_encoder_depth = 1
+        config.dynamics_dim = 32
+        config.dynamics_depth = 1
+        config.dynamics_num_heads = 2
+        return config
+
+    def test_trainer_builds_the_configured_head_counts(self):
+        from synora.training.train_genie import create_genie_trainer
+
+        config = self._tiny_small_config()
+        config.tokenizer_num_heads = 2
+        config.action_num_heads = 4
+
+        _, model = create_genie_trainer(config, torch.device("cpu"))
+
+        def heads(module):
+            return {m.num_heads for m in module.modules() if hasattr(m, "num_heads")}
+
+        assert heads(model.video_tokenizer) == {2}
+        assert heads(model.latent_action_model) == {4}
+
+    def test_checkpoint_after_warmup_loads_with_weights_only(self, tmp_path):
+        """Past warmup the cosine schedule must not leave numpy scalars in the
+        scheduler state, which `torch.load(weights_only=True)` rejects."""
+        from synora.training.train_genie import create_genie_trainer
+
+        config = self._tiny_small_config()
+        config.tokenizer_num_heads = 2
+        config.action_num_heads = 2
+        config.warmup_steps = 1
+        config.max_steps = 10
+
+        trainer, _ = create_genie_trainer(config, torch.device("cpu"))
+        batch = torch.rand(2, 3, config.num_frames, config.image_size, config.image_size)
+        for _ in range(3):
+            trainer.train_step(batch)
+
+        path = tmp_path / "genie.pt"
+        trainer.save_checkpoint(str(path))
+        trainer.load_checkpoint(str(path))
+        assert trainer.global_step == 3
+
     def test_video_dataset_loads_npy_clips(self, tmp_path):
         from synora.training.train_genie import VideoDataset
 
