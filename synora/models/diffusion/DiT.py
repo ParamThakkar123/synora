@@ -16,7 +16,7 @@ from synora.blocks.mhsa import MultiHeadSelfAttention
 from synora.models.diffusion.DDPM import DDPM
 from synora.datasets.cifar10 import make_cifar10
 from synora.datasets.imagenet1k import make_imagenet1k, make_imagefolder
-from torchvision.transforms import RandomHorizontalFlip, Compose, ToTensor
+from torchvision.transforms import Compose, Normalize, RandomHorizontalFlip, ToTensor
 from synora.transforms.image import make_transforms
 from synora.utils.train_utils import EarlyStopping
 import time
@@ -724,7 +724,16 @@ class DiT(ExportableAgentMixin, nn.Module):
             print("WARNING: CUDA not available, using CPU")
 
         if dataset.lower() == "cifar10":
-            transform = Compose([RandomHorizontalFlip(), ToTensor()])
+            # Scale to [-1, 1], the range the DDPM forward process, the sampler's
+            # final clamp and every `(x + 1) / 2` display path assume. Plain
+            # ToTensor() trained on [0, 1] and sampled washed-out images.
+            transform = Compose(
+                [
+                    RandomHorizontalFlip(),
+                    ToTensor(),
+                    Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
+                ]
+            )
         else:
             # Default the crop to the model's own input size. These are two
             # independent knobs, and a mismatch does not fail until the first
@@ -1016,10 +1025,11 @@ class DiT(ExportableAgentMixin, nn.Module):
             # Until this existed, weights were written only after the whole
             # epoch loop returned, so a run stopped at epoch 399 of 400 -- by a
             # timeout, an OOM or Ctrl+C -- left nothing on disk at all.
-            if checkpoint_every > 0 and (epoch + 1) % checkpoint_every == 0:
+            # `epoch` already counts from 1.
+            if checkpoint_every > 0 and epoch % checkpoint_every == 0:
                 os.makedirs(workdir, exist_ok=True)
                 periodic = ema_model if ema_model is not None else model
-                periodic_path = Path(workdir) / f"dit_model_epoch{epoch + 1}.pth"
+                periodic_path = Path(workdir) / f"dit_model_epoch{epoch}.pth"
                 torch.save(periodic.state_dict(), periodic_path)
                 print(f"Wrote {periodic_path}")
         print("Training Complete.")
@@ -1048,6 +1058,11 @@ class DiT(ExportableAgentMixin, nn.Module):
             TIMESTEPS=timesteps,
             EMA=ema,
             EMA_DECAY=ema_decay,
+            # Without these a class-conditional checkpoint reloads as an
+            # unconditional model and fails on the missing y_embedder weights.
+            NUM_CLASSES=num_classes,
+            CLASS_DROPOUT_PROB=class_dropout_prob,
+            LEARN_SIGMA=learn_sigma,
             WORKDIR=workdir,
             ROOT_PATH=root_path,
         )
@@ -1059,8 +1074,17 @@ class DiT(ExportableAgentMixin, nn.Module):
         model_to_sample = ema_model if ema_model is not None else model
         model_to_sample.eval()
         with torch.no_grad():
+            sample_labels = (
+                torch.arange(16, device=device) % num_classes
+                if num_classes > 0
+                else None
+            )
             samples = ddpm.sample(
-                model_to_sample, n=16, img_size=img_size, channels=channels
+                model_to_sample,
+                n=16,
+                img_size=img_size,
+                channels=channels,
+                y=sample_labels,
             )
             os.makedirs(workdir, exist_ok=True)
             save_image((samples + 1) / 2, f"{workdir}/generated_samples.png", nrow=4)

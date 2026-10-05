@@ -60,12 +60,17 @@ class DDPM(ExportableAgentMixin, nn.Module):
         return s1 * x_start + s2 * noise
 
     def p_sample(
-        self, model: nn.Module, x_t: torch.Tensor, t: torch.Tensor
+        self,
+        model: nn.Module,
+        x_t: torch.Tensor,
+        t: torch.Tensor,
+        y: torch.Tensor | None = None,
     ) -> torch.Tensor:
         # Predict noise. Models that also learn the covariance (e.g. DiT with
         # learn_sigma) emit 2C channels -- noise first, then the covariance
-        # parameterisation -- so keep only the noise half here.
-        eps = model(x_t, t)
+        # parameterisation -- so keep only the noise half here. `y` carries
+        # class labels for class-conditional models.
+        eps = model(x_t, t) if y is None else model(x_t, t, y)
         if eps.shape[1] == 2 * x_t.shape[1]:
             eps = eps[:, : x_t.shape[1]]
         # Compute x0_hat
@@ -88,12 +93,17 @@ class DDPM(ExportableAgentMixin, nn.Module):
 
     @torch.no_grad()
     def sample(
-        self, model: nn.Module, n: int, img_size: int, channels: int
+        self,
+        model: nn.Module,
+        n: int,
+        img_size: int,
+        channels: int,
+        y: torch.Tensor | None = None,
     ) -> torch.Tensor:
         x = torch.randn(n, channels, img_size, img_size).to(
             next(model.parameters()).device
         )
         for i in reversed(range(self.timesteps)):
             t = torch.full((n,), i, dtype=torch.long).to(x.device)
-            x = self.p_sample(model, x, t)
+            x = self.p_sample(model, x, t, y)
         return x.clamp(-1.0, 1.0)
