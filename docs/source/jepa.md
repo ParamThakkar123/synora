@@ -6,6 +6,19 @@ hand-crafted data augmentations.
 
 Based on paper: [I-JEPA: Image-based Joint Embedding Predictive Architecture](https://arxiv.org/abs/2301.08243) (Bardes et al., 2023)
 
+## See it in action
+
+```{raw} html
+<figure class="demo-media">
+  <img src="_static/gallery/jepa_neighbours.png" alt="Test images (left) and their nearest training images in I-JEPA feature space. Neither the encoder nor the search used labels." loading="lazy">
+  <figcaption>Test images (left) and their nearest training images in I-JEPA feature space. Neither the encoder nor the search used labels.</figcaption>
+</figure>
+```
+
+Trained from scratch in one to two hours on a 4 GB laptop GPU with
+`python demos/jepa_demo.py train`, then recorded with `python demos/jepa_demo.py record`.
+More clips are in the {ref}`gallery <gallery-i-jepa>`.
+
 ```{contents} Contents
 :depth: 3
 ```

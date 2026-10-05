@@ -13,6 +13,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   import package, `import synora`, and the `synora` / `synora-train` CLI
   commands are unchanged.
 
+### Added
+- A demo per model in `demos/` (Dreamer, DreamerV2, PlaNet, ModularRSSM,
+  DIAMOND, IRIS, Genie, DiT, I-JEPA). Each trains from scratch on a 4 GB laptop
+  GPU in one to two hours and records video of what it learned;
+  `demos/run_all.py` reproduces all of them.
+- A documentation gallery with the recorded clips, plus a "See it in action"
+  section on every algorithm page and in the README.
+- `DreamerV1Agent` and `DreamerV2Agent`, the agents behind
+  `create_model("dreamer-v1")` / `create_model("dreamer-v2")`.
+
+### Fixed
+- `create_model("dreamer-v1")` and `create_model("dreamer-v2")` raised a
+  `TypeError`; they now build agents that train their own version.
+- DreamerV2 could not train: its two-hot heads exposed `mean` as a method with
+  an extra trailing axis, and its actor loss detached the lambda-returns, so the
+  actor received no gradient.
+- DIAMOND's imagination paired each conditioning frame with the action taken one
+  step later, so actor-critic training rolled the diffusion model forward on
+  shifted actions.
+- The TinyWorlds loader read each game's flat `(N, H, W, 3)` frame stream as
+  grayscale clips, so every Genie sample was one scrambled frame; clip files
+  also had channels interleaved across frames.
+- Genie checkpoints saved after warmup failed to load with `weights_only=True`,
+  and the trainer ignored `tokenizer_num_heads` / `action_num_heads`.
+- DiT trained on CIFAR-10 in `[0, 1]` instead of `[-1, 1]`, a class-conditional
+  run crashed at its final sampling step, its `config.yaml` omitted the class
+  settings needed to reload it, and periodic checkpoints were one epoch late.
+
 ## [1.0.0] — 2026-10-04
 
 First stable release, and the first under the name **Synora** (formerly

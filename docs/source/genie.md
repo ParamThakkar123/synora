@@ -6,6 +6,19 @@ without requiring any action labels.
 
 Based on paper: [Genie: Generative Interactive Environments](https://arxiv.org/abs/2402.15391) (Bruce et al., 2024)
 
+## See it in action
+
+```{raw} html
+<figure class="demo-media">
+  <video src="_static/gallery/genie_replay.mp4" autoplay loop muted playsinline preload="metadata"></video>
+  <figcaption>Left: a real Sonic clip. Right: Genie generating the clip from its first frame alone, driven by latent actions it inferred without any action labels.</figcaption>
+</figure>
+```
+
+Trained from scratch in one to two hours on a 4 GB laptop GPU with
+`python demos/genie_demo.py train`, then recorded with `python demos/genie_demo.py record`.
+More clips are in the {ref}`gallery <gallery-genie>`.
+
 ```{contents} Contents
 :depth: 3
 ```

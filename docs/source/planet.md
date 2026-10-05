@@ -9,6 +9,19 @@ dynamics model to select the best action.
 PlaNet introduced the **RSSM** (Recurrent State-Space Model) that later became
 the backbone of Dreamer and other latent-dynamics agents.
 
+## See it in action
+
+```{raw} html
+<figure class="demo-media">
+  <video src="_static/gallery/planet_dream.mp4" autoplay loop muted playsinline preload="metadata"></video>
+  <figcaption>Left: the real environment. Right: PlaNet's latent model predicting open loop from the actions its CEM planner chooses.</figcaption>
+</figure>
+```
+
+Trained from scratch in one to two hours on a 4 GB laptop GPU with
+`python demos/planet_demo.py train`, then recorded with `python demos/planet_demo.py record`.
+More clips are in the {ref}`gallery <gallery-planet>`.
+
 ```{contents} Contents
 ```
 

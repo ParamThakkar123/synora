@@ -3,6 +3,19 @@
 IRIS (Imagination with auto-Regression over an Inner Speech) is an implementation of the paper
 "Transformers are Sample-Efficient World Models" (Micheli et al., 2023).
 
+## See it in action
+
+```{raw} html
+<figure class="demo-media">
+  <video src="_static/gallery/iris_dream.mp4" autoplay loop muted playsinline preload="metadata"></video>
+  <figcaption>The IRIS policy acting inside the Transformer's imagination of Pong, starting from a single real frame.</figcaption>
+</figure>
+```
+
+Trained from scratch in one to two hours on a 4 GB laptop GPU with
+`python demos/iris_demo.py train`, then recorded with `python demos/iris_demo.py record`.
+More clips are in the {ref}`gallery <gallery-iris>`.
+
 ```{contents} Contents
 :depth: 3
 ```

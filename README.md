@@ -21,6 +21,30 @@
 
 **Synora brings the major world-model families together under a single PyTorch API.** Train Dreamer, PlaNet, JEPA, IRIS, DIAMOND, DiT, and Genie agents through `create_config` / `create_model` / `make_env`, or drop down to their encoders, decoders, and latent-dynamics backbones to compose your own architecture. Environment adapters (Gym/Gymnasium, DeepMind Control, MuJoCo, Brax, Atari, Unity ML-Agents) and ONNX / TorchScript / TensorRT export come built in.
 
+## See it in action
+
+Every model ships with a demo that trains from scratch on a laptop GPU (RTX
+3050, 4 GB) in one to two hours and records what it learned. These are short
+runs, not paper-scale results: the point is to show what each model does.
+
+<table>
+<tr>
+<td width="50%" valign="top"><a href="https://paramthakkar123.github.io/synora/gallery.html#gallery-dreamer"><img src="https://raw.githubusercontent.com/ParamThakkar123/synora/main/docs/source/_static/gallery/dreamer_dream.gif" alt="Dreamer" width="100%"></a><br><b>Dreamer</b>: the real environment (left) beside the world model imagining it open loop (right).</td>
+<td width="50%" valign="top"><a href="https://paramthakkar123.github.io/synora/gallery.html#gallery-diamond"><img src="https://raw.githubusercontent.com/ParamThakkar123/synora/main/docs/source/_static/gallery/diamond_dream.gif" alt="DIAMOND" width="100%"></a><br><b>DIAMOND</b>: Breakout in the emulator beside a diffusion model generating every frame itself.</td>
+</tr>
+<tr>
+<td width="50%" valign="top"><a href="https://paramthakkar123.github.io/synora/gallery.html#gallery-genie"><img src="https://raw.githubusercontent.com/ParamThakkar123/synora/main/docs/source/_static/gallery/genie_replay.gif" alt="Genie" width="100%"></a><br><b>Genie</b>: a real Sonic clip beside Genie regenerating it from the first frame, with actions it learned from unlabelled video.</td>
+<td width="50%" valign="top"><a href="https://paramthakkar123.github.io/synora/gallery.html#gallery-iris"><img src="https://raw.githubusercontent.com/ParamThakkar123/synora/main/docs/source/_static/gallery/iris_dream.gif" alt="IRIS" width="100%"></a><br><b>IRIS</b>: a policy playing Pong inside a Transformer world model made of discrete tokens.</td>
+</tr>
+<tr>
+<td width="50%" valign="top"><a href="https://paramthakkar123.github.io/synora/gallery.html#gallery-planet"><img src="https://raw.githubusercontent.com/ParamThakkar123/synora/main/docs/source/_static/gallery/planet_dream.gif" alt="PlaNet" width="100%"></a><br><b>PlaNet</b>: a latent model predicting the future while a CEM planner searches inside it.</td>
+<td width="50%" valign="top"><a href="https://paramthakkar123.github.io/synora/gallery.html#gallery-dit"><img src="https://raw.githubusercontent.com/ParamThakkar123/synora/main/docs/source/_static/gallery/dit_denoising.gif" alt="DiT" width="100%"></a><br><b>DiT</b>: a class-conditional Diffusion Transformer denoising CIFAR-10, one row per class.</td>
+</tr>
+</table>
+
+More clips, learning curves and the commands to reproduce each one are in the
+[gallery](https://paramthakkar123.github.io/synora/gallery.html); the scripts live in [`demos/`](demos/).
+
 ## Quick Start
 
 ```bash

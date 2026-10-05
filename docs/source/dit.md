@@ -9,6 +9,19 @@ Based on papers:
 - [Scalable Diffusion Models with Transformers](https://arxiv.org/abs/2212.09748) (Peebles & Xie, 2023)
 - [DIAMOND: Diffusion as a Model of Environment Dreams](https://arxiv.org/abs/2403.05187) (Alonso et al., 2024)
 
+## See it in action
+
+```{raw} html
+<figure class="demo-media">
+  <video src="_static/gallery/dit_denoising.mp4" autoplay loop muted playsinline preload="metadata"></video>
+  <figcaption>A class-conditional DiT-S/4 denoising CIFAR-10 samples from pure noise, one row per class.</figcaption>
+</figure>
+```
+
+Trained from scratch in one to two hours on a 4 GB laptop GPU with
+`python demos/dit_demo.py train`, then recorded with `python demos/dit_demo.py record`.
+More clips are in the {ref}`gallery <gallery-dit>`.
+
 ```{contents} Contents
 :depth: 3
 ```

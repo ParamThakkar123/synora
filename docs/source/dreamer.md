@@ -7,6 +7,19 @@ Based on papers:
 - [Dreamer: Learning Latent Dynamics for Planning from Pixels](https://arxiv.org/abs/1912.01603) (DreamerV1, Hafner et al., 2019)
 - [Mastering Atari with Discrete World Models](https://arxiv.org/abs/2010.02193) (DreamerV2, Hafner et al., 2020)
 
+## See it in action
+
+```{raw} html
+<figure class="demo-media">
+  <video src="_static/gallery/dreamer_dream.mp4" autoplay loop muted playsinline preload="metadata"></video>
+  <figcaption>Left: the real environment (DeepMind Control cartpole swing-up). Right: Dreamer's world model, given 5 real frames and then imagining the rest open loop from the policy's actions.</figcaption>
+</figure>
+```
+
+Trained from scratch in one to two hours on a 4 GB laptop GPU with
+`python demos/dreamer_demo.py train`, then recorded with `python demos/dreamer_demo.py record`.
+More clips are in the {ref}`gallery <gallery-dreamer>`.
+
 ```{contents} Contents
 :depth: 3
 ```

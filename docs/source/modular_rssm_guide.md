@@ -4,6 +4,19 @@ The Modular RSSM lets you mix and match encoder, backbone, and decoder
 components for world-model research. The standard Dreamer RSSM is a fixed
 architecture; the modular variant exposes every piece as a pluggable component.
 
+## See it in action
+
+```{raw} html
+<figure class="demo-media">
+  <video src="_static/gallery/modular_rssm_dream.mp4" autoplay loop muted playsinline preload="metadata"></video>
+  <figcaption>The same encoder and decoder with a GRU and an LSTM backbone, both predicting open loop next to the real frames.</figcaption>
+</figure>
+```
+
+Trained from scratch in one to two hours on a 4 GB laptop GPU with
+`python demos/modular_rssm_demo.py train`, then recorded with `python demos/modular_rssm_demo.py record`.
+More clips are in the {ref}`gallery <gallery-modular-rssm>`.
+
 ```{contents} Contents
 :depth: 3
 ```

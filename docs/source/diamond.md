@@ -4,6 +4,19 @@ DIAMOND (**DI**ffusion **A**s a **M**odel **O**f e**N**vironment **D**reams) is 
 
 Use DIAMOND when you want to study model-based RL with pixel-space generation rather than latent-state prediction. Dreamer learns compact latent dynamics; IRIS predicts discrete visual tokens; DIAMOND keeps the environment model in observation space and uses a denoising diffusion model to synthesize future frames.
 
+## See it in action
+
+```{raw} html
+<figure class="demo-media">
+  <video src="_static/gallery/diamond_dream.mp4" autoplay loop muted playsinline preload="metadata"></video>
+  <figcaption>Left: Breakout in the emulator. Right: the diffusion world model generating every frame from its own previous outputs, following the same actions.</figcaption>
+</figure>
+```
+
+Trained from scratch in one to two hours on a 4 GB laptop GPU with
+`python demos/diamond_demo.py train`, then recorded with `python demos/diamond_demo.py record`.
+More clips are in the {ref}`gallery <gallery-diamond>`.
+
 ```{contents} Contents
 ```
 
