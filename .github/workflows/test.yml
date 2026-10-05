@@ -200,7 +200,7 @@ jobs:
         python -m pip install --upgrade pip
         pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
 
-        wheels=(dist/synora-*.whl)
+        wheels=(dist/synora_world-*.whl)
         if [ "${#wheels[@]}" -ne 1 ]; then
           echo "Expected exactly one synora wheel in dist/, found ${#wheels[@]}"
           ls -la dist
@@ -214,6 +214,15 @@ jobs:
         synora version
         popd >/dev/null
 
+        # Resolve the gym extra fresh, as `pip install synora-world[gym]` does, and
+        # render the README's quick-start env. A dependency clash (pygame and
+        # pygame-ce in one environment) once crashed exactly here, while the
+        # locked dev environment and the unit tests looked fine.
+        pip install "${wheels[0]}[gym]"
+        pushd "$RUNNER_TEMP" >/dev/null
+        python -X faulthandler -c "import gymnasium as gym; e = gym.make('Pendulum-v1', render_mode='rgb_array'); e.reset(seed=0); print(e.render().shape)"
+        popd >/dev/null
+
     - name: Install sdist into a clean virtualenv and smoke test it (Unix)
       if: runner.os != 'Windows'
       shell: bash
@@ -223,7 +232,7 @@ jobs:
         python -m pip install --upgrade pip
         pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
 
-        sdists=(dist/synora-*.tar.gz)
+        sdists=(dist/synora_world-*.tar.gz)
         if [ "${#sdists[@]}" -ne 1 ]; then
           echo "Expected exactly one synora sdist in dist/, found ${#sdists[@]}"
           ls -la dist
@@ -245,7 +254,7 @@ jobs:
         & "$env:RUNNER_TEMP\synora-wheel-smoke\Scripts\python.exe" -m pip install --upgrade pip
         & "$env:RUNNER_TEMP\synora-wheel-smoke\Scripts\pip.exe" install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
 
-        $wheels = Get-ChildItem dist\synora-*.whl
+        $wheels = Get-ChildItem dist\synora_world-*.whl
         if ($wheels.Count -ne 1) {
           Write-Host "Expected exactly one synora wheel in dist/, found $($wheels.Count)"
           Get-ChildItem dist
@@ -259,6 +268,13 @@ jobs:
         & "$env:RUNNER_TEMP\synora-wheel-smoke\Scripts\synora.exe" version
         Pop-Location
 
+        # See the Unix step: render the quick-start env from a fresh gym extra.
+        & "$env:RUNNER_TEMP\synora-wheel-smoke\Scripts\pip.exe" install "$($wheels[0].FullName)[gym]"
+        Push-Location $env:RUNNER_TEMP
+        & "$env:RUNNER_TEMP\synora-wheel-smoke\Scripts\python.exe" -X faulthandler -c "import gymnasium as gym; e = gym.make('Pendulum-v1', render_mode='rgb_array'); e.reset(seed=0); print(e.render().shape)"
+        if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+        Pop-Location
+
     - name: Install sdist into a clean virtualenv and smoke test it (Windows)
       if: runner.os == 'Windows'
       shell: pwsh
@@ -267,7 +283,7 @@ jobs:
         & "$env:RUNNER_TEMP\synora-sdist-smoke\Scripts\python.exe" -m pip install --upgrade pip
         & "$env:RUNNER_TEMP\synora-sdist-smoke\Scripts\pip.exe" install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
 
-        $sdists = Get-ChildItem dist\synora-*.tar.gz
+        $sdists = Get-ChildItem dist\synora_world-*.tar.gz
         if ($sdists.Count -ne 1) {
           Write-Host "Expected exactly one synora sdist in dist/, found $($sdists.Count)"
           Get-ChildItem dist

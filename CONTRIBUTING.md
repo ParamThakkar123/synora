@@ -52,7 +52,7 @@ pre-commit install
 
 ### Running the full suite with every backend installed
 
-With `synora[all]` installed, a single `pytest` process ends up holding torch,
+With `synora-world[all]` installed, a single `pytest` process ends up holding torch,
 jax, brax, and the Unity SDK resident at the same time. On a machine with
 limited RAM the run dies partway through with allocation errors — or, worse,
 with no summary line at all, because the process was killed rather than a test

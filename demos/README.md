@@ -36,7 +36,7 @@ Optional extras the demo paths use:
 |---|---|
 | `omegaconf` | `train_iris`, `scripts/smoke_train.py` |
 | `tensorboard` | `--tensorboard` on Dreamer runs |
-| `dm_control` | `walker-walk` and other DMC tasks (`pip install synora[dmc]`) |
+| `dm_control` | `walker-walk` and other DMC tasks (`pip install synora-world[dmc]`) |
 | `ale-py` | Atari for DIAMOND/IRIS (already installed) |
 
 ## 1. Train

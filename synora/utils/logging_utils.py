@@ -292,7 +292,7 @@ def collect_system_stats(device: torch.device | str | None = None) -> dict[str, 
                 logger.warning(
                     "GPU utilization is unavailable (%s); logging the other "
                     "system metrics without it. Install `nvidia-ml-py` (or "
-                    "`synora[ml]`) to record it.",
+                    "`synora-world[ml]`) to record it.",
                     exc,
                 )
                 _mark_nvml_warned()

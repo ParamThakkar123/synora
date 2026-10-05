@@ -1,6 +1,6 @@
 """Install the DeepMind Control backend, including on CPython 3.13.
 
-``pip install synora[dmc]`` covers Python 3.12 and below. On 3.13 it installs
+``pip install synora-world[dmc]`` covers Python 3.12 and below. On 3.13 it installs
 the pure-Python ``labmaze-new`` but leaves ``dm_control`` out, because
 dm-control pins the ``labmaze`` distribution whose newest release (1.0.6)
 publishes wheels only through CPython 3.12. Resolving that pin on 3.13 builds

@@ -1,5 +1,5 @@
 [project]
-name = "synora"
+name = "synora-world"
 dynamic = ["version"]
 description = "A Modular Pytorch Based library for training world models"
 readme = "README.md"
@@ -40,9 +40,14 @@ synora-train = "synora.cli:run_train"
 
 [project.optional-dependencies]
 gym = [
+    # No direct pygame requirement: gymnasium's box2d extra brings its own
+    # renderer, which is `pygame` up to gymnasium 1.2 and `pygame-ce` from 1.3.
+    # Both install the same `pygame` package directory, so also requiring
+    # `pygame` here installed the two over each other on gymnasium 1.3, and
+    # rendering any classic-control env (the README's Pendulum quick start)
+    # crashed the interpreter with an access violation.
     "gymnasium[box2d]>=1.2.2",
     "huggingface-hub>=0.23.0",
-    "pygame>=2.6.1",
     # ALE itself, not just the ROM installer. `autorom` alone leaves
     # `gym.make("ALE/Breakout-v5")` raising NamespaceNotFound, because the
     # namespace is registered by `ale_py`, which every Atari path here
@@ -178,7 +183,7 @@ dev = [
     "ruff==0.16.8",
 ]
 all = [
-    "synora[gym,dmc,viz,worldmodels,ml,ml-agents,mujoco,robotics,brax,bsuite,dev,docs]",
+    "synora-world[gym,dmc,viz,worldmodels,ml,ml-agents,mujoco,robotics,brax,bsuite,dev,docs]",
 ]
 docs = [
     "sphinx>=8.0.0,<9.0.0",

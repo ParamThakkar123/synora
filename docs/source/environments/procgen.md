@@ -2,7 +2,7 @@
 
 The Procgen backend adapts the `procgen.ProcgenEnv` vector API to Synora's single-environment image interface for procedurally generated benchmark games such as CoinRun, Maze, Heist, and StarPilot.
 
-Install: `pip install procgen` manually. Upstream Procgen wheels only support Python <= 3.10, while Synora requires Python >= 3.11, so there is no `synora[procgen]` extra.
+Install: `pip install procgen` manually. Upstream Procgen wheels only support Python <= 3.10, while Synora requires Python >= 3.11, so there is no `synora-world[procgen]` extra.
 
 ## Main APIs
 

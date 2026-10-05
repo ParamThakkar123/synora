@@ -22,7 +22,7 @@ The adapter supports:
 - Deterministic RGB feature-band images for vector observations.
 - Raw vector observations in `info["vector_observation"]` for diagnostics.
 
-Install: `pip install synora[brax]`
+Install: `pip install synora-world[brax]`
 
 Dreamer uses `cfg.env_backend = "brax"` to select this backend. See {doc}`../dreamer` for the full Dreamer config reference. Brax-specific fields (`brax_backend`, `brax_jit`, `brax_suppress_warp_warnings`) are forwarded from `DreamerConfig` to `BraxImageEnv`.
 
@@ -79,7 +79,7 @@ If you see an import error for `brax`, `jax`, or `jax.numpy`, install the Brax
 extra:
 
 ```bash
-pip install synora[brax]
+pip install synora-world[brax]
 ```
 
 ### Backend selection

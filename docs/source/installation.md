@@ -8,25 +8,25 @@ For stable releases:
 
 ```bash
 # Core dependencies (torch, torchvision, torchaudio, gym, gymnasium, etc.)
-pip install synora
+pip install synora-world
 
 # With specific extras
-pip install synora[gym]       # Additional gym environments (huggingface-hub, pygame, autorom)
-pip install synora[ml-agents] # Unity ML-Agents support
-pip install synora[ml]        # TensorBoard, Weights & Biases, logging tools
-pip install synora[viz]       # FastAPI, Uvicorn, documentation tools
-pip install synora[docs]      # Sphinx and documentation tools
-pip install synora[dev]       # Testing and development tools (pytest, mypy, pre-commit)
+pip install synora-world[gym]       # Additional gym environments (Box2D and classic-control rendering, ALE, huggingface-hub, autorom)
+pip install synora-world[ml-agents] # Unity ML-Agents support
+pip install synora-world[ml]        # TensorBoard, Weights & Biases, logging tools
+pip install synora-world[viz]       # FastAPI, Uvicorn, documentation tools
+pip install synora-world[docs]      # Sphinx and documentation tools
+pip install synora-world[dev]       # Testing and development tools (pytest, mypy, pre-commit)
 
 # Install multiple extras
-pip install synora[gym,ml-agents,dev]
+pip install synora-world[gym,ml-agents,dev]
 ```
 
 ### Available Extras
 
 | Extra | Description |
 |-------|-------------|
-| `gym` | Additional Gym environment dependencies (huggingface-hub, pygame, autorom) |
+| `gym` | Additional Gym environment dependencies (Box2D and classic-control rendering, ALE, huggingface-hub, autorom) |
 | `ml-agents` | Unity ML-Agents support |
 | `ml` | TensorBoard, Weights & Biases, and logging tools |
 | `viz` | Latent-space visualization (opencv-python, umap-learn, scikit-learn, plotly) |

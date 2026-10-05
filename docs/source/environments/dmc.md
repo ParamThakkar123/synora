@@ -5,7 +5,7 @@ The DeepMind Control Suite (DMC) backend is the default Dreamer environment path
 ## Install
 
 ```bash
-pip install "synora[dmc]"          # pip, Python 3.12 and below
+pip install "synora-world[dmc]"          # pip, Python 3.12 and below
 python -m synora.install_dmc       # pip or uv, any version, including 3.13
 uv sync --extra dmc-uv              # uv, any version
 ```

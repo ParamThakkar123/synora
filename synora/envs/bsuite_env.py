@@ -117,7 +117,7 @@ class BSuiteImageEnv:
         if importlib.util.find_spec("bsuite") is None:
             raise ImportError(
                 "BSuite support requires the optional 'bsuite' package. "
-                "Install it with `pip install bsuite` or `pip install synora[bsuite]`."
+                "Install it with `pip install bsuite` or `pip install synora-world[bsuite]`."
             )
         bsuite = importlib.import_module("bsuite")
         return bsuite.load_from_id(bsuite_id)

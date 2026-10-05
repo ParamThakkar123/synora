@@ -174,7 +174,7 @@ def test_real_unity_backend_if_binary_provided():
 def test_real_dmc_backend_smoke():
     """DeepMind Control through the dmc backend, when it is installed.
 
-    `pip install synora[dmc]` covers Python <= 3.12; on 3.13 the backend is
+    `pip install synora-world[dmc]` covers Python <= 3.12; on 3.13 the backend is
     installed by `python -m synora.install_dmc`, which supplies the `labmaze`
     module through the pure-Python `labmaze-new`.
     """

@@ -5,7 +5,7 @@
 Install from PyPI:
 
 ```bash
-pip install synora
+pip install synora-world
 ```
 
 Install from source:
@@ -59,8 +59,8 @@ import synora
 print(synora.list_models())
 print(synora.list_env_backends())
 
-# Runs on `pip install synora[gym]`. Use env="walker-walk" (default backend)
-# with `pip install synora[dmc]` for DeepMind Control tasks.
+# Runs on `pip install synora-world[gym]`. Use env="walker-walk" (default backend)
+# with `pip install synora-world[dmc]` for DeepMind Control tasks.
 agent = synora.create_model(
     "dreamer", env="Pendulum-v1", env_backend="gym", total_steps=5_000
 )
@@ -74,7 +74,7 @@ need lower-level control:
 from synora import DreamerAgent, DreamerConfig
 
 cfg = DreamerConfig()
-cfg.env_backend = "gym"  # or the default "dmc" with synora[dmc] installed
+cfg.env_backend = "gym"  # or the default "dmc" with synora-world[dmc] installed
 cfg.env = "Pendulum-v1"
 agent = DreamerAgent(cfg)
 ```

@@ -59,7 +59,7 @@ def main() -> None:
         if not env_ids:
             raise SystemExit(
                 "No Gymnasium Robotics environments found. Install with: "
-                "pip install 'synora[robotics]'"
+                "pip install 'synora-world[robotics]'"
             )
         for env_id in env_ids:
             print(env_id)

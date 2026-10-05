@@ -56,7 +56,7 @@ def register_gymnasium_robotics_envs() -> Any:
         raise ImportError(
             "Gymnasium Robotics is required for env_backend='robotics' and "
             "Gymnasium MuJoCo v2/v3 task ids. Install it with "
-            "`pip install gymnasium-robotics` or `pip install synora[robotics]`."
+            "`pip install gymnasium-robotics` or `pip install synora-world[robotics]`."
         )
 
     before_ids = _registry_ids()

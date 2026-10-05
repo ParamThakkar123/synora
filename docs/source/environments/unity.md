@@ -2,7 +2,7 @@
 
 The Unity ML-Agents backend connects Synora to an external Unity executable. It supports continuous-action ML-Agents behaviors, extracts visual observations when available, and converts vector observations into image-like inputs when necessary.
 
-Install: `pip install synora[ml-agents]` (requires a Unity executable at runtime)
+Install: `pip install synora-world[ml-agents]` (requires a Unity executable at runtime)
 
 ## Main API
 

@@ -31,7 +31,7 @@ def _load_mujoco() -> Any:
     if importlib.util.find_spec("mujoco") is None:
         raise ImportError(
             "The native MuJoCo bindings are required for MuJoCoImageEnv. "
-            "Install them with `pip install mujoco` or `pip install synora[mujoco]`."
+            "Install them with `pip install mujoco` or `pip install synora-world[mujoco]`."
         )
     return importlib.import_module("mujoco")
 

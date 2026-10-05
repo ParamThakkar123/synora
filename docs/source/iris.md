@@ -350,12 +350,12 @@ than errors, so the same set works across Treechop and Navigate.
 `minerl` and `minedojo` are **not** installable as Synora extras. MineRL 1.x
 publishes no release compatible with Python 3.11+, and MineDojo pins
 `gym==0.21.0`, whose sdist no longer builds under modern setuptools -- so
-`pip install synora[minerl]` could only ever fail. Install them yourself in a
+`pip install synora-world[minerl]` could only ever fail. Install them yourself in a
 Python 3.10 environment alongside Synora:
 
 ```bash
 # Python 3.10 environment, separate from the one Synora is developed in.
-pip install synora
+pip install synora-world
 pip install "setuptools<66" wheel        # gym 0.21's sdist needs the old backend
 pip install minerl                       # or: pip install minedojo
 ```

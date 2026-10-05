@@ -9,7 +9,7 @@ agents with a unified API.
 
    import synora
 
-   # Runs on ``pip install synora[gym]``.
+   # Runs on ``pip install synora-world[gym]``.
    agent = synora.create_model(
        "dreamer", env="Pendulum-v1", env_backend="gym", total_steps=5_000
    )

@@ -62,7 +62,7 @@ class BraxImageEnv:
         self._include_state = bool(include_state)
         self._state = None
 
-        install_hint = "Install Brax support with `pip install synora[brax]`."
+        install_hint = "Install Brax support with `pip install synora-world[brax]`."
         self._jax = _require_module("jax", install_hint)
         self._jnp = _require_module("jax.numpy", install_hint)
         self._suppress_warp_warnings = bool(suppress_warp_warnings)
