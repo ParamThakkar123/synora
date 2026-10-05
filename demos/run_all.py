@@ -7,7 +7,11 @@
 Each demo runs alone: several of them hold gigabytes of replay data in RAM and
 most of a 4 GB GPU, so running two at once fails in confusing ways. Logs go to
 ``demos/runs/<demo>.log``. On the reference machine (RTX 3050 Laptop, 4 GB)
-the full sequence takes roughly ten hours.
+the full sequence takes about thirteen hours.
+
+Safe to stop and rerun: finished demos are skipped, and the Dreamer demos
+continue from their newest checkpoint. Any other demo that was interrupted
+starts its training again from scratch.
 """
 
 from __future__ import annotations
@@ -23,10 +27,18 @@ RUNS = HERE / "runs"
 
 # name: (script, train args, record args, file that marks the demo as done)
 DEMOS = {
-    "dreamer": ("dreamer_demo.py", ["--steps", "60000"], [], "dream.mp4"),
+    "dreamer": ("dreamer_demo.py", ["--steps", "60000", "--resume"], [], "dream.mp4"),
     "dreamer_v2": (
         "dreamer_demo.py",
-        ["--algo", "dreamer-v2", "--steps", "60000", "--run", "demos/runs/dreamer_v2"],
+        [
+            "--algo",
+            "dreamer-v2",
+            "--steps",
+            "60000",
+            "--run",
+            "demos/runs/dreamer_v2",
+            "--resume",
+        ],
         ["--run", "demos/runs/dreamer_v2"],
         "dream.mp4",
     ),

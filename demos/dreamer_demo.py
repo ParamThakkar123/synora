@@ -7,6 +7,9 @@
     python demos/dreamer_demo.py train  --algo dreamer-v2 --run demos/runs/dreamer_v2
     python demos/dreamer_demo.py record --run demos/runs/dreamer_v2
 
+    # Interrupted? Continue from the newest checkpoint.
+    python demos/dreamer_demo.py train --resume ...same arguments...
+
 ``record`` writes into ``<run>/media``:
 
 * ``dream.mp4`` -- the real environment beside the world model's open-loop
@@ -21,6 +24,7 @@
 from __future__ import annotations
 
 import argparse
+import json
 import sys
 from pathlib import Path
 
@@ -32,8 +36,53 @@ sys.path[:0] = [str(_HERE), str(_HERE.parent)]
 from _media import hstack, label, plot_curves, read_metrics, upscale, write_mp4  # noqa: E402
 
 
+def _segments(run: Path) -> list[dict]:
+    """The run's training segments: the first run, then one per ``--resume``.
+
+    Each segment is its own Dreamer log folder whose step counter starts at 0,
+    so ``offset`` is the global environment step it continued from.
+    """
+    path = run / "segments.json"
+    if path.exists():
+        return json.loads(path.read_text())
+    return [{"dir": ".", "offset": 0}]
+
+
+def _checkpoints(run: Path) -> list[tuple[int, Path]]:
+    """Every checkpoint of the run as (global step, path), oldest first."""
+    found = []
+    for seg in _segments(run):
+        for ckpt in (run / seg["dir"]).glob("ckpts/*_ckpt.pt"):
+            found.append((seg["offset"] + int(ckpt.stem.split("_")[0]), ckpt))
+    return sorted(found)
+
+
+def _latest_checkpoint(run: Path) -> Path:
+    ckpts = _checkpoints(run)
+    if not ckpts:
+        raise SystemExit(f"No checkpoints under {run}")
+    return ckpts[-1][1]
+
+
 def train(args: argparse.Namespace) -> None:
     import synora
+
+    run = Path(args.run).resolve()
+    steps, logdir, restore = args.steps, run, {}
+    if args.resume and _checkpoints(run):
+        # Continue from the newest checkpoint: weights and optimizers are
+        # restored, the replay buffer (not checkpointed) refills from fresh
+        # experience, and training covers the remaining steps.
+        done, ckpt = _checkpoints(run)[-1]
+        if done >= args.steps:
+            print(f"{run} already reached {done} steps")
+            return
+        segments = [s for s in _segments(run) if s["offset"] < done]
+        segments.append({"dir": f"resume_{done}", "offset": done})
+        (run / "segments.json").write_text(json.dumps(segments, indent=2))
+        steps, logdir = args.steps - done, run / f"resume_{done}"
+        restore = {"restore": True, "checkpoint_path": str(ckpt)}
+        print(f"Resuming from {ckpt} ({done} steps done, {steps} to go)")
 
     cfg = synora.create_config(
         args.algo,
@@ -43,7 +92,7 @@ def train(args: argparse.Namespace) -> None:
         image_size=(64, 64),
         batch_size=50,
         train_seq_len=50,
-        total_steps=args.steps,
+        total_steps=steps,
         # global_step advances by action_repeat per env step, so every interval
         # below must be a multiple of it or its `% interval == 0` check never fires.
         seed_steps=args.action_repeat * 500,
@@ -51,23 +100,34 @@ def train(args: argparse.Namespace) -> None:
         update_steps=100,
         # The run stores steps // action_repeat transitions; the 800k default
         # would reserve gigabytes of RAM for an empty buffer.
-        buffer_size=args.steps // args.action_repeat + 1000,
+        buffer_size=steps // args.action_repeat + 1000,
         checkpoint_interval=10_000,
         test_interval=5_000,
         test_episodes=1,
         seed=args.seed,
         exp_name="demo",
-        logdir=str(Path(args.run).resolve()),
+        logdir=str(logdir),
+        **restore,
     )
     agent = synora.create_model(args.algo, config=cfg)
     agent.train()
 
 
-def _latest_checkpoint(run: Path) -> Path:
-    ckpts = sorted(run.glob("ckpts/*_ckpt.pt"), key=lambda p: int(p.stem.split("_")[0]))
-    if not ckpts:
-        raise SystemExit(f"No checkpoints under {run}/ckpts")
-    return ckpts[-1]
+def _eval_curve(run: Path) -> tuple[list[float], list[float]]:
+    """Evaluation return against global step, stitched across segments."""
+    segments = _segments(run)
+    steps, returns = [], []
+    for i, seg in enumerate(segments):
+        end = segments[i + 1]["offset"] if i + 1 < len(segments) else float("inf")
+        path = run / seg["dir"] / "metrics.jsonl"
+        if not path.exists():
+            continue
+        for row in read_metrics(path):
+            step = seg["offset"] + row.get("step", 0)
+            if "eval_avg_reward" in row and step < end:
+                steps.append(step)
+                returns.append(row["eval_avg_reward"])
+    return steps, returns
 
 
 def _frame(obs) -> np.ndarray:
@@ -148,11 +208,10 @@ def record(args: argparse.Namespace) -> None:
     print(f"policy return over {len(frames)} steps: {total:.1f}")
     print("wrote", write_mp4(frames, out / "policy.mp4", fps=args.fps))
 
-    rows = [r for r in read_metrics(run / "metrics.jsonl") if "eval_avg_reward" in r]
-    if rows:
-        steps = [r["step"] for r in rows]
+    steps, returns = _eval_curve(run)
+    if steps:
         plot_curves(
-            {"eval return": (steps, [r["eval_avg_reward"] for r in rows])},
+            {"eval return": (steps, returns)},
             out / "curve.png",
             title=f"{player.args.algo} on {player.args.env}",
             xlabel="environment steps",
@@ -175,6 +234,11 @@ def main() -> None:
     t.add_argument("--steps", type=int, default=60_000)
     t.add_argument("--seed", type=int, default=1)
     t.add_argument("--run", default="demos/runs/dreamer")
+    t.add_argument(
+        "--resume",
+        action="store_true",
+        help="continue from the run's newest checkpoint instead of starting over",
+    )
 
     r = sub.add_parser("record")
     r.add_argument("--run", default="demos/runs/dreamer")

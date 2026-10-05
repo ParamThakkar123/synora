@@ -43,6 +43,12 @@ python demos/run_all.py --record-only    # re-record from existing runs
 python demos/build_gallery.py            # compress media into docs/source/_static/gallery
 ```
 
+`run_all.py` is safe to stop and rerun. Finished demos are skipped, and the
+Dreamer demos continue from their newest checkpoint (`dreamer_demo.py train
+--resume`): weights and optimizers are restored, the replay buffer refills from
+fresh experience, and the learning curve is stitched across the restart. Other
+demos that were interrupted start training again.
+
 ## Requirements
 
 ```bash

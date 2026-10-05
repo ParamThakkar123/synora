@@ -331,7 +331,7 @@ See {doc}`jepa`.
 ## Reproduce everything
 
 ```bash
-python demos/run_all.py            # trains and records every demo, about ten hours on a 4 GB laptop GPU
+python demos/run_all.py            # trains and records every demo, about thirteen hours on a 4 GB laptop GPU
 python demos/build_gallery.py      # copies the media into docs/source/_static/gallery
 ```
 
