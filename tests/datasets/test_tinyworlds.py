@@ -1,5 +1,6 @@
 import pytest
 import numpy as np
+import torch
 from pathlib import Path
 
 h5py = pytest.importorskip("h5py")
@@ -188,6 +189,59 @@ class TestTinyWorldsDataset:
         assert T == 16, f"Frames should be 16, got {T}"
         assert H == 64, f"Height should be 64, got {H}"
         assert W == 64, f"Width should be 64, got {W}"
+
+
+class TestTinyWorldsLayouts:
+    """Samples must be real clips: consecutive frames, channels kept intact."""
+
+    @staticmethod
+    def _dataset(tmp_path: Path, data: np.ndarray, num_frames: int):
+        from synora.datasets.tinyworlds import TinyWorldsDataset
+
+        path = tmp_path / "frames.h5"
+        with h5py.File(path, "w") as f:
+            f.create_dataset("frames", data=data)
+        return TinyWorldsDataset(
+            dataset_name="SONIC",
+            num_frames=num_frames,
+            image_size=data.shape[-2],
+            data_file=str(path),
+        )
+
+    @staticmethod
+    def _labelled_frames(n: int, size: int = 8) -> np.ndarray:
+        """Frame t has value t in R, 100 + t in G and 200 - t in B."""
+        t = np.arange(n, dtype=np.uint8)[:, None, None]
+        frames = np.empty((n, size, size, 3), dtype=np.uint8)
+        frames[..., 0] = t
+        frames[..., 1] = 100 + t
+        frames[..., 2] = 200 - t
+        return frames
+
+    def test_flat_frame_stream_yields_consecutive_windows(self, tmp_path):
+        """TinyWorlds stores each game as one (N, H, W, 3) stream of frames."""
+        dataset = self._dataset(tmp_path, self._labelled_frames(20), num_frames=4)
+
+        assert dataset.data_layout == "NHWC"
+        assert len(dataset) == 17
+
+        clip = dataset[5] * 255.0
+        assert clip.shape == (3, 4, 8, 8)
+        expected_t = torch.arange(5, 9, dtype=torch.float32)
+        assert torch.allclose(clip[0, :, 0, 0], expected_t)
+        assert torch.allclose(clip[1, :, 0, 0], 100 + expected_t)
+        assert torch.allclose(clip[2, :, 0, 0], 200 - expected_t)
+
+    def test_clip_layout_keeps_channels_and_time_apart(self, tmp_path):
+        """(N, T, H, W, C) clips: channel c of frame t must stay channel c."""
+        clips = self._labelled_frames(6).reshape(2, 3, 8, 8, 3)
+        dataset = self._dataset(tmp_path, clips, num_frames=3)
+
+        clip = dataset[1] * 255.0
+        expected_t = torch.arange(3, 6, dtype=torch.float32)
+        assert torch.allclose(clip[0, :, 0, 0], expected_t)
+        assert torch.allclose(clip[1, :, 0, 0], 100 + expected_t)
+        assert torch.allclose(clip[2, :, 0, 0], 200 - expected_t)
 
 
 class TestTinyWorldsWorkers:

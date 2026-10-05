@@ -218,6 +218,17 @@ class TinyWorldsDataset(Dataset):
             self.raw_width = shape[3]
             self.channels = shape[4]
             self.data_layout = "NTHWC"
+        elif len(shape) == 4 and shape[-1] in (1, 3, 4):
+            # One continuous stream of frames, which is how TinyWorlds ships
+            # every game: (N, H, W, C). Each sample is a window of
+            # `num_frames` consecutive frames from it.
+            self.total_frames = shape[0]
+            self.video_length = self.num_frames
+            self.num_samples = max(0, self.total_frames - self.num_frames + 1)
+            self.raw_height = shape[1]
+            self.raw_width = shape[2]
+            self.channels = shape[3]
+            self.data_layout = "NHWC"
         elif len(shape) == 4:
             self.num_samples = shape[0]
             self.video_length = shape[1]
@@ -268,12 +279,16 @@ class TinyWorldsDataset(Dataset):
         return state
 
     def __getitem__(self, idx: int) -> torch.Tensor:
-        video = self._open_data_file()[self._data_key][idx][:]
+        data = self._open_data_file()[self._data_key]
+        if self.data_layout == "NHWC":
+            video = data[idx : idx + self.num_frames]
+        else:
+            video = data[idx][:]
 
         if not isinstance(video, np.ndarray):
             video = np.array(video)
 
-        if self.data_layout == "NTHWC":
+        if self.data_layout in ("NTHWC", "NHWC"):
             pass
         elif self.data_layout == "NTHW":
             video = np.expand_dims(video, axis=-1)
@@ -293,15 +308,13 @@ class TinyWorldsDataset(Dataset):
         else:
             video = video.astype(np.uint8)
 
-        video = torch.from_numpy(video).float()
-        video = video.permute(0, 3, 1, 2)
-        if video.shape[1] == 1:
-            video = video.expand(-1, 3, -1, -1)
-        video = video.reshape(
-            video.shape[0] * video.shape[1], video.shape[2], video.shape[3]
-        )
-        C_val = video.shape[0] // self.num_frames
-        video = video.reshape(C_val, self.num_frames, video.shape[1], video.shape[2])
+        # (T, H, W, C) -> (C, T, H, W). This must be a permute: reshaping the
+        # flattened (T*C) axis into (C, T) interleaves channels across frames.
+        video = torch.from_numpy(video[..., :3]).float()
+        video = video.permute(3, 0, 1, 2)
+        if video.shape[0] == 1:
+            video = video.expand(3, -1, -1, -1)
+        video = video.contiguous()
 
         if self.image_size is not None and (
             video.shape[2] != self.image_size or video.shape[3] != self.image_size
