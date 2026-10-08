@@ -28,7 +28,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   `TypeError`; they now build agents that train their own version.
 - DreamerV2 could not train: its two-hot heads exposed `mean` as a method with
   an extra trailing axis, and its actor loss detached the lambda-returns, so the
-  actor received no gradient.
+  actor received no gradient. The actor also maximised `symlog` of the returns
+  rather than the returns themselves (DreamerV2, Sec. 2.4); on DMC cartpole
+  swing-up that pinned every action at -1 and stalled the return at ~75.
 - DIAMOND's imagination paired each conditioning frame with the action taken one
   step later, so actor-critic training rolled the diffusion model forward on
   shifted actions.

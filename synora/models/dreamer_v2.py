@@ -51,11 +51,14 @@ class DreamerV2(Dreamer):
         self, returns: torch.Tensor, discounts: torch.Tensor
     ) -> torch.Tensor:
         # Dynamics backpropagation (DreamerV2 Sec. 2.4, rho = 0 for continuous
-        # actions): the actor is trained through the lambda-returns, so they must
-        # keep their graph. Detaching them left the actor with no gradient.
+        # actions): the actor maximises the lambda-returns themselves, so they
+        # must keep their graph. The two-hot heads already decode rewards and
+        # values back to the real scale. Squashing the returns through symlog
+        # here (not in the paper) made the actor saturate: on DMC cartpole
+        # swing-up it pinned every action at -1 and its gradient decayed to
+        # ~1e-8, stalling the return at ~75 while DreamerV1 reached ~500.
         weight = discounts.detach()
-        target = _symlog(returns)
-        return -torch.mean(weight * target)
+        return -torch.mean(weight * returns)
 
     def _compute_value_loss(
         self,

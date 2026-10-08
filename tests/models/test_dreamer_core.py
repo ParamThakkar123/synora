@@ -191,3 +191,23 @@ def test_versioned_model_names_build_agents_for_that_version(name, core, algo):
     assert issubclass(agent_cls, models.DreamerAgent)
     assert agent_cls.core_cls is getattr(models, core)
     assert agent_cls.algo_name == algo
+
+
+def test_dreamer_v2_actor_maximises_the_lambda_returns_themselves():
+    """DreamerV2 Sec. 2.4, continuous actions (rho = 0): L = -E[V_lambda].
+
+    A symlog on the returns here made the actor saturate on cartpole swing-up
+    (every action pinned at -1, actor gradient ~1e-8)."""
+    from synora.models.dreamer_v2 import DreamerV2
+
+    torch.manual_seed(0)
+    dreamer = DreamerV2(_tiny_config(), OBS_SHAPE, ACTION_SIZE, "cpu")
+    returns = torch.tensor([[[5.0]], [[50.0]]], requires_grad=True)
+    discounts = torch.tensor([[[1.0]], [[0.5]]])
+
+    loss = dreamer._compute_actor_loss(returns, discounts)
+    loss.backward()
+
+    assert loss.item() == pytest.approx(-(5.0 * 1.0 + 50.0 * 0.5) / 2)
+    # Every unit of return is worth the same to the actor, however large.
+    assert torch.allclose(returns.grad.flatten(), torch.tensor([-0.5, -0.25]))
