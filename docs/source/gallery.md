@@ -101,7 +101,7 @@ Train it with `create_model("dreamer-v2")`, or:
 ```
 
 ```bash
-python demos/dreamer_demo.py train --algo dreamer-v2 --run demos/runs/dreamer_v2
+python demos/dreamer_demo.py train --algo dreamer-v2 --batch-size 32 --run demos/runs/dreamer_v2
 python demos/dreamer_demo.py record --run demos/runs/dreamer_v2
 ```
 

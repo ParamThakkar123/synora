@@ -38,6 +38,10 @@ DEMOS = {
             "--run",
             "demos/runs/dreamer_v2",
             "--resume",
+            # V2's two-hot heads raise its peak; at batch 50 PyTorch holds
+            # ~3.7 GB of a 4 GB card and MuJoCo's OpenGL renderer is killed.
+            "--batch-size",
+            "32",
         ],
         ["--run", "demos/runs/dreamer_v2"],
         "dream.mp4",

@@ -90,7 +90,7 @@ def train(args: argparse.Namespace) -> None:
         env=args.env,
         action_repeat=args.action_repeat,
         image_size=(64, 64),
-        batch_size=50,
+        batch_size=args.batch_size,
         train_seq_len=50,
         total_steps=steps,
         # global_step advances by action_repeat per env step, so every interval
@@ -231,6 +231,12 @@ def main() -> None:
     t.add_argument("--env", default="cartpole-swingup")
     t.add_argument("--backend", default="dmc")
     t.add_argument("--action-repeat", type=int, default=8)
+    t.add_argument(
+        "--batch-size",
+        type=int,
+        default=50,
+        help="sequences per update; lower it if MuJoCo rendering runs out of GPU memory",
+    )
     t.add_argument("--steps", type=int, default=60_000)
     t.add_argument("--seed", type=int, default=1)
     t.add_argument("--run", default="demos/runs/dreamer")
