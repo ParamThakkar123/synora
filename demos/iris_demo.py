@@ -1,11 +1,18 @@
 """IRIS: a discrete autoencoder + Transformer world model, and a policy trained in it.
 
-    python demos/iris_demo.py train  --minutes 100
+    python demos/iris_demo.py train  --minutes 600
+    python demos/iris_demo.py train  --minutes 600 --resume   # continue a stopped run
     python demos/iris_demo.py record --run demos/runs/iris
 
-The paper configuration is used unchanged. Only the amount of work per epoch
-and the batch sizes are reduced so that a run fits a laptop GPU; the values are
-written to ``<run>/args.json``.
+The paper configuration is used unchanged, including its schedule: the
+autoencoder trains alone until epoch 25, the Transformer joins it, and the
+policy starts at epoch 50. Only the batch sizes (to fit a 4 GB GPU) and, if
+asked, the gradient steps per epoch differ; the values used are written to
+``<run>/args.json``.
+
+Every few epochs the run saves the agent (weights and optimizers), its replay
+buffer and its progress, so ``--resume`` continues where it stopped rather than
+starting over.
 
 ``record`` writes into ``<run>/media``:
 
@@ -21,6 +28,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import sys
 import time
 from pathlib import Path
@@ -31,18 +39,46 @@ _HERE = Path(__file__).resolve().parent
 sys.path[:0] = [str(_HERE), str(_HERE.parent)]
 from _media import hstack, label, plot_curves, read_metrics, upscale, write_mp4  # noqa: E402
 
-# Per-epoch work and batch sizes, scaled down for a 4 GB GPU. Architecture,
-# tokenizer, horizon and losses stay at the paper's values.
-RUNTIME_OVERRIDES = dict(
+# Batch sizes that fit a 4 GB GPU. Architecture, tokenizer, horizon, losses and
+# the training schedule stay at the paper's values.
+BATCH_OVERRIDES = dict(
     autoencoder_batch_size=64,
     transformer_batch_size=16,
     actor_critic_batch_size=16,
-    training_steps_per_epoch=100,
-    transformer_steps_per_epoch=50,
-    actor_critic_steps_per_epoch=20,
-    start_transformer_after=10,
-    start_actor_critic_after=20,
 )
+BUFFER_FIELDS = ("observations", "actions", "rewards", "terminals")
+
+
+def _save_state(trainer, run: Path, epoch: int) -> None:
+    """Checkpoint everything --resume needs; each file is replaced atomically."""
+    buffer = trainer.replay_buffer
+    filled = buffer.size if buffer.full else buffer.idx
+    tmp = run / "replay.tmp.npz"
+    np.savez(tmp, **{f: getattr(buffer, f)[:filled] for f in BUFFER_FIELDS})
+    os.replace(tmp, run / "replay.npz")
+    trainer.agent.save(str(run / "iris.tmp.pt"))
+    os.replace(run / "iris.tmp.pt", run / "iris.pt")
+    state = {
+        "epoch": epoch,
+        "env_steps": trainer.env_steps,
+        "buffer": {k: getattr(buffer, k) for k in ("idx", "full", "steps", "episodes")},
+    }
+    (run / "state.json").write_text(json.dumps(state, indent=2))
+
+
+def _load_state(trainer, run: Path) -> int:
+    """Restore a run saved by _save_state; returns the epoch to continue from."""
+    state = json.loads((run / "state.json").read_text())
+    trainer.agent.load(str(run / "iris.pt"))
+    data = np.load(run / "replay.npz")
+    buffer = trainer.replay_buffer
+    for field in BUFFER_FIELDS:
+        values = data[field]
+        getattr(buffer, field)[: len(values)] = values
+    for key, value in state["buffer"].items():
+        setattr(buffer, key, value)
+    trainer.env_steps = state["env_steps"]
+    return int(state["epoch"])
 
 
 def train(args: argparse.Namespace) -> None:
@@ -51,17 +87,33 @@ def train(args: argparse.Namespace) -> None:
 
     run = Path(args.run)
     run.mkdir(parents=True, exist_ok=True)
-    (run / "args.json").write_text(
-        json.dumps({**vars(args), "overrides": RUNTIME_OVERRIDES}, indent=2)
-    )
+    overrides = dict(BATCH_OVERRIDES)
+    for key, value in (
+        ("training_steps_per_epoch", args.autoencoder_steps),
+        ("transformer_steps_per_epoch", args.transformer_steps),
+        ("actor_critic_steps_per_epoch", args.actor_critic_steps),
+    ):
+        if value is not None:
+            overrides[key] = value
+    resuming = args.resume and (run / "state.json").exists()
+    if resuming:
+        # Keep the original run's settings so a resumed run stays one experiment.
+        overrides = json.loads((run / "args.json").read_text())["overrides"]
+    else:
+        (run / "args.json").write_text(
+            json.dumps({**vars(args), "overrides": overrides}, indent=2)
+        )
+
     config = IRISConfig()
-    for key, value in RUNTIME_OVERRIDES.items():
+    for key, value in overrides.items():
         setattr(config, key, value)
     trainer = IRISTrainer(game=args.game, device="cuda", seed=args.seed, config=config)
+    epoch = _load_state(trainer, run) if resuming else 0
+    if resuming:
+        print(f"Resuming at epoch {epoch} ({trainer.env_steps} env steps)", flush=True)
 
     deadline = time.time() + args.minutes * 60
-    epoch = 0
-    while time.time() < deadline:
+    while time.time() < deadline and epoch < config.total_epochs:
         started = time.time()
         metrics = trainer.train_epoch(epoch)
         row = {"epoch": epoch, "seconds": time.time() - started}
@@ -72,9 +124,9 @@ def train(args: argparse.Namespace) -> None:
             f.write(json.dumps(row) + "\n")
         print(json.dumps(row), flush=True)
         epoch += 1
-        if epoch % 5 == 0:
-            trainer.agent.save(str(run / "iris.pt"))
-    trainer.agent.save(str(run / "iris.pt"))
+        if epoch % args.save_every == 0:
+            _save_state(trainer, run, epoch)
+    _save_state(trainer, run, epoch)
 
 
 def record(args: argparse.Namespace) -> None:
@@ -203,9 +255,16 @@ def main() -> None:
 
     t = sub.add_parser("train")
     t.add_argument("--game", default="ALE/Pong-v5")
-    t.add_argument("--minutes", type=float, default=100)
+    t.add_argument("--minutes", type=float, default=600)
     t.add_argument("--seed", type=int, default=1)
     t.add_argument("--run", default="demos/runs/iris")
+    t.add_argument("--resume", action="store_true", help="continue a stopped run")
+    t.add_argument(
+        "--save-every", type=int, default=5, help="epochs between checkpoints"
+    )
+    t.add_argument("--autoencoder-steps", type=int, default=None, help="paper: 200")
+    t.add_argument("--transformer-steps", type=int, default=None, help="paper: 200")
+    t.add_argument("--actor-critic-steps", type=int, default=None, help="paper: 200")
 
     r = sub.add_parser("record")
     r.add_argument("--run", default="demos/runs/iris")
