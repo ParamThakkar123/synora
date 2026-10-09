@@ -68,6 +68,32 @@ class TestVideoTokenizer:
         assert indices.shape[0] == B
         assert recon.shape == (B, C, T, H, W)
 
+    @pytest.mark.parametrize("use_ema", [False, True])
+    def test_encoded_embeddings_match_a_codebook_lookup_of_their_indices(self, use_ema):
+        """Genie decodes generated frames with `decode_indices` (a codebook
+        lookup), so `encode` must hand the decoder that same layout. It used to
+        reshape the quantizer's channel-first output instead of permuting it,
+        and every frame generated from tokens decoded to noise."""
+        torch.manual_seed(0)
+        tokenizer = create_video_tokenizer(
+            num_frames=2,
+            image_size=16,
+            encoder_dim=32,
+            decoder_dim=32,
+            encoder_depth=1,
+            decoder_depth=1,
+            num_heads=2,
+            vocab_size=16,
+            embedding_dim=8,
+            use_ema=use_ema,
+        ).eval()
+
+        with torch.no_grad():
+            z_q, indices, _ = tokenizer.encode(torch.rand(2, 3, 2, 16, 16))
+            looked_up = tokenizer.decode_indices(indices)
+
+        assert torch.allclose(z_q, looked_up, atol=1e-5)
+
 
 class TestLatentActionModel:
     def test_initialization(self):

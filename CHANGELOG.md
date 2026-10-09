@@ -37,6 +37,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - The TinyWorlds loader read each game's flat `(N, H, W, 3)` frame stream as
   grayscale clips, so every Genie sample was one scrambled frame; clip files
   also had channels interleaved across frames.
+- Genie's video tokenizer reshaped the quantizer's channel-first output instead
+  of permuting it, scrambling embeddings across positions. The decoder learned
+  that layout, so every frame Genie generated from tokens decoded to noise.
+  Genie models trained before this fix need retraining.
 - Genie checkpoints saved after warmup failed to load with `weights_only=True`,
   and the trainer ignored `tokenizer_num_heads` / `action_num_heads`.
 - DiT trained on CIFAR-10 in `[0, 1]` instead of `[-1, 1]`, a class-conditional

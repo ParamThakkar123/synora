@@ -195,7 +195,12 @@ class VideoTokenizer(ExportableAgentMixin, nn.Module):
             x_t_embed = x_t_embed.permute(0, 3, 1, 2)
 
             z_q_t, indices_t, vq_loss_t = self.vq(x_t_embed)
-            z_all.append(z_q_t.reshape(B, H_enc, W_enc, self.embedding_dim))
+            # The quantizer returns its input's channel-first (B, D, H', W')
+            # layout. Reshaping it to (B, H', W', D) scrambled embeddings across
+            # positions, so the decoder learned a layout that `decode_indices`
+            # (a plain codebook lookup) never produces, and every frame
+            # generated from tokens decoded to noise.
+            z_all.append(z_q_t.permute(0, 2, 3, 1))
             indices_all.append(indices_t.reshape(B, H_enc, W_enc))
             for k, v in vq_loss_t.items():
                 if k not in vq_loss_all:
