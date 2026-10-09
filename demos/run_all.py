@@ -56,7 +56,7 @@ DEMOS = {
     "diamond": ("diamond_demo.py", ["--epochs", "21"], [], "dream.mp4"),
     "iris": ("iris_demo.py", ["--minutes", "100"], [], "dream.mp4"),
     "genie": ("genie_demo.py", ["--steps", "6000"], [], "replay.mp4"),
-    "dit": ("dit_demo.py", ["--epochs", "40"], [], "samples.png"),
+    "dit": ("dit_demo.py", ["--epochs", "40", "--batch-size", "64"], [], "samples.png"),
     "jepa": ("jepa_demo.py", ["--epochs", "30"], [], "neighbours.png"),
 }
 

@@ -265,7 +265,7 @@ sampled with classifier-free guidance.
 ```
 
 ```bash
-python demos/dit_demo.py train --epochs 40
+python demos/dit_demo.py train --epochs 40 --batch-size 64
 python demos/dit_demo.py record
 ```
 

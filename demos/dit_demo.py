@@ -135,7 +135,7 @@ def main() -> None:
 
     t = sub.add_parser("train")
     t.add_argument("--epochs", type=int, default=40)
-    t.add_argument("--batch-size", type=int, default=128)
+    t.add_argument("--batch-size", type=int, default=64)
     t.add_argument("--data", default="data")
     t.add_argument("--run", default="demos/runs/dit")
 
