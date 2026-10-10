@@ -47,13 +47,11 @@ MEDIA = [
     ("iris", "policy.mp4", "iris_policy"),
     ("iris", "curve.png", "iris_curve"),
     ("genie", "replay.mp4", "genie_replay"),
-    ("genie", "actions.mp4", "genie_actions"),
     ("genie", "tokens.mp4", "genie_tokens"),
     ("genie", "curve.png", "genie_curve"),
     ("dit", "denoising.mp4", "dit_denoising"),
     ("dit", "samples.png", "dit_samples"),
     ("jepa", "neighbours.png", "jepa_neighbours"),
-    ("jepa", "patches.png", "jepa_patches"),
     ("jepa", "knn.json", "jepa_knn"),
 ]
 README_GIFS = {
@@ -62,7 +60,6 @@ README_GIFS = {
     "diamond_dream",
     "iris_dream",
     "genie_replay",
-    "dit_denoising",
 }
 
 

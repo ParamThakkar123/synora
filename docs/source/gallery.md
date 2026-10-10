@@ -60,7 +60,10 @@ halves drift apart is exactly where the model is wrong.
 
 Dreamer learns a recurrent state-space model of the environment from pixels,
 then trains an actor-critic purely on imagined trajectories. Here it is on the
-DeepMind Control *cartpole swing-up* task (60k environment steps).
+DeepMind Control *cartpole swing-up* task. In 60k environment steps (about
+95 minutes) its evaluation return rose from about 75 to 493, out of a maximum of
+roughly 880: the policy swings the pole up but cannot yet balance it. The world
+model tracks the real cart for about ten imagined steps before it drifts.
 
 ```{raw} html
 <figure class="demo-media">
@@ -85,7 +88,9 @@ python demos/dreamer_demo.py record
 ```
 
 **DreamerV2** swaps in symlog two-hot reward and value heads and a balanced KL.
-Train it with `create_model("dreamer-v2")`, or:
+On the same budget its return rose from about 75 to between 165 and 250. It
+trained at batch 32 rather than 50, the most that fit beside MuJoCo's renderer
+on a 4 GB GPU. Train it with `create_model("dreamer-v2")`, or:
 
 ```{raw} html
 <div class="demo-pair">
@@ -114,7 +119,9 @@ See {doc}`dreamer` for the method and the full API.
 
 PlaNet has no policy network. At every step it searches over action sequences
 with the cross-entropy method *inside* its learned latent model and executes the
-first action of the best plan. Same task as Dreamer, so the two are comparable.
+first action of the best plan. Same task as Dreamer, so the two are comparable:
+in 75 minutes its evaluation return rose from 76 to 435, and the recorded
+planner episode below scores 388.
 
 ```{raw} html
 <figure class="demo-media">
@@ -147,7 +154,11 @@ See {doc}`planet`.
 
 DIAMOND's world model is a diffusion model: it generates each next Atari frame
 by denoising, conditioned on the previous four frames and the action. The agent
-is trained entirely on frames the model generates.
+is trained entirely on frames the model generates. After 21 epochs (about
+1.75 hours) the model renders Breakout's walls, bricks, score and paddle
+convincingly, but it has not yet learned the ball, which is one or two pixels at
+64x64; small, fast objects are the last thing it picks up. The agent, trained on
+those frames, is correspondingly weak.
 
 ```{raw} html
 <figure class="demo-media">
@@ -202,12 +213,15 @@ policy learns from Transformer imagination only.
 ```
 
 ```bash
-python demos/iris_demo.py train --minutes 100
+python demos/iris_demo.py train --minutes 600 --autoencoder-steps 200 --transformer-steps 200 --actor-critic-steps 20
 python demos/iris_demo.py record
 ```
 
-The demo keeps the paper configuration and only scales down the work per epoch
-and the batch sizes. See {doc}`iris`.
+The demo keeps the paper's architecture and its schedule (autoencoder alone
+until epoch 25, the policy from epoch 50). Batches are a quarter of the paper's
+to fit a 4 GB GPU, and the policy takes 20 updates per epoch instead of 200,
+because each one imagines 20 frames token by token. `--resume` continues an
+interrupted run. See {doc}`iris`.
 
 ---
 
@@ -217,24 +231,25 @@ and the batch sizes. See {doc}`iris`.
 Genie learns from gameplay video alone, with no actions recorded. A latent
 action model discovers a small vocabulary of "controls" from how consecutive
 frames differ, and a MaskGIT dynamics model generates the next frame given one.
-Trained here on Sonic from the TinyWorlds dataset.
+Trained here for 6,000 steps (about 1.5 hours) on Sonic from the TinyWorlds
+dataset.
 
 ```{raw} html
 <figure class="demo-media">
   <video src="_static/gallery/genie_replay.mp4" autoplay loop muted playsinline preload="metadata"></video>
   <figcaption>Left: a real clip. Right: Genie's generation from only its first frame, driven by the latent actions it inferred from the real clip.</figcaption>
 </figure>
-<div class="demo-pair">
-  <figure class="demo-media">
-    <video src="_static/gallery/genie_actions.mp4" autoplay loop muted playsinline preload="metadata"></video>
-    <figcaption>One starting frame, played forward under each of the 8 latent actions Genie discovered.</figcaption>
-  </figure>
-  <figure class="demo-media">
-    <video src="_static/gallery/genie_tokens.mp4" autoplay loop muted playsinline preload="metadata"></video>
-    <figcaption>Real frames and their reconstruction from Genie's video tokens.</figcaption>
-  </figure>
-</div>
+<figure class="demo-media">
+  <video src="_static/gallery/genie_tokens.mp4" autoplay loop muted playsinline preload="metadata"></video>
+  <figcaption>Real frames and their reconstruction from Genie's video tokens.</figcaption>
+</figure>
 ```
+
+At this budget Genie reproduces the scene layout, but the scene stays largely
+still, and its 8 latent actions are not yet distinct controls: played from the
+same frame, they produce nearly the same video. Learning separable actions is
+the part of Genie that needs the most training. Frames are sampled at
+temperature 0.3 (`record --temperature`).
 
 ```bash
 python demos/genie_demo.py train --steps 6000
@@ -248,8 +263,9 @@ See {doc}`genie`.
 (gallery-dit)=
 ## DiT
 
-A Diffusion Transformer (DiT-S/4) trained class-conditionally on CIFAR-10, and
-sampled with classifier-free guidance.
+A Diffusion Transformer (DiT-S/4, 33M parameters) trained class-conditionally
+on CIFAR-10 for 40 epochs, about two hours, and sampled with classifier-free
+guidance at scale 4.
 
 ```{raw} html
 <div class="demo-pair">
@@ -287,8 +303,8 @@ the future.
   <figcaption>Real frames, then the GRU and LSTM world models predicting open loop from the same actions.</figcaption>
 </figure>
 <figure class="demo-media">
-  <img src="_static/gallery/modular_rssm_curve.png" alt="Reconstruction loss for both backbones" loading="lazy">
-  <figcaption>Reconstruction loss for both backbones.</figcaption>
+  <img src="_static/gallery/modular_rssm_curve.png" alt="Reconstruction error for both backbones" loading="lazy">
+  <figcaption>Reconstruction error (half the summed squared error per frame) for both backbones, 25 minutes each.</figcaption>
 </figure>
 ```
 
@@ -306,16 +322,15 @@ See {doc}`modular_rssm_guide`.
 
 I-JEPA learns image features without reconstructing pixels and without labels:
 it predicts the *representations* of masked image blocks from a visible context
-block. A ViT-Tiny trained on CIFAR-10 shows what that buys.
+block. A ViT-Tiny trained for 30 epochs on CIFAR-10 (about an hour) shows
+what that buys: classifying test images by their 20 nearest training images in
+feature space scores 41.1%, against 29.6% for the same network at random
+initialisation (chance is 10%).
 
 ```{raw} html
 <figure class="demo-media">
   <img src="_static/gallery/jepa_neighbours.png" alt="Test images and their nearest training images in I-JEPA feature space" loading="lazy">
   <figcaption>Each row: a test image (left) and its nearest training images in the encoder's feature space. No labels were used to train the encoder or to find the neighbours.</figcaption>
-</figure>
-<figure class="demo-media">
-  <img src="_static/gallery/jepa_patches.png" alt="Principal components of I-JEPA patch features as colour" loading="lazy">
-  <figcaption>Patch features projected onto their top three principal components and shown as colour: patches the encoder considers similar get similar colours.</figcaption>
 </figure>
 ```
 

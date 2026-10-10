@@ -38,7 +38,7 @@ runs, not paper-scale results: the point is to show what each model does.
 </tr>
 <tr>
 <td width="50%" valign="top"><a href="https://paramthakkar123.github.io/synora/gallery.html#gallery-planet"><img src="https://raw.githubusercontent.com/ParamThakkar123/synora/main/docs/source/_static/gallery/planet_dream.gif" alt="PlaNet" width="100%"></a><br><b>PlaNet</b>: a latent model predicting the future while a CEM planner searches inside it.</td>
-<td width="50%" valign="top"><a href="https://paramthakkar123.github.io/synora/gallery.html#gallery-dit"><img src="https://raw.githubusercontent.com/ParamThakkar123/synora/main/docs/source/_static/gallery/dit_denoising.gif" alt="DiT" width="100%"></a><br><b>DiT</b>: a class-conditional Diffusion Transformer denoising CIFAR-10, one row per class.</td>
+<td width="50%" valign="top"><a href="https://paramthakkar123.github.io/synora/gallery.html#gallery-dit"><img src="https://raw.githubusercontent.com/ParamThakkar123/synora/main/docs/source/_static/gallery/dit_samples.png" alt="DiT" width="100%"></a><br><b>DiT</b>: CIFAR-10 samples from a class-conditional Diffusion Transformer, one row per class.</td>
 </tr>
 </table>
 
