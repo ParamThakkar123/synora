@@ -84,7 +84,9 @@ def record(args: argparse.Namespace) -> None:
     run = Path(args.run)
     out = run / "media"
     ckpt = Path(args.checkpoint) if args.checkpoint else _latest_checkpoint(run)
-    agent = make_agent(str(ckpt), args.game, seed=args.seed)
+    agent = make_agent(
+        str(ckpt), args.game, seed=args.seed, sampling_steps=args.sampling_steps
+    )
     device, n = agent.device, agent.config.num_conditioning_frames
     print(f"Loaded {ckpt}")
 
@@ -187,6 +189,12 @@ def main() -> None:
     r.add_argument("--horizon", type=int, default=60)
     r.add_argument("--dream-steps", type=int, default=90)
     r.add_argument("--fps", type=int, default=12)
+    r.add_argument(
+        "--sampling-steps",
+        type=int,
+        default=None,
+        help="Euler denoising steps per frame (training used 3)",
+    )
     r.add_argument("--seed", type=int, default=7)
 
     args = parser.parse_args()

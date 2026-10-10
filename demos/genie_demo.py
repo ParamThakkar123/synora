@@ -214,7 +214,12 @@ def main() -> None:
     r.add_argument("--dataset", default="SONIC")
     r.add_argument("--checkpoint", default=None)
     r.add_argument("--clips", type=int, default=4)
-    r.add_argument("--temperature", type=float, default=1.0)
+    r.add_argument(
+        "--temperature",
+        type=float,
+        default=0.3,
+        help="token sampling temperature; each frame is one independent pass",
+    )
     r.add_argument("--fps", type=int, default=8)
     r.add_argument("--seed", type=int, default=3)
 

@@ -30,6 +30,7 @@ from _media import hstack, label, plot_curves, read_metrics, upscale, write_mp4 
 
 BACKBONES = ("gru", "lstm")
 FREE_NATS = 3.0
+_NLL_CONSTANT = 0.5 * 3 * 64 * 64 * float(np.log(2 * np.pi))
 
 
 def collect(env_name: str, episodes: int, action_repeat: int, seed: int):
@@ -211,13 +212,19 @@ def record(args: argparse.Namespace) -> None:
     series = {}
     for name in BACKBONES:
         mine = [r for r in rows if r["backbone"] == name]
-        series[name.upper()] = ([r["step"] for r in mine], [r["recon"] for r in mine])
+        # The NLL of a unit-variance Gaussian over 3x64x64 pixels includes the
+        # constant 0.5 * 12288 * ln(2*pi) ~= 11291, which flattens the curve;
+        # what remains is half the summed squared error.
+        series[name.upper()] = (
+            [r["step"] for r in mine],
+            [r["recon"] - _NLL_CONSTANT for r in mine],
+        )
     plot_curves(
         series,
         out / "curve.png",
         title=f"ModularRSSM backbones on {saved['env']}",
         xlabel="gradient steps",
-        ylabel="reconstruction NLL",
+        ylabel="reconstruction error (SSE / 2)",
     )
     print("wrote", out / "curve.png")
 
