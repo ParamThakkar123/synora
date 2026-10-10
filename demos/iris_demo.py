@@ -81,6 +81,29 @@ def _load_state(trainer, run: Path) -> int:
     return int(state["epoch"])
 
 
+def _release_cache_between_phases(agent) -> None:
+    """Free PyTorch's cached GPU memory whenever training switches phase.
+
+    The autoencoder, Transformer and imagination phases each leave their own
+    peak cached, which together fill a 4 GB card; Windows then backs the
+    overflow with system memory (8 GB of commit on the reference laptop) until
+    the machine runs short. Training itself is unchanged.
+    """
+    import torch
+
+    last: list[str | None] = [None]
+    for name in ("update_autoencoder", "update_transformer", "imagine_rollout"):
+        method = getattr(agent, name)
+
+        def wrapped(*args, _method=method, _name=name, **kwargs):
+            if last[0] != _name:
+                torch.cuda.empty_cache()
+                last[0] = _name
+            return _method(*args, **kwargs)
+
+        setattr(agent, name, wrapped)
+
+
 def train(args: argparse.Namespace) -> None:
     from synora.configs.iris_config import IRISConfig
     from synora.training.train_iris import IRISTrainer
@@ -108,6 +131,7 @@ def train(args: argparse.Namespace) -> None:
     for key, value in overrides.items():
         setattr(config, key, value)
     trainer = IRISTrainer(game=args.game, device="cuda", seed=args.seed, config=config)
+    _release_cache_between_phases(trainer.agent)
     epoch = _load_state(trainer, run) if resuming else 0
     if resuming:
         print(f"Resuming at epoch {epoch} ({trainer.env_steps} env steps)", flush=True)
@@ -230,7 +254,8 @@ def record(args: argparse.Namespace) -> None:
         )
     print("wrote", write_mp4(frames, out / "dream.mp4", fps=args.fps))
 
-    rows = read_metrics(run / "metrics.jsonl")
+    # A resumed run re-logs the epochs after its last checkpoint; keep the latest.
+    rows = list({r["epoch"]: r for r in read_metrics(run / "metrics.jsonl")}.values())
     series = {}
     for key, name in (
         ("recon_loss", "autoencoder recon"),
