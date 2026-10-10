@@ -110,19 +110,35 @@ def train(args: argparse.Namespace) -> None:
 
     run = Path(args.run)
     run.mkdir(parents=True, exist_ok=True)
-    overrides = dict(BATCH_OVERRIDES)
-    for key, value in (
-        ("training_steps_per_epoch", args.autoencoder_steps),
-        ("transformer_steps_per_epoch", args.transformer_steps),
-        ("actor_critic_steps_per_epoch", args.actor_critic_steps),
-    ):
-        if value is not None:
-            overrides[key] = value
+    requested = {
+        key: value
+        for key, value in (
+            ("training_steps_per_epoch", args.autoencoder_steps),
+            ("transformer_steps_per_epoch", args.transformer_steps),
+            ("actor_critic_steps_per_epoch", args.actor_critic_steps),
+            ("actor_critic_batch_size", args.actor_critic_batch),
+        )
+        if value is not None
+    }
     resuming = args.resume and (run / "state.json").exists()
     if resuming:
-        # Keep the original run's settings so a resumed run stays one experiment.
-        overrides = json.loads((run / "args.json").read_text())["overrides"]
+        # Keep the original run's settings, except those changed explicitly on
+        # this command line (for example more policy work once the world model
+        # has converged). Every change is recorded in args.json.
+        saved = json.loads((run / "args.json").read_text())
+        overrides = {**saved["overrides"], **requested}
+        if requested:
+            changes = saved.setdefault("changes", [])
+            changes.append(
+                {
+                    "from_epoch": json.loads((run / "state.json").read_text())["epoch"],
+                    **requested,
+                }
+            )
+            saved["overrides"] = overrides
+            (run / "args.json").write_text(json.dumps(saved, indent=2))
     else:
+        overrides = {**BATCH_OVERRIDES, **requested}
         (run / "args.json").write_text(
             json.dumps({**vars(args), "overrides": overrides}, indent=2)
         )
@@ -290,6 +306,12 @@ def main() -> None:
     t.add_argument("--autoencoder-steps", type=int, default=None, help="paper: 200")
     t.add_argument("--transformer-steps", type=int, default=None, help="paper: 200")
     t.add_argument("--actor-critic-steps", type=int, default=None, help="paper: 200")
+    t.add_argument(
+        "--actor-critic-batch",
+        type=int,
+        default=None,
+        help="imagined trajectories per policy update (default 16; paper: 64)",
+    )
 
     r = sub.add_parser("record")
     r.add_argument("--run", default="demos/runs/iris")
